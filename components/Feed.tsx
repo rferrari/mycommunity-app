@@ -66,7 +66,6 @@ const VideoPlayerComponent = React.memo(({ url, onToggleMute }: {
   const player = useVideoPlayer(url, player => {
     player.loop = true;
     player.muted = true;
-    player.play(); // Auto-play the video since we removed the play button
   });
   
   const { muted } = useEvent(player, 'mutedChange', { muted: player.muted });
@@ -81,8 +80,9 @@ const VideoPlayerComponent = React.memo(({ url, onToggleMute }: {
       <VideoView
         style={{ width: '100%', height: '100%' }}
         player={player}
+        allowsFullscreen={false}
       />
-      <View className="absolute bottom-2 right-2">
+      <View className="absolute bottom-2 right-2 z-10">
         <Pressable
           className="bg-black/50 p-2.5 rounded-full w-10 h-10 items-center justify-center"
           onPress={handleMutePress}
@@ -150,26 +150,30 @@ function PostCard({ post }: { post: Post }) {
         {post.body && (
           <View className="flex-row flex-wrap gap-1 mb-3">
             {extractMediaFromBody(post.body).map((media, index) => (
-              <Pressable
+              <View
                 key={index}
-                onPress={() => handleMediaPress(media)}
                 className={`${extractMediaFromBody(post.body).length === 1 ? 'w-full' : 'w-[49%]'} aspect-square rounded-lg overflow-hidden relative bg-gray-100`}
               >
-                {media.type === 'image' ? (
-                  <Image
-                    source={{ uri: media.url }}
-                    className="w-full h-full"
-                    resizeMode="cover"
-                  />
-                ) : (
+                {media.type === 'video' ? (
                   <View className="w-full h-full">
                     <VideoPlayerComponent
                       url={media.url}
                       onToggleMute={() => toggleMute(media.url)}
                     />
                   </View>
+                ) : (
+                  <Pressable
+                    onPress={() => handleMediaPress(media)}
+                    className={`w-full h-full`}
+                  >
+                    <Image
+                      source={{ uri: media.url }}
+                      className="w-full h-full"
+                      resizeMode="cover"
+                    />
+                  </Pressable>
                 )}
-              </Pressable>
+              </View>
             ))}
           </View>
         )}
