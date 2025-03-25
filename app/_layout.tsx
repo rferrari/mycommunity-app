@@ -26,6 +26,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="fetch"
+        options={{
+          title: 'Fetch',
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="cloud-download-outline" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
