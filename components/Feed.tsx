@@ -5,20 +5,55 @@ import React, { useState } from 'react';
 import { Image, Modal, Pressable, View } from 'react-native';
 import { Card, CardContent } from './ui/card';
 import { Text } from './ui/text';
+import { API_BASE_URL } from '~/lib/constants';
 
 interface Post {
-  id: string;
-  username: string;
-  handle: string;
-  avatar: string;
-  content: string;
-  createdAt: Date;
-  likes: number;
-  earnings: number;
-  media?: {
-    type: 'image' | 'video';
-    url: string;
-  }[];
+  title: string;
+  body: string;
+  author: string;
+  permlink: string;
+  created: string;
+  last_edited: string | null;
+  cashout_time: string;
+  last_payout: string;
+  tags: string[];
+  json_metadata: {
+    app: string;
+    tags: string[];
+    image?: string;
+  };
+  pending_payout_value: string;
+  author_rewards: string;
+  author_rewards_in_hive: string;
+  total_payout_value: string;
+  curator_payout_value: string;
+  total_vote_weight: number;
+  allow_votes: boolean;
+  deleted: boolean;
+}
+
+function extractMediaFromBody(body: string): { type: 'image' | 'video'; url: string }[] {
+  const media: { type: 'image' | 'video'; url: string }[] = [];
+  
+  // Extract images
+  const imageMatches = body.match(/!\[.*?\]\((.*?)\)/g);
+  if (imageMatches) {
+    imageMatches.forEach(match => {
+      const url = match.match(/\((.*?)\)/)?.[1];
+      if (url) media.push({ type: 'image', url });
+    });
+  }
+
+  // Extract videos from iframes
+  const iframeMatches = body.match(/<iframe.*?src="(.*?)".*?><\/iframe>/g);
+  if (iframeMatches) {
+    iframeMatches.forEach(match => {
+      const url = match.match(/src="(.*?)"/)?.[1];
+      if (url) media.push({ type: 'video', url });
+    });
+  }
+
+  return media;
 }
 
 function PostCard({ post }: { post: Post }) {
@@ -39,30 +74,30 @@ function PostCard({ post }: { post: Post }) {
           <View className="flex-row items-center">
             <View className="h-10 w-10 mr-3 rounded-full overflow-hidden">
               <Image 
-                source={{ uri: post.avatar }} 
+                source={{ uri: `https://images.ecency.com/webp/u/${post.author}/avatar/small` }} 
                 className="w-full h-full"
-                alt={`${post.username}'s avatar`}
+                alt={`${post.author}'s avatar`}
               />
             </View>
             <View>
-              <Text className="font-bold text-lg">{post.username}</Text>
-              <Text className="text-gray-500">@{post.handle}</Text>
+              <Text className="font-bold text-lg">{post.author}</Text>
+              <Text className="text-gray-500">@{post.author}</Text>
             </View>
           </View>
           <Text className="text-gray-500 mt-1">
-            {formatDistanceToNow(post.createdAt, { addSuffix: true })}
+            {formatDistanceToNow(new Date(post.created), { addSuffix: true })}
           </Text>
         </View>
         
-        <Text className="mb-3">{post.content}</Text>
+        <Text className="mb-3">{post.body.replace(/<iframe.*?<\/iframe>|!\[.*?\]\(.*?\)/g, '')}</Text>
         
-        {post.media && post.media.length > 0 && (
+        {post.body && (
           <View className="flex-row flex-wrap gap-1 mb-3">
-            {post.media.map((media, index) => (
+            {extractMediaFromBody(post.body).map((media, index) => (
               <Pressable
                 key={index}
                 onPress={() => handleMediaPress(media.url)}
-                className={`${post.media?.length === 1 ? 'w-full' : 'w-[49%]'} aspect-square rounded-lg overflow-hidden`}
+                className={`${extractMediaFromBody(post.body).length === 1 ? 'w-full' : 'w-[49%]'} aspect-square rounded-lg overflow-hidden`}
               >
                 {media.type === 'image' ? (
                   <Image
@@ -88,7 +123,7 @@ function PostCard({ post }: { post: Post }) {
         
         <View className="flex-row justify-between items-center">
           <Text className="text-green-600 font-bold">
-            ${post.earnings.toFixed(2)}
+            ${parseFloat(post.total_payout_value).toFixed(3)}
           </Text>
           <Pressable
             onPress={() => setIsLiked(!isLiked)}
@@ -100,7 +135,7 @@ function PostCard({ post }: { post: Post }) {
               color={isLiked ? "#ff4444" : "#666666"}
               style={{ marginRight: 4 }}
             />
-            <Text className="text-gray-600">{post.likes}</Text>
+            <Text className="text-gray-600">{Math.floor(post.total_vote_weight / 1000000)}</Text>
           </Pressable>
         </View>
       </CardContent>
@@ -130,38 +165,41 @@ function PostCard({ post }: { post: Post }) {
 }
 
 export function Feed() {
-  const samplePosts: Post[] = [
-    {
-      id: '1',
-      username: 'John Doe',
-      handle: 'johndoe',
-      avatar: 'https://api.dicebear.com/9.x/pixel-art/png?seed=john',
-      content: 'Just launched my new project! 🚀',
-      createdAt: new Date('2025-03-24T10:00:00'),
-      likes: 42,
-      earnings: 15.50,
-    },
-    {
-      id: '2',
-      username: 'Jane Smith',
-      handle: 'janesmith',
-      avatar: 'https://api.dicebear.com/9.x/pixel-art/png?seed=jane',
-      content: 'Check out these amazing photos from my trip!',
-      createdAt: new Date('2025-03-24T09:30:00'),
-      likes: 127,
-      earnings: 45.75,
-      media: [
-        { type: 'image', url: 'https://picsum.photos/400/300' },
-        { type: 'image', url: 'https://picsum.photos/400/301' },
-      ],
-    }
-  ];
+  const [feedData, setFeedData] = React.useState<Post[]>([]);
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    const fetchFeed = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`${API_BASE_URL}/feed`);
+        const data = await response.json();
+        if (data.success && Array.isArray(data.data)) {
+          setFeedData(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching feed:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFeed();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View className="w-full items-center justify-center p-4">
+        <Text>Loading posts...</Text>
+      </View>
+    );
+  }
 
   return (
     <View className="w-full gap-4">
       <Text className="text-2xl font-bold mb-2">Latest Posts</Text>
-      {samplePosts.map((post) => (
-        <PostCard key={post.id} post={post} />
+      {feedData.map((post) => (
+        <PostCard key={post.permlink} post={post} />
       ))}
     </View>
   );
