@@ -12,11 +12,14 @@ export default function Screen() {
   const [username, setUsername] = React.useState('');
   const [authData, setAuthData] = React.useState<string>('');
   const [authError, setAuthError] = React.useState<string>('');
+  const [isPublicLoading, setIsPublicLoading] = React.useState(false);
+  const [isAuthLoading, setIsAuthLoading] = React.useState(false);
 
   async function fetchFeedData() {
     // Clear previous states
     setErrorMessage('');
     setFeedData('');
+    setIsPublicLoading(true);
     
     try {
       const response = await fetch(`${API_BASE_URL}/feed`);
@@ -29,12 +32,15 @@ export default function Screen() {
       console.error('Error fetching feed:', error);
       setErrorMessage(error instanceof Error ? error.message : 'An error occurred while fetching data');
       setFeedData('');
+    } finally {
+      setIsPublicLoading(false);
     }
   }
 
   async function fetchAuthenticatedData() {
     setAuthError('');
     setAuthData('');
+    setIsAuthLoading(true);
     
     try {
       if (!username) {
@@ -65,6 +71,8 @@ export default function Screen() {
       console.error('Error fetching authenticated data:', error);
       setAuthError(error instanceof Error ? error.message : 'An error occurred while fetching data');
       setAuthData('');
+    } finally {
+      setIsAuthLoading(false);
     }
   }
 
@@ -91,8 +99,9 @@ export default function Screen() {
             variant='outline'
             className='shadow shadow-foreground/5'
             onPress={fetchFeedData}
+            disabled={isPublicLoading}
           >
-            <Text>Fetch Public Data</Text>
+            <Text>{isPublicLoading ? 'Loading...' : 'Fetch Public Data'}</Text>
           </Button>
         </CardContent>
       </Card>
@@ -108,6 +117,7 @@ export default function Screen() {
             placeholder="Enter username"
             value={username}
             onChangeText={setUsername}
+            editable={!isAuthLoading}
           />
           {authError ? (
             <View className='bg-destructive/10 p-4 rounded-lg'>
@@ -124,8 +134,9 @@ export default function Screen() {
             variant='outline'
             className='shadow shadow-foreground/5'
             onPress={fetchAuthenticatedData}
+            disabled={isAuthLoading}
           >
-            <Text>Fetch Authenticated Data</Text>
+            <Text>{isAuthLoading ? 'Loading...' : 'Fetch Authenticated Data'}</Text>
           </Button>
         </CardContent>
       </Card>
