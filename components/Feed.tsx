@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, RefreshControl, ScrollView } from 'react-native';
 import { Text } from './ui/text';
 import { PostCard } from './feed/PostCard';
 import { API_BASE_URL } from '~/lib/constants';
@@ -12,9 +12,9 @@ interface FeedProps {
 export function Feed({ refreshTrigger = 0 }: FeedProps) {
   const [feedData, setFeedData] = React.useState<Post[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
 
   const fetchFeed = React.useCallback(async () => {
-    setIsLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/feed`);
       const data = await response.json();
@@ -23,13 +23,18 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
       }
     } catch (error) {
       console.error('Error fetching feed:', error);
-    } finally {
-      setIsLoading(false);
     }
   }, []);
 
+  const handleRefresh = React.useCallback(async () => {
+    setIsRefreshing(true);
+    await fetchFeed();
+    setIsRefreshing(false);
+  }, [fetchFeed]);
+
   React.useEffect(() => {
-    fetchFeed();
+    setIsLoading(true);
+    fetchFeed().finally(() => setIsLoading(false));
   }, [fetchFeed, refreshTrigger]);
 
   if (isLoading) {
@@ -41,11 +46,24 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
   }
 
   return (
-    <View className="w-full gap-4">
-      <Text className="text-2xl font-bold mb-2">Latest Posts</Text>
-      {feedData.map((post) => (
-        <PostCard key={post.permlink} post={post} />
-      ))}
-    </View>
+    <ScrollView
+      className="flex-1"
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={handleRefresh}
+          tintColor="hsl(var(--foreground))"
+          colors={["hsl(var(--foreground))"]}
+          progressBackgroundColor="hsl(var(--background))"
+        />
+      }
+    >
+      <View className="w-full gap-4 px-4">
+        <Text className="text-2xl font-bold mb-2">Latest Posts</Text>
+        {feedData.map((post) => (
+          <PostCard key={post.permlink} post={post} />
+        ))}
+      </View>
+    </ScrollView>
   );
 }
