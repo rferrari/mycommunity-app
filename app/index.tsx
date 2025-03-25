@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import { View, TextInput, ScrollView } from 'react-native';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 import { Text } from '~/components/ui/text';
 import { API_BASE_URL } from '~/lib/constants';
 import * as SecureStore from 'expo-secure-store';
-import { TextInput } from 'react-native';
 
 export default function Screen() {
   const [feedData, setFeedData] = React.useState<string>('');
@@ -83,7 +82,9 @@ export default function Screen() {
             </View>
           ) : (
             <View className='bg-muted p-4 rounded-lg'>
-              <Text className='text-sm'>{feedData || 'No data fetched yet'}</Text>
+              <ScrollView className='max-h-32' showsVerticalScrollIndicator={true}>
+                <Text className='text-sm'>{feedData || 'No data fetched yet'}</Text>
+              </ScrollView>
             </View>
           )}
           <Button 
@@ -114,7 +115,9 @@ export default function Screen() {
             </View>
           ) : (
             <View className='bg-muted p-4 rounded-lg'>
-              <Text className='text-sm'>{authData || 'No authenticated data fetched yet'}</Text>
+              <ScrollView className='max-h-32' showsVerticalScrollIndicator={true}>
+                <Text className='text-sm'>{authData || 'No authenticated data fetched yet'}</Text>
+              </ScrollView>
             </View>
           )}
           <Button 
