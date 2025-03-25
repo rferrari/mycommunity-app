@@ -59,9 +59,17 @@ export function PostCard({ post }: PostCardProps) {
         )}
 
         <View className="flex-row justify-between items-center">
-          <Text className="text-green-600 font-bold">
-            ${parseFloat(post.total_payout_value).toFixed(3)}
-          </Text>
+          {
+            parseInt(post.total_payout_value) == 0 ? (
+              <Text className="text-gray-500 font-bold">
+                ${post.total_payout_value}
+              </Text>
+            ) : (
+              <Text className="text-gray-500 font-bold">
+                ${parseFloat(post.total_payout_value).toFixed(3)}
+              </Text>
+            )
+          }
           <Pressable
             onPress={() => setIsLiked(!isLiked)}
             className="flex-row items-center"
