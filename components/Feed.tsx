@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, RefreshControl, ScrollView } from 'react-native';
+import { View, RefreshControl, FlatList, ActivityIndicator } from 'react-native';
 import { Text } from './ui/text';
 import { PostCard } from './feed/PostCard';
 import { API_BASE_URL } from '~/lib/constants';
@@ -32,22 +32,42 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
     setIsRefreshing(false);
   }, [fetchFeed]);
 
+  const renderItem = React.useCallback(({ item }: { item: Post }) => (
+    <PostCard key={item.permlink} post={item} />
+  ), []);
+
+  const keyExtractor = React.useCallback((item: Post) => item.permlink, []);
+
+  const ListHeaderComponent = React.useCallback(() => (
+    <Text className="text-2xl font-bold mb-2 px-4">Latest Posts</Text>
+  ), []);
+
+  const ItemSeparatorComponent = React.useCallback(() => (
+    <View className="h-2" />
+  ), []);
+
   React.useEffect(() => {
     setIsLoading(true);
     fetchFeed().finally(() => setIsLoading(false));
   }, [fetchFeed, refreshTrigger]);
 
-  if (isLoading) {
-    return (
-      <View className="w-full items-center justify-center p-4 bg-background">
-        <Text className="text-foreground">Loading posts...</Text>
-      </View>
-    );
-  }
+  // Prepare the loading view component
+  const loadingView = (
+    <View className="w-full items-center justify-center p-4 bg-background">
+      <ActivityIndicator size="large" color="hsl(var(--foreground))" />
+      <Text className="text-foreground mt-2">Loading posts...</Text>
+    </View>
+  );
 
-  return (
-    <ScrollView
-      className="flex-1"
+  // Prepare the content view component
+  const contentView = (
+    <FlatList
+      data={feedData}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      ListHeaderComponent={ListHeaderComponent}
+      ItemSeparatorComponent={ItemSeparatorComponent}
+      contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16 }}
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
@@ -57,13 +77,14 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
           progressBackgroundColor="hsl(var(--background))"
         />
       }
-    >
-      <View className="w-full gap-2 px-4">
-        <Text className="text-2xl font-bold mb-2">Latest Posts</Text>
-        {feedData.map((post) => (
-          <PostCard key={post.permlink} post={post} />
-        ))}
-      </View>
-    </ScrollView>
+      removeClippedSubviews={true}
+      initialNumToRender={5}
+      maxToRenderPerBatch={3}
+      windowSize={7}
+      updateCellsBatchingPeriod={50}
+    />
   );
+
+  // Return the appropriate view based on loading state
+  return isLoading ? loadingView : contentView;
 }
