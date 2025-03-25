@@ -59,18 +59,22 @@ function extractMediaFromBody(body: string): { type: 'image' | 'video'; url: str
   return media;
 }
 
-const VideoPlayerComponent = React.memo(({ url, onTogglePlayStatus, onToggleMute }: { 
+const VideoPlayerComponent = React.memo(({ url, onToggleMute }: { 
   url: string; 
-  onTogglePlayStatus: () => void; 
   onToggleMute: () => void;
 }) => {
   const player = useVideoPlayer(url, player => {
     player.loop = true;
     player.muted = true;
+    player.play(); // Auto-play the video since we removed the play button
   });
   
-  const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
   const { muted } = useEvent(player, 'mutedChange', { muted: player.muted });
+
+  const handleMutePress = () => {
+    player.muted = !player.muted;
+    onToggleMute();
+  };
 
   return (
     <>
@@ -78,20 +82,10 @@ const VideoPlayerComponent = React.memo(({ url, onTogglePlayStatus, onToggleMute
         style={{ width: '100%', height: '100%' }}
         player={player}
       />
-      <View className="absolute bottom-2 right-2 flex-row gap-2">
+      <View className="absolute bottom-2 right-2">
         <Pressable
-          className="bg-black/50 p-2 rounded-full"
-          onPress={onTogglePlayStatus}
-        >
-          <FontAwesome
-            name={isPlaying ? "pause" : "play"}
-            size={20}
-            color="white"
-          />
-        </Pressable>
-        <Pressable
-          className="bg-black/50 p-2 rounded-full"
-          onPress={onToggleMute}
+          className="bg-black/50 p-2.5 rounded-full w-10 h-10 items-center justify-center"
+          onPress={handleMutePress}
         >
           <FontAwesome
             name={muted ? "volume-off" : "volume-up"}
@@ -171,7 +165,6 @@ function PostCard({ post }: { post: Post }) {
                   <View className="w-full h-full">
                     <VideoPlayerComponent
                       url={media.url}
-                      onTogglePlayStatus={() => togglePlayStatus(media.url)}
                       onToggleMute={() => toggleMute(media.url)}
                     />
                   </View>
@@ -219,7 +212,6 @@ function PostCard({ post }: { post: Post }) {
             ) : selectedMedia?.type === 'video' ? (
               <VideoPlayerComponent
                 url={selectedMedia.url}
-                onTogglePlayStatus={() => togglePlayStatus(selectedMedia.url)}
                 onToggleMute={() => toggleMute(selectedMedia.url)}
               />
             ) : null}
