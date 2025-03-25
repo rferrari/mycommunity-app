@@ -1,7 +1,8 @@
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { useEvent } from 'expo';
 import { FontAwesome } from '@expo/vector-icons';
 import { formatDistanceToNow } from 'date-fns';
-import { ResizeMode, Video } from 'expo-av';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Image, Modal, Pressable, View } from 'react-native';
 import { Card, CardContent } from './ui/card';
 import { Text } from './ui/text';
@@ -34,7 +35,7 @@ interface Post {
 
 function extractMediaFromBody(body: string): { type: 'image' | 'video'; url: string }[] {
   const media: { type: 'image' | 'video'; url: string }[] = [];
-  
+
   // Extract images
   const imageMatches = body.match(/!\[.*?\]\((.*?)\)/g);
   if (imageMatches) {
@@ -44,28 +45,89 @@ function extractMediaFromBody(body: string): { type: 'image' | 'video'; url: str
     });
   }
 
-  // Extract videos from iframes
+  // Extract videos from iframes with IPFS links
   const iframeMatches = body.match(/<iframe.*?src="(.*?)".*?><\/iframe>/g);
   if (iframeMatches) {
     iframeMatches.forEach(match => {
       const url = match.match(/src="(.*?)"/)?.[1];
-      if (url) media.push({ type: 'video', url });
+      if (url && url.includes('ipfs.skatehive.app')) {
+        media.push({ type: 'video', url });
+      }
     });
   }
 
   return media;
 }
 
+const VideoPlayerComponent = React.memo(({ url, onTogglePlayStatus, onToggleMute }: { 
+  url: string; 
+  onTogglePlayStatus: () => void; 
+  onToggleMute: () => void;
+}) => {
+  const player = useVideoPlayer(url, player => {
+    player.loop = true;
+    player.muted = true;
+  });
+  
+  const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
+  const { muted } = useEvent(player, 'mutedChange', { muted: player.muted });
+
+  return (
+    <>
+      <VideoView
+        style={{ width: '100%', height: '100%' }}
+        player={player}
+      />
+      <View className="absolute bottom-2 right-2 flex-row gap-2">
+        <Pressable
+          className="bg-black/50 p-2 rounded-full"
+          onPress={onTogglePlayStatus}
+        >
+          <FontAwesome
+            name={isPlaying ? "pause" : "play"}
+            size={20}
+            color="white"
+          />
+        </Pressable>
+        <Pressable
+          className="bg-black/50 p-2 rounded-full"
+          onPress={onToggleMute}
+        >
+          <FontAwesome
+            name={muted ? "volume-off" : "volume-up"}
+            size={20}
+            color="white"
+          />
+        </Pressable>
+      </View>
+    </>
+  );
+});
+
 function PostCard({ post }: { post: Post }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
+  const [selectedMedia, setSelectedMedia] = useState<{ type: 'image' | 'video'; url: string } | null>(null);
   const [isLiked, setIsLiked] = useState(false);
-  const video = React.useRef(null);
+  const [playerStates, setPlayerStates] = useState<{[key: string]: { isPlaying: boolean; isMuted: boolean }}>({});
 
-  const handleMediaPress = (url: string) => {
-    setSelectedMedia(url);
+  const handleMediaPress = useCallback((media: { type: 'image' | 'video'; url: string }) => {
+    setSelectedMedia(media);
     setIsModalVisible(true);
-  };
+  }, []);
+
+  const togglePlayStatus = useCallback((url: string) => {
+    setPlayerStates(prev => ({
+      ...prev,
+      [url]: { ...prev[url], isPlaying: !prev[url]?.isPlaying }
+    }));
+  }, []);
+
+  const toggleMute = useCallback((url: string) => {
+    setPlayerStates(prev => ({
+      ...prev,
+      [url]: { ...prev[url], isMuted: !prev[url]?.isMuted }
+    }));
+  }, []);
 
   return (
     <Card className="w-full mb-4">
@@ -73,8 +135,8 @@ function PostCard({ post }: { post: Post }) {
         <View className="flex-row items-start justify-between mb-3">
           <View className="flex-row items-center">
             <View className="h-10 w-10 mr-3 rounded-full overflow-hidden">
-              <Image 
-                source={{ uri: `https://images.ecency.com/webp/u/${post.author}/avatar/small` }} 
+              <Image
+                source={{ uri: `https://images.ecency.com/webp/u/${post.author}/avatar/small` }}
                 className="w-full h-full"
                 alt={`${post.author}'s avatar`}
               />
@@ -88,16 +150,16 @@ function PostCard({ post }: { post: Post }) {
             {formatDistanceToNow(new Date(post.created), { addSuffix: true })}
           </Text>
         </View>
-        
+
         <Text className="mb-3">{post.body.replace(/<iframe.*?<\/iframe>|!\[.*?\]\(.*?\)/g, '')}</Text>
-        
+
         {post.body && (
           <View className="flex-row flex-wrap gap-1 mb-3">
             {extractMediaFromBody(post.body).map((media, index) => (
               <Pressable
                 key={index}
-                onPress={() => handleMediaPress(media.url)}
-                className={`${extractMediaFromBody(post.body).length === 1 ? 'w-full' : 'w-[49%]'} aspect-square rounded-lg overflow-hidden`}
+                onPress={() => handleMediaPress(media)}
+                className={`${extractMediaFromBody(post.body).length === 1 ? 'w-full' : 'w-[49%]'} aspect-square rounded-lg overflow-hidden relative bg-gray-100`}
               >
                 {media.type === 'image' ? (
                   <Image
@@ -106,21 +168,19 @@ function PostCard({ post }: { post: Post }) {
                     resizeMode="cover"
                   />
                 ) : (
-                  <Video
-                    ref={video}
-                    source={{ uri: media.url }}
-                    className="w-full h-full"
-                    resizeMode={ResizeMode.COVER}
-                    useNativeControls={false}
-                    shouldPlay={false}
-                    isLooping
-                  />
+                  <View className="w-full h-full">
+                    <VideoPlayerComponent
+                      url={media.url}
+                      onTogglePlayStatus={() => togglePlayStatus(media.url)}
+                      onToggleMute={() => toggleMute(media.url)}
+                    />
+                  </View>
                 )}
               </Pressable>
             ))}
           </View>
         )}
-        
+
         <View className="flex-row justify-between items-center">
           <Text className="text-green-600 font-bold">
             ${parseFloat(post.total_payout_value).toFixed(3)}
@@ -150,13 +210,19 @@ function PostCard({ post }: { post: Post }) {
           onPress={() => setIsModalVisible(false)}
         >
           <View className="w-full h-[80%] justify-center">
-            {selectedMedia && (
+            {selectedMedia?.type === 'image' ? (
               <Image
-                source={{ uri: selectedMedia }}
+                source={{ uri: selectedMedia.url }}
                 className="w-full h-full"
                 resizeMode="contain"
               />
-            )}
+            ) : selectedMedia?.type === 'video' ? (
+              <VideoPlayerComponent
+                url={selectedMedia.url}
+                onTogglePlayStatus={() => togglePlayStatus(selectedMedia.url)}
+                onToggleMute={() => toggleMute(selectedMedia.url)}
+              />
+            ) : null}
           </View>
         </Pressable>
       </Modal>
