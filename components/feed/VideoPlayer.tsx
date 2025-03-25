@@ -13,8 +13,9 @@ export const VideoPlayer = React.memo(({ url }: VideoPlayerProps) => {
   return (
     <VideoView
       style={{ width: '100%', height: '100%' }}
+      contentFit='cover'
       player={player}
-      allowsFullscreen={false}
+      allowsFullscreen={true}
     />
   );
 });
