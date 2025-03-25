@@ -1,3 +1,5 @@
+export const API_BASE_URL = 'http://192.168.0.14:3000/api/v1';
+
 export const NAV_THEME = {
   light: {
     background: 'hsl(0 0% 100%)', // background
