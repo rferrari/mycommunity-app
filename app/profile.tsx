@@ -23,6 +23,8 @@ export default function ProfileScreen() {
       }
 
       await SecureStore.setItemAsync(username, password);
+      // Store the last logged in user
+      await SecureStore.setItemAsync('lastLoggedInUser', username);
       setMessage('Credentials saved successfully!');
       setUsername('');
       setPassword('');
