@@ -6,8 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 import { Text } from '~/components/ui/text';
 import { API_BASE_URL } from '~/lib/constants';
 import * as SecureStore from 'expo-secure-store';
+import { useColorScheme } from '~/lib/useColorScheme';
 
 export default function FetchScreen() {
+  const { isDarkColorScheme } = useColorScheme();
   const [feedData, setFeedData] = React.useState<string>('');
   const [errorMessage, setErrorMessage] = React.useState<string>('');
   const [username, setUsername] = React.useState('');
@@ -77,9 +79,9 @@ export default function FetchScreen() {
   }
 
   return (
-    <SafeAreaView edges={['bottom']} className='flex-1'>
+    <SafeAreaView edges={['bottom']} className='flex-1 bg-background'>
       <ScrollView className='flex-1'>
-        <View className='justify-center items-center gap-5 p-6 bg-secondary/30'>
+        <View className='justify-center items-center gap-5 p-6'>
           {/* Public API Card */}
           <Card className='w-full max-w-sm rounded-2xl'>
             <CardHeader>
@@ -115,11 +117,12 @@ export default function FetchScreen() {
             </CardHeader>
             <CardContent className='flex-col gap-4'>
               <TextInput
-                className='w-full p-2 border border-gray-300 rounded-lg dark:border-gray-600'
+                className='w-full p-2 border border-input rounded-lg bg-background text-foreground'
                 placeholder="Enter username"
                 value={username}
                 onChangeText={setUsername}
                 editable={!isAuthLoading}
+                placeholderTextColor={isDarkColorScheme ? '#666' : '#999'}
               />
               {authError ? (
                 <View className='bg-destructive/10 p-4 rounded-lg'>

@@ -24,14 +24,13 @@ export function Feed() {
         setIsLoading(false);
       }
     };
-
     fetchFeed();
   }, []);
 
   if (isLoading) {
     return (
-      <View className="w-full items-center justify-center p-4">
-        <Text>Loading posts...</Text>
+      <View className="w-full items-center justify-center p-4 bg-background">
+        <Text className="text-foreground">Loading posts...</Text>
       </View>
     );
   }

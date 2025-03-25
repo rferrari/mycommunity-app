@@ -5,8 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
 import * as SecureStore from 'expo-secure-store';
+import { useColorScheme } from '~/lib/useColorScheme';
 
 export default function ProfileScreen() {
+  const { isDarkColorScheme } = useColorScheme();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -52,8 +54,8 @@ export default function ProfileScreen() {
   };
 
   return (
-    <SafeAreaView edges={['bottom']} className="flex-1">
-      <ScrollView className="flex-1 bg-secondary/30">
+    <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
+      <ScrollView className="flex-1">
         <View className="p-6">
           <Card className="w-full max-w-sm rounded-2xl mx-auto">
             <CardHeader>
@@ -63,30 +65,32 @@ export default function ProfileScreen() {
               <View className='gap-4'>
                 <Text className='text-base font-medium'>Save Credentials</Text>
                 <TextInput
-                  className='w-full p-2 border border-gray-300 rounded-lg dark:border-gray-600'
+                  className='w-full p-2 border border-input rounded-lg bg-background text-foreground'
                   placeholder="Username"
                   value={username}
                   onChangeText={setUsername}
+                  placeholderTextColor={isDarkColorScheme ? '#666' : '#999'}
                 />
                 <TextInput
-                  className='w-full p-2 border border-gray-300 rounded-lg dark:border-gray-600'
+                  className='w-full p-2 border border-input rounded-lg bg-background text-foreground'
                   placeholder="Password"
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry
+                  placeholderTextColor={isDarkColorScheme ? '#666' : '#999'}
                 />
                 <Button onPress={saveCredentials}>
                   <Text>Save Credentials</Text>
                 </Button>
               </View>
-
               <View className='gap-4 mt-4'>
                 <Text className='text-base font-medium'>Retrieve Password</Text>
                 <TextInput
-                  className='w-full p-2 border border-gray-300 rounded-lg dark:border-gray-600'
+                  className='w-full p-2 border border-input rounded-lg bg-background text-foreground'
                   placeholder="Enter username to search"
                   value={searchUsername}
                   onChangeText={setSearchUsername}
+                  placeholderTextColor={isDarkColorScheme ? '#666' : '#999'}
                 />
                 <Button onPress={retrievePassword}>
                   <Text>Find Password</Text>
@@ -97,7 +101,6 @@ export default function ProfileScreen() {
                   </View>
                 )}
               </View>
-
               {message && (
                 <Text className='text-sm text-center mt-4'>{message}</Text>
               )}
