@@ -9,7 +9,6 @@ interface MediaPreviewProps {
   selectedMedia: Media | null;
   isModalVisible: boolean;
   onCloseModal: () => void;
-  onToggleMute: (url: string) => void;
 }
 
 export function MediaPreview({
@@ -18,7 +17,6 @@ export function MediaPreview({
   selectedMedia,
   isModalVisible,
   onCloseModal,
-  onToggleMute,
 }: MediaPreviewProps) {
   return (
     <>
@@ -30,10 +28,7 @@ export function MediaPreview({
           >
             {item.type === 'video' ? (
               <View className="w-full h-full">
-                <VideoPlayer
-                  url={item.url}
-                  onToggleMute={() => onToggleMute(item.url)}
-                />
+                <VideoPlayer url={item.url} />
               </View>
             ) : (
               <Pressable
@@ -50,7 +45,6 @@ export function MediaPreview({
           </View>
         ))}
       </View>
-
       <Modal
         visible={isModalVisible}
         transparent={true}
@@ -68,10 +62,7 @@ export function MediaPreview({
                 resizeMode="contain"
               />
             ) : selectedMedia?.type === 'video' ? (
-              <VideoPlayer
-                url={selectedMedia.url}
-                onToggleMute={() => onToggleMute(selectedMedia.url)}
-              />
+              <VideoPlayer url={selectedMedia.url} />
             ) : null}
           </View>
         </Pressable>

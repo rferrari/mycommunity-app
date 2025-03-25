@@ -16,18 +16,10 @@ export function PostCard({ post }: PostCardProps) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
   const [isLiked, setIsLiked] = useState(false);
-  const [playerStates, setPlayerStates] = useState<{[key: string]: { isPlaying: boolean; isMuted: boolean }}>({});
 
   const handleMediaPress = useCallback((media: Media) => {
     setSelectedMedia(media);
     setIsModalVisible(true);
-  }, []);
-
-  const toggleMute = useCallback((url: string) => {
-    setPlayerStates(prev => ({
-      ...prev,
-      [url]: { ...prev[url], isMuted: !prev[url]?.isMuted }
-    }));
   }, []);
 
   const media = extractMediaFromBody(post.body);
@@ -63,7 +55,6 @@ export function PostCard({ post }: PostCardProps) {
             selectedMedia={selectedMedia}
             isModalVisible={isModalVisible}
             onCloseModal={() => setIsModalVisible(false)}
-            onToggleMute={toggleMute}
           />
         )}
 
