@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, ScrollView, TextInput } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
@@ -51,57 +52,59 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-secondary/30">
-      <View className="p-6">
-        <Card className="w-full max-w-sm rounded-2xl mx-auto">
-          <CardHeader>
-            <CardTitle className='py-2 text-center'>Profile</CardTitle>
-          </CardHeader>
-          <CardContent className='gap-4'>
-            <View className='gap-4'>
-              <Text className='text-base font-medium'>Save Credentials</Text>
-              <TextInput
-                className='w-full p-2 border border-gray-300 rounded-lg dark:border-gray-600'
-                placeholder="Username"
-                value={username}
-                onChangeText={setUsername}
-              />
-              <TextInput
-                className='w-full p-2 border border-gray-300 rounded-lg dark:border-gray-600'
-                placeholder="Password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-              />
-              <Button onPress={saveCredentials}>
-                <Text>Save Credentials</Text>
-              </Button>
-            </View>
+    <SafeAreaView edges={['bottom']} className="flex-1">
+      <ScrollView className="flex-1 bg-secondary/30">
+        <View className="p-6">
+          <Card className="w-full max-w-sm rounded-2xl mx-auto">
+            <CardHeader>
+              <CardTitle className='py-2 text-center'>Profile</CardTitle>
+            </CardHeader>
+            <CardContent className='gap-4'>
+              <View className='gap-4'>
+                <Text className='text-base font-medium'>Save Credentials</Text>
+                <TextInput
+                  className='w-full p-2 border border-gray-300 rounded-lg dark:border-gray-600'
+                  placeholder="Username"
+                  value={username}
+                  onChangeText={setUsername}
+                />
+                <TextInput
+                  className='w-full p-2 border border-gray-300 rounded-lg dark:border-gray-600'
+                  placeholder="Password"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                />
+                <Button onPress={saveCredentials}>
+                  <Text>Save Credentials</Text>
+                </Button>
+              </View>
 
-            <View className='gap-4 mt-4'>
-              <Text className='text-base font-medium'>Retrieve Password</Text>
-              <TextInput
-                className='w-full p-2 border border-gray-300 rounded-lg dark:border-gray-600'
-                placeholder="Enter username to search"
-                value={searchUsername}
-                onChangeText={setSearchUsername}
-              />
-              <Button onPress={retrievePassword}>
-                <Text>Find Password</Text>
-              </Button>
-              {foundPassword && (
-                <View className='p-2 bg-muted rounded-lg'>
-                  <Text>Found Password: {foundPassword}</Text>
-                </View>
+              <View className='gap-4 mt-4'>
+                <Text className='text-base font-medium'>Retrieve Password</Text>
+                <TextInput
+                  className='w-full p-2 border border-gray-300 rounded-lg dark:border-gray-600'
+                  placeholder="Enter username to search"
+                  value={searchUsername}
+                  onChangeText={setSearchUsername}
+                />
+                <Button onPress={retrievePassword}>
+                  <Text>Find Password</Text>
+                </Button>
+                {foundPassword && (
+                  <View className='p-2 bg-muted rounded-lg'>
+                    <Text>Found Password: {foundPassword}</Text>
+                  </View>
+                )}
+              </View>
+
+              {message && (
+                <Text className='text-sm text-center mt-4'>{message}</Text>
               )}
-            </View>
-
-            {message && (
-              <Text className='text-sm text-center mt-4'>{message}</Text>
-            )}
-          </CardContent>
-        </Card>
-      </View>
-    </ScrollView>
+            </CardContent>
+          </Card>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
