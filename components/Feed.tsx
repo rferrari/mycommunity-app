@@ -5,27 +5,32 @@ import { PostCard } from './feed/PostCard';
 import { API_BASE_URL } from '~/lib/constants';
 import type { Post } from './feed/types';
 
-export function Feed() {
+interface FeedProps {
+  refreshTrigger?: number;
+}
+
+export function Feed({ refreshTrigger = 0 }: FeedProps) {
   const [feedData, setFeedData] = React.useState<Post[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  React.useEffect(() => {
-    const fetchFeed = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`${API_BASE_URL}/feed`);
-        const data = await response.json();
-        if (data.success && Array.isArray(data.data)) {
-          setFeedData(data.data);
-        }
-      } catch (error) {
-        console.error('Error fetching feed:', error);
-      } finally {
-        setIsLoading(false);
+  const fetchFeed = React.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/feed`);
+      const data = await response.json();
+      if (data.success && Array.isArray(data.data)) {
+        setFeedData(data.data);
       }
-    };
-    fetchFeed();
+    } catch (error) {
+      console.error('Error fetching feed:', error);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  React.useEffect(() => {
+    fetchFeed();
+  }, [fetchFeed, refreshTrigger]);
 
   if (isLoading) {
     return (
