@@ -58,7 +58,7 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
         />
       }
     >
-      <View className="w-full gap-4 px-4">
+      <View className="w-full gap-2 px-4">
         <Text className="text-2xl font-bold mb-2">Latest Posts</Text>
         {feedData.map((post) => (
           <PostCard key={post.permlink} post={post} />

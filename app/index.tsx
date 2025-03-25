@@ -14,7 +14,7 @@ export default function IndexPage() {
   );
 
   return (
-    <View className="flex-1 p-4 bg-background">
+    <View className="flex-1 bg-background">
       <Feed refreshTrigger={refreshKey} />
     </View>
   );
