@@ -125,7 +125,7 @@ export function PostCard({ post }: PostCardProps) {
             disabled={isVoting}
           >
             <Text className="text-gray-600">
-              {Math.floor(post.total_vote_weight / 1000000)}
+              {post.votes.length}
             </Text>
             <FontAwesome
               name={isLiked ? "heart" : "heart-o"}
