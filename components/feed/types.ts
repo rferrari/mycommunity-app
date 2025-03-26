@@ -21,22 +21,6 @@ export interface Post {
   total_vote_weight: number;
   allow_votes: boolean;
   deleted: boolean;
-  votes: {
-    voter: string;
-    weight: number;
-    rshares: number;
-    timestamp: string;
-    pending_payout: number;
-    pending_payout_symbol: string;
-  }[];
-  user_json_metadata?: {
-    extensions?: {
-      level?: number;
-      staticXp?: number;
-      eth_address?: string;
-      video_parts?: any[];
-    }
-  };
 }
 
 export interface Media {

@@ -21,14 +21,20 @@ const CardHeader = React.forwardRef<ViewRef, ViewProps>(({ className, ...props }
 ));
 CardHeader.displayName = 'CardHeader';
 
-const CardTitle = React.forwardRef<TextRef, TextProps>(({ className, ...props }, ref) => (
-  <Text
-    ref={ref}
-    className={cn('text-2xl text-card-foreground font-semibold leading-none tracking-tight', className)}
-    {...props}
-    accessibilityRole="header"
-  />
-));
+const CardTitle = React.forwardRef<TextRef, React.ComponentPropsWithoutRef<typeof Text>>(
+  ({ className, ...props }, ref) => (
+    <Text
+      role='heading'
+      aria-level={3}
+      ref={ref}
+      className={cn(
+        'text-2xl text-card-foreground font-semibold leading-none tracking-tight',
+        className
+      )}
+      {...props}
+    />
+  )
+);
 CardTitle.displayName = 'CardTitle';
 
 const CardDescription = React.forwardRef<TextRef, TextProps>(({ className, ...props }, ref) => (
@@ -36,21 +42,11 @@ const CardDescription = React.forwardRef<TextRef, TextProps>(({ className, ...pr
 ));
 CardDescription.displayName = 'CardDescription';
 
-const CardContent = React.forwardRef<ViewRef, ViewProps>(({ className, children, ...props }, ref) => {
-  const textClass = React.useContext(TextClassContext);
-  return (
-    <TextClassContext.Provider value={cn('text-card-foreground', textClass)}>
-      <View ref={ref} className={cn('p-6 pt-0', className)} {...props}>
-        {React.Children.map(children, child => {
-          if (typeof child === 'string' || typeof child === 'number') {
-            return <Text>{child}</Text>;
-          }
-          return child;
-        })}
-      </View>
-    </TextClassContext.Provider>
-  );
-});
+const CardContent = React.forwardRef<ViewRef, ViewProps>(({ className, ...props }, ref) => (
+  <TextClassContext.Provider value='text-card-foreground'>
+    <View ref={ref} className={cn('p-6 pt-0', className)} {...props} />
+  </TextClassContext.Provider>
+));
 CardContent.displayName = 'CardContent';
 
 const CardFooter = React.forwardRef<ViewRef, ViewProps>(({ className, ...props }, ref) => (
