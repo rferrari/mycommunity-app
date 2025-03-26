@@ -71,6 +71,23 @@ export interface Post {
   }>;
 }
 
+export interface PaginationData {
+  total: number;
+  totalPages: number;
+  currentPage: number;
+  limit: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  nextPage: number | null;
+  prevPage: number | null;
+}
+
+export interface MagazineResponse {
+  success: boolean;
+  data: Post[];
+  pagination: PaginationData;
+}
+
 export interface Media {
   type: 'image' | 'video';
   url: string;

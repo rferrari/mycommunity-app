@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, ActivityIndicator, Animated } from 'react-native';
+import { View, ActivityIndicator, Animated, Dimensions } from 'react-native';
 import { Text } from './text';
 import { useColorScheme } from '~/lib/useColorScheme';
-// import { LOADING_EFFECT } from '@env';
 import { getLoadingEffect } from './loading-effects';
 
 const LOADING_MESSAGES = [
@@ -17,6 +16,8 @@ const LOADING_MESSAGES = [
   'Rolling forward...',
   'Perfecting that ollie...',
 ] as const;
+
+const { width, height } = Dimensions.get('window');
 
 export function LoadingScreen() {
   const { isDarkColorScheme } = useColorScheme();
@@ -69,40 +70,36 @@ export function LoadingScreen() {
   }, []);
 
   return (
-    <View className="flex-1 items-center justify-center p-4 bg-background">
+    <View style={{ width, height }} className="bg-background">
       <BackgroundEffect />
-      <View className="items-center space-y-6">
-        <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-          <ActivityIndicator 
-            size="large" 
-            color={foregroundColor} 
-          />
-        </Animated.View>
-        <View className="items-center">
-          <Animated.Text 
-            className="text-6xl font-bold mb-4"
-            style={[
-              { color: foregroundColor },
-              { textShadowColor: 'rgba(0, 0, 0, 0.2)',
-                textShadowOffset: { width: 2, height: 2 },
-                textShadowRadius: 4
-              }
-            ]}
-          >
-            LOADING
-          </Animated.Text>
-          <Animated.Text 
-            className="text-3xl font-medium"
-            style={[
-              { color: foregroundColor },
-              { textShadowColor: 'rgba(0, 0, 0, 0.2)',
-                textShadowOffset: { width: 1, height: 1 },
-                textShadowRadius: 2
-              }
-            ]}
-          >
-            {loadingMessage}
-          </Animated.Text>
+      <View className="absolute inset-0 items-center justify-center">
+        <View className="items-center space-y-6">
+          <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+            <ActivityIndicator 
+              size="large" 
+              color={foregroundColor} 
+            />
+          </Animated.View>
+          <View className="items-center">
+            <Animated.Text 
+              className="text-6xl font-bold mb-4"
+              style={[
+                { color: foregroundColor },
+                { transform: [{ scale: pulseAnim }] }
+              ]}
+            >
+              LOADING
+            </Animated.Text>
+            <Animated.Text 
+              className="text-3xl font-medium"
+              style={{ 
+                color: foregroundColor,
+                opacity: fadeAnim 
+              }}
+            >
+              {loadingMessage}
+            </Animated.Text>
+          </View>
         </View>
       </View>
     </View>

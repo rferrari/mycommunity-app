@@ -5,7 +5,7 @@ import { Text } from './ui/text';
 import { PostCard } from './magazine/PostCard';
 import { API_BASE_URL } from '~/lib/constants';
 import { LoadingScreen } from './ui/LoadingScreen';
-import type { Post } from './magazine/types';
+import type { Post, PaginationData, MagazineResponse } from './magazine/types';
 
 interface MagazineProps {
   refreshTrigger?: number;
@@ -18,28 +18,49 @@ export function Magazine({ refreshTrigger = 0 }: MagazineProps) {
   const [feedData, setFeedData] = React.useState<Post[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
+  const [isLoadingMore, setIsLoadingMore] = React.useState(false);
+  const [pagination, setPagination] = React.useState<PaginationData | null>(null);
 
-  const fetchFeed = React.useCallback(async () => {
+  const fetchFeed = React.useCallback(async (page = 1) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/magazine`);
-      const data = await response.json();
-      if (data.success && Array.isArray(data.data)) {
-        setFeedData(data.data);
+      const response = await fetch(`${API_BASE_URL}/magazine?page=${page}`);
+      const data: MagazineResponse = await response.json();
+      if (data.success) {
+        if (page === 1) {
+          setFeedData(data.data);
+        } else {
+          setFeedData(prev => [...prev, ...data.data]);
+        }
+        setPagination(data.pagination);
       }
     } catch (error) {
       console.error('Error fetching feed:', error);
     }
   }, []);
 
+  const handleLoadMore = React.useCallback(async () => {
+    if (!pagination?.hasNextPage || isLoadingMore) return;
+
+    setIsLoadingMore(true);
+    await fetchFeed(pagination.nextPage);
+    setIsLoadingMore(false);
+  }, [fetchFeed, pagination, isLoadingMore]);
+
   const handleRefresh = React.useCallback(async () => {
     setIsRefreshing(true);
-    await fetchFeed();
+    await fetchFeed(1);
     setIsRefreshing(false);
   }, [fetchFeed]);
 
   const renderItem = React.useCallback(({ item }: { item: Post }) => (
     <View style={{ width: SCREEN_WIDTH }}>
-      <PostCard post={item} />
+      <FlatList
+        showsVerticalScrollIndicator={true}
+        scrollEnabled={true}
+        data={[item]}
+        renderItem={({ item }) => <PostCard post={item} />}
+        keyExtractor={(item) => item.permlink}
+      />
     </View>
   ), []);
 
@@ -88,6 +109,15 @@ export function Magazine({ refreshTrigger = 0 }: MagazineProps) {
             colors={[foregroundColor]}
             progressBackgroundColor={backgroundColor}
           />
+        }
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          isLoadingMore ? (
+            <View style={{ width: SCREEN_WIDTH }}>
+              <LoadingScreen />
+            </View>
+          ) : null
         }
         removeClippedSubviews={true}
         initialNumToRender={2}
