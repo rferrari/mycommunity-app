@@ -6,6 +6,7 @@ import { PostCard } from './magazine/PostCard';
 import { API_BASE_URL } from '~/lib/constants';
 import { LoadingScreen } from './ui/LoadingScreen';
 import type { Post, PaginationData, MagazineResponse } from './magazine/types';
+import { preloadedData } from '~/app/index';
 
 interface MagazineProps {
   refreshTrigger?: number;
@@ -69,9 +70,45 @@ export function Magazine({ refreshTrigger = 0 }: MagazineProps) {
   const ItemSeparatorComponent = React.useCallback(() => null, []);
 
   React.useEffect(() => {
-    setIsLoading(true);
-    fetchFeed().finally(() => setIsLoading(false));
-  }, [fetchFeed, refreshTrigger]);
+    const loadMagazine = async () => {
+      if (preloadedData.magazine && preloadedData.magazine.length > 0) {
+        console.info('Using preloaded magazine data:', preloadedData.magazine.length);
+        setFeedData(preloadedData.magazine);
+        setPagination({
+          currentPage: 1,
+          hasNextPage: true,
+          hasPrevPage: false,
+          limit: preloadedData.magazine.length,
+          nextPage: 2,
+          prevPage: null,
+          total: 0,
+          totalPages: 0
+        });
+        // Only clear preloaded data after we're sure it's been used
+        setTimeout(() => {
+          preloadedData.magazine = null;
+        }, 100);
+      } else {
+        setIsLoading(true);
+        console.info('No preloaded data, fetching magazine');
+        try {
+          const response = await fetch(`${API_BASE_URL}/magazine?page=1`);
+          const data: MagazineResponse = await response.json();
+          if (data.success) {
+            setFeedData(data.data);
+            setPagination(data.pagination);
+            // Don't store in preloadedData here since we're already viewing
+          }
+        } catch (error) {
+          console.error('Error fetching magazine:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadMagazine();
+  }, [refreshTrigger]);
 
   // Theme colors
   const foregroundColor = isDarkColorScheme ? '#ffffff' : '#000000';
