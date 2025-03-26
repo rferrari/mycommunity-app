@@ -27,13 +27,13 @@ export function AuthScreen() {
   }, []);
 
   const handleSpectator = () => {
-    Animated.timing(slideAnim, {
-      toValue: -height,
-      duration: 500,
-      useNativeDriver: true
-    }).start(() => {
-      router.push('/(tabs)/home');
-    });
+    // Animated.timing(slideAnim, {
+    //   toValue: -height,
+    //   duration: 500,
+    //   useNativeDriver: true
+    // }).start(() => {
+    router.push('/(tabs)/home');
+    // });
   };
 
   const handleLogin = () => {
@@ -67,9 +67,9 @@ export function AuthScreen() {
   };
 
   return (
-    <Animated.View 
+    <Animated.View
       className="absolute inset-0 bg-background"
-      style={{ 
+      style={{
         transform: [{ translateY: slideAnim }]
       }}
     >
@@ -125,10 +125,11 @@ export function AuthScreen() {
             <Pressable
               onPress={handleSubmit}
               className="bg-foreground px-8 py-4 rounded-lg mt-4"
-            ></Pressable>
+            >
               <Text className="text-xl font-bold text-center text-background">
-                Submit
+                ENTER
               </Text>
+            </Pressable>
           </View>
         )}
       </View>

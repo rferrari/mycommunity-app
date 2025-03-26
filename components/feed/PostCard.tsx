@@ -6,6 +6,7 @@ import { Image, Pressable, View } from 'react-native';
 import { API_BASE_URL } from '~/lib/constants';
 import { Text } from '../ui/text';
 import { MediaPreview } from './MediaPreview';
+import { Toast } from '../ui/toast';
 import type { Media, Post } from './types';
 import { extractMediaFromBody } from './types';
 
@@ -19,6 +20,7 @@ export function PostCard({ post }: PostCardProps) {
   const [isLiked, setIsLiked] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
   const [voteError, setVoteError] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState(false);
 
   const handleMediaPress = useCallback((media: Media) => {
     setSelectedMedia(media);
@@ -30,20 +32,21 @@ export function PostCard({ post }: PostCardProps) {
       setIsVoting(true);
       setVoteError(null);
 
-      // Get stored credentials
       const storedUsername = await SecureStore.getItemAsync('lastLoggedInUser');
       if (!storedUsername) {
         setVoteError('Please login first');
+        setShowToast(true);
         return;
       }
 
       const password = await SecureStore.getItemAsync(storedUsername);
       if (!password) {
         setVoteError('Invalid credentials');
+        setShowToast(true);
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/v1/vote`, {
+      const response = await fetch(`${API_BASE_URL}/vote`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -66,6 +69,7 @@ export function PostCard({ post }: PostCardProps) {
     } catch (error) {
       console.error('Vote error:', error);
       setVoteError(error instanceof Error ? error.message : 'Failed to vote');
+      setShowToast(true);
     } finally {
       setIsVoting(false);
     }
@@ -75,6 +79,14 @@ export function PostCard({ post }: PostCardProps) {
 
   return (
     <View className="w-full mb-4">
+      {showToast && voteError && (
+        <Toast 
+          message={voteError} 
+          type="error" 
+          onHide={() => setShowToast(false)}
+        />
+      )}
+
       <View className="flex-row items-center justify-between mb-3 px-2">
         <View className="flex-row items-center">
           <View className="h-12 w-12 mr-3 rounded-full overflow-hidden">
@@ -116,9 +128,6 @@ export function PostCard({ post }: PostCardProps) {
           </Text>
         )}
         <View>
-          {voteError && (
-            <Text className="text-red-500 text-xs mb-1">{voteError}</Text>
-          )}
           <Pressable
             onPress={handleVote}
             className="flex-row items-center gap-2"

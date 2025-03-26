@@ -1,4 +1,4 @@
-import { View, Animated, Pressable } from 'react-native';
+import { View, Animated, Pressable, useColorScheme } from 'react-native';
 import { router } from 'expo-router';
 import { Text } from '~/components/ui/text';
 import React from 'react';
@@ -6,6 +6,7 @@ import { MatrixRain } from '~/components/ui/loading-effects/MatrixRain';
 import { API_BASE_URL } from '~/lib/constants';
 import type { Post } from '~/components/magazine/types';
 import { AuthScreen } from '~/components/auth/AuthScreen';
+import { Ionicons } from '@expo/vector-icons';
 
 // Create a global cache for preloaded data with proper typing
 export const preloadedData = {
@@ -16,6 +17,9 @@ export const preloadedData = {
 export default function Index() {
   const pulseAnim = React.useRef(new Animated.Value(1)).current;
   const [showAuth, setShowAuth] = React.useState(false);
+
+  const colorScheme = useColorScheme();
+  const isDarkColorScheme = colorScheme === 'dark';
 
   React.useEffect(() => {
     const preloadData = async () => {
@@ -80,9 +84,27 @@ export default function Index() {
     setShowAuth(true);
   };
 
+  const handleInfoPress = () => {
+    router.push('/about');
+  };
+
   return (
     <View className="flex-1 bg-background">
       <MatrixRain />
+      {/* Add info button in top-right corner */}
+      <Pressable 
+        onPress={handleInfoPress}
+        className="absolute top-12 right-6 z-10"
+      >
+        <View className="bg-foreground/20 rounded-full p-2">
+          <Ionicons 
+            name="information-circle-outline" 
+            size={24} 
+            color={isDarkColorScheme ? '#ffffff' : '#000000'} 
+          />
+        </View>
+      </Pressable>
+      
       <View className="flex-1 items-center justify-center">
         <View className="items-center space-y-8">
           <Text className="text-6xl font-bold text-foreground">
