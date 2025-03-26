@@ -5,6 +5,34 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import '~/global.css';
 import { useColorScheme } from '~/lib/useColorScheme';
 
+const TAB_ITEMS = [
+  {
+    name: 'index',
+    title: 'Feed',
+    icon: 'home-outline'
+  },
+  {
+    name: 'magazine',
+    title: 'Mag',
+    icon: 'cloud-download-outline'
+  },
+  {
+    name: 'skatefeed',
+    title: 'SkateFeed',
+    icon: 'cloud-download-outline'
+  },
+  {
+    name: 'fetch',
+    title: 'Fetch', 
+    icon: 'cloud-download-outline'
+  },
+  {
+    name: 'profile',
+    title: 'Profile',
+    icon: 'person-outline'
+  }
+] as const;
+
 export default function TabLayout() {
   const { isDarkColorScheme } = useColorScheme();
   
@@ -21,33 +49,18 @@ export default function TabLayout() {
               tabBarActiveTintColor: isDarkColorScheme ? '#ffffff' : '#000000',
             }}
           >
-            <Tabs.Screen
-              name="index"
-              options={{
-                title: 'Feed',
-                tabBarIcon: ({ color }) => (
-                  <TabBarIcon name="home-outline" color={color} />
-                ),
-              }}
-            />
-            <Tabs.Screen
-              name="fetch"
-              options={{
-                title: 'Fetch',
-                tabBarIcon: ({ color }) => (
-                  <TabBarIcon name="cloud-download-outline" color={color} />
-                ),
-              }}
-            />
-            <Tabs.Screen
-              name="profile"
-              options={{
-                title: 'Profile',
-                tabBarIcon: ({ color }) => (
-                  <TabBarIcon name="person-outline" color={color} />
-                ),
-              }}
-            />
+            {TAB_ITEMS.map((tab) => (
+              <Tabs.Screen
+                key={tab.name}
+                name={tab.name}
+                options={{
+                  title: tab.title,
+                  tabBarIcon: ({ color }) => (
+                    <TabBarIcon name={tab.icon} color={color} />
+                  ),
+                }}
+              />
+            ))}
           </Tabs>
         </SafeAreaView>
       </View>
