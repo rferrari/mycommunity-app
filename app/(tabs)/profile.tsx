@@ -63,8 +63,52 @@ export default function ProfileScreen() {
         const currentUser = await SecureStore.getItemAsync('lastLoggedInUser');
         if (currentUser) {
           setUsername(currentUser);
+          
+          // If SPECTATOR, set skeleton data
+          if (currentUser === 'SPECTATOR') {
+            setProfileData({
+              name: 'SPECTATOR',
+              reputation: '0',
+              followers: '0',
+              followings: '0',
+              total_posts: '0',
+              posting_metadata: {
+                profile: {
+                  name: 'Spectator Mode',
+                  about: 'Browse and explore content without logging in.',
+                  profile_image: '', // Will use fallback icon
+                  cover_image: '',
+                  location: '',
+                }
+              }
+            });
+
+            setWalletData({
+              account_name: 'SPECTATOR',
+              hive: '0.000',
+              hbd: '0.000',
+              vests: '0.000000',
+              hp_equivalent: '0.000',
+              hive_savings: '0.000',
+              hbd_savings: '0.000'
+            });
+
+            setRewardsData({
+              summary: {
+                total_pending_payout: '0.000',
+                pending_hbd: '0.000',
+                pending_hp: '0.000',
+                pending_posts_count: '0',
+                total_author_rewards: '0.000',
+                total_curator_payouts: '0.000'
+              }
+            });
+
+            setIsLoading(false);
+            return;
+          }
         } else {
-          router.push('/'); // Redirect to landing if no user found
+          router.push('/');
         }
       } catch (error) {
         console.error('Error getting current user:', error);
@@ -131,9 +175,19 @@ export default function ProfileScreen() {
     }
   };
 
-  const handleQuit = () => {
-    // Simply navigate back to landing page without clearing credentials
-    router.push('/');
+  const handleQuit = async () => {
+    try {
+      // Set a flag to prevent auto-login
+      await SecureStore.setItemAsync('manualQuit', 'true');
+      // Navigate back to landing page
+      router.push('/');
+    } catch (error) {
+      console.error('Error setting quit flag:', error);
+    }
+  };
+
+  const handleWaitingList = () => {
+    router.push('/waitlist'); // We'll create this route
   };
 
   const WalletSection = () => (
@@ -182,43 +236,67 @@ export default function ProfileScreen() {
     </View>
   );
 
+  // Modify the profile image section to show an icon for SPECTATOR
+  const renderProfileImage = () => {
+    if (username === 'SPECTATOR') {
+      return (
+        <View 
+          className="w-24 h-24 rounded-full bg-foreground/10 items-center justify-center"
+          style={{ borderWidth: 3, borderColor: isDarkColorScheme ? '#ffffff20' : '#00000020' }}
+        >
+          <Ionicons 
+            name="person-circle-outline" 
+            size={64} 
+            color={isDarkColorScheme ? '#ffffff' : '#000000'} 
+          />
+        </View>
+      );
+    }
+
+    return profileData?.posting_metadata.profile.profile_image ? (
+      <Image
+        source={{ uri: profileData.posting_metadata.profile.profile_image }}
+        className="w-24 h-24 rounded-full"
+        style={{ borderWidth: 3, borderColor: isDarkColorScheme ? '#ffffff20' : '#00000020' }}
+      />
+    ) : null;
+  };
+
   return (
     <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
       <ScrollView className="flex-1">
         <View className="p-2 space-y-4">
           {/* Profile Info Section */}
-          {profileData && (
-            <View className="w-full">
-              <View className="items-center py-4">
-                {profileData.posting_metadata.profile.profile_image && (
-                  <Image
-                    source={{ uri: profileData.posting_metadata.profile.profile_image }}
-                    className="w-24 h-24 rounded-full"
-                    style={{ borderWidth: 3, borderColor: isDarkColorScheme ? '#ffffff20' : '#00000020' }}
-                  />
-                )}
-                <View className="items-center mt-2">
-                  <Text className="text-xl font-bold">{profileData.posting_metadata.profile.name}</Text>
-                  <Text className="text-sm opacity-70">@{profileData.name}</Text>
-                  <Text className="mt-2 text-center px-4">{profileData.posting_metadata.profile.about}</Text>
+          <View className="w-full">
+            <View className="items-center py-4">
+              {renderProfileImage()}
+              <View className="items-center mt-2">
+                <Text className="text-xl font-bold">
+                  {profileData?.posting_metadata.profile.name || 'Spectator Mode'}
+                </Text>
+                <Text className="text-sm opacity-70">
+                  @{profileData?.name || 'SPECTATOR'}
+                </Text>
+                <Text className="mt-2 text-center px-4">
+                  {profileData?.posting_metadata.profile.about || 'Browse and explore content without logging in.'}
+                </Text>
+              </View>
+              <View className="flex-row justify-around w-full mt-4">
+                <View className="items-center">
+                  <Text className="font-bold">{profileData?.followers || '0'}</Text>
+                  <Text>Followers</Text>
                 </View>
-                <View className="flex-row justify-around w-full mt-4">
-                  <View className="items-center">
-                    <Text className="font-bold">{profileData.followers}</Text>
-                    <Text>Followers</Text>
-                  </View>
-                  <View className="items-center">
-                    <Text className="font-bold">{profileData.followings}</Text>
-                    <Text>Following</Text>
-                  </View>
-                  <View className="items-center">
-                    <Text className="font-bold">{profileData.total_posts}</Text>
-                    <Text>Posts</Text>
-                  </View>
+                <View className="items-center">
+                  <Text className="font-bold">{profileData?.followings || '0'}</Text>
+                  <Text>Following</Text>
+                </View>
+                <View className="items-center">
+                  <Text className="font-bold">{profileData?.total_posts || '0'}</Text>
+                  <Text>Posts</Text>
                 </View>
               </View>
             </View>
-          )}
+          </View>
 
           {/* Add Wallet Section here */}
           {walletData && <WalletSection />}
@@ -257,13 +335,40 @@ export default function ProfileScreen() {
             </View>
           )}
 
+          {/* Show Create Account CTA only for SPECTATOR */}
+          {username === 'SPECTATOR' && (
+            <View className="w-full py-6 bg-foreground/5 rounded-xl">
+              <View className="items-center space-y-4 px-4">
+                <Ionicons 
+                  name="rocket-outline" 
+                  size={48} 
+                  color={isDarkColorScheme ? '#ffffff' : '#000000'} 
+                />
+                <Text className="text-xl font-bold text-center">
+                  Ready to Start Your Journey?
+                </Text>
+                <Text className="text-center opacity-70">
+                  Join our community and start earning rewards for your content
+                </Text>
+                <Button
+                  onPress={handleWaitingList}
+                  className="bg-foreground w-full"
+                >
+                  <Text className="text-background text-lg font-bold">
+                    Join Waiting List
+                  </Text>
+                </Button>
+              </View>
+            </View>
+          )}
+
           {/* Actions */}
           <View className="px-2 space-y-3">
             <Button 
               onPress={handleQuit}
               className="bg-white"
             >
-              <Text className="text-gray-900 text-lg">Quit to Home</Text>
+              <Text className="text-gray-900 text-lg">Back to Home</Text>
             </Button>
             
             <View className="h-px bg-foreground/10" />
@@ -273,7 +378,7 @@ export default function ProfileScreen() {
               onPress={handleLogout}
               className="bg-red-500/80"
             >
-              <Text className="text-white text-lg">Logout</Text>
+              <Text className="text-white text-lg">Exit Spectator Mode</Text>
             </Button>
 
             {message && (

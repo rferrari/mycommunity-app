@@ -3,10 +3,11 @@ import { router } from 'expo-router';
 import { Text } from '~/components/ui/text';
 import React from 'react';
 import { MatrixRain } from '~/components/ui/loading-effects/MatrixRain';
-import { API_BASE_URL } from '~/lib/constants';
+import { APP_NAME, API_BASE_URL } from '~/lib/constants';
 import type { Post } from '~/components/magazine/types';
 import { AuthScreen } from '~/components/auth/AuthScreen';
 import { Ionicons } from '@expo/vector-icons';
+import * as SecureStore from 'expo-secure-store';
 
 // Create a global cache for preloaded data with proper typing
 export const preloadedData = {
@@ -60,6 +61,30 @@ export default function Index() {
       }
     };
 
+    const checkLastUser = async () => {
+      try {
+        // Check if user manually quit
+        const manualQuit = await SecureStore.getItemAsync('manualQuit');
+        if (manualQuit === 'true') {
+          // Clear the flag and don't auto-login
+          await SecureStore.deleteItemAsync('manualQuit');
+          return;
+        }
+
+        const lastLoggedInUser = await SecureStore.getItemAsync('lastLoggedInUser');
+        if (lastLoggedInUser && lastLoggedInUser !== 'SPECTATOR') {
+          // If we have a real user (not spectator), go directly to home
+          router.push('/(tabs)/home');
+        }
+      } catch (error) {
+        console.error('Error checking last user:', error);
+      }
+    };
+
+    // Check last user when component mounts
+    checkLastUser();
+    
+    // Start preloading data as well
     preloadData();
   }, []);
 
@@ -108,7 +133,7 @@ export default function Index() {
       <View className="flex-1 items-center justify-center">
         <View className="items-center space-y-8">
           <Text className="text-6xl font-bold text-foreground">
-            MyCommunity
+            {APP_NAME}
           </Text>
           <Pressable onPress={handlePress}>
             <Animated.View 

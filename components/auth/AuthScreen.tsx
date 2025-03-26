@@ -53,14 +53,22 @@ export function AuthScreen() {
     }).start();
   }, []);
 
-  const handleSpectator = () => {
-    // Animated.timing(slideAnim, {
-    //   toValue: -height,
-    //   duration: 500,
-    //   useNativeDriver: true
-    // }).start(() => {
-    router.push('/(tabs)/home');
-    // });
+  const handleSpectator = async () => {
+    try {
+      // Set lastLoggedInUser to 'SPECTATOR' mode (uppercase)
+      await SecureStore.setItemAsync('lastLoggedInUser', 'SPECTATOR');
+      
+      // Animate and navigate
+      Animated.timing(slideAnim, {
+        toValue: -height,
+        duration: 500,
+        useNativeDriver: true
+      }).start(() => {
+        router.push('/(tabs)/home');
+      });
+    } catch (error) {
+      console.error('Error setting spectator mode:', error);
+    }
   };
 
   const handleLogin = () => {
@@ -134,9 +142,9 @@ export function AuthScreen() {
   const StoredUsersView = () => (
     <View className="w-full max-w-sm">
       <ScrollView 
-        className="max-h-[200px]" // Increased height and using arbitrary value
-        showsVerticalScrollIndicator={true} // Add scrollbar for better UX
-        bounces={false} // Prevent overscroll
+        className="max-h-[200px]"
+        showsVerticalScrollIndicator={true}
+        bounces={false}
       >
         {storedUsers.map((user, index) => (
           <Pressable
@@ -151,7 +159,7 @@ export function AuthScreen() {
                 color={isDarkColorScheme ? '#ffffff' : '#000000'} 
               />
               <Text className="text-lg font-medium text-foreground ml-2">
-                @{user}
+                {'@' + user} {/* Changed to concatenate inside Text component */}
               </Text>
             </View>
             <Ionicons 

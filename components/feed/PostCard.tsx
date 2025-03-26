@@ -34,8 +34,8 @@ export function PostCard({ post }: PostCardProps) {
 
       const currentUser = await SecureStore.getItemAsync('lastLoggedInUser');
       
-      // Check if user is in spectator mode (no user logged in)
-      if (!currentUser) {
+      // Check if user is in spectator mode
+      if (!currentUser || currentUser === 'SPECTATOR') {
         setVoteError('Please login to vote');
         setShowToast(true);
         return;
