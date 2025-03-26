@@ -32,15 +32,17 @@ export function PostCard({ post }: PostCardProps) {
       setIsVoting(true);
       setVoteError(null);
 
-      const storedUsername = await SecureStore.getItemAsync('lastLoggedInUser');
-      if (!storedUsername) {
-        setVoteError('Please login first');
+      const currentUser = await SecureStore.getItemAsync('lastLoggedInUser');
+      
+      // Check if user is in spectator mode (no user logged in)
+      if (!currentUser) {
+        setVoteError('Please login to vote');
         setShowToast(true);
         return;
       }
 
-      const password = await SecureStore.getItemAsync(storedUsername);
-      if (!password) {
+      const userCredentials = await SecureStore.getItemAsync(currentUser);
+      if (!userCredentials) {
         setVoteError('Invalid credentials');
         setShowToast(true);
         return;
@@ -52,10 +54,10 @@ export function PostCard({ post }: PostCardProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          voter: storedUsername,
+          voter: currentUser,
           author: post.author,
           permlink: post.permlink,
-          posting_key: password,
+          posting_key: userCredentials,
           weight: isLiked ? 0 : 10000 // Toggle between like and unlike
         })
       });
@@ -74,6 +76,25 @@ export function PostCard({ post }: PostCardProps) {
       setIsVoting(false);
     }
   };
+
+  // Optional: Add visual indication for spectator mode
+  const renderVoteButton = () => (
+    <Pressable
+      onPress={handleVote}
+      className="flex-row items-center gap-2"
+      disabled={isVoting}
+    >
+      <Text className="text-gray-600">
+        {post.votes.length}
+      </Text>
+      <FontAwesome
+        name={isLiked ? "heart" : "heart-o"}
+        size={20}
+        color={isLiked ? "#ff4444" : "#666666"}
+        style={{ marginRight: 4 }}
+      />
+    </Pressable>
+  );
 
   const media = extractMediaFromBody(post.body);
 
@@ -128,21 +149,7 @@ export function PostCard({ post }: PostCardProps) {
           </Text>
         )}
         <View>
-          <Pressable
-            onPress={handleVote}
-            className="flex-row items-center gap-2"
-            disabled={isVoting}
-          >
-            <Text className="text-gray-600">
-              {post.votes.length}
-            </Text>
-            <FontAwesome
-              name={isLiked ? "heart" : "heart-o"}
-              size={20}
-              color={isLiked ? "#ff4444" : "#666666"}
-              style={{ marginRight: 4 }}
-            />
-          </Pressable>
+          {renderVoteButton()}
         </View>
       </View>
     </View>
