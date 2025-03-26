@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Image, Pressable } from 'react-native';
+import { View, ScrollView, Image, Pressable, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
@@ -56,6 +56,7 @@ export default function ProfileScreen() {
   const [showWallet, setShowWallet] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [username, setUsername] = useState<string | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
     const getCurrentUser = async () => {
@@ -113,6 +114,8 @@ export default function ProfileScreen() {
       } catch (error) {
         console.error('Error getting current user:', error);
         router.push('/');
+      } finally {
+        setIsInitializing(false);
       }
     };
 
@@ -261,6 +264,19 @@ export default function ProfileScreen() {
       />
     ) : null;
   };
+
+  if (isInitializing || (isLoading && !username)) {
+    return (
+      <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator 
+            size="large" 
+            color={isDarkColorScheme ? '#ffffff' : '#000000'} 
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView edges={['bottom']} className="flex-1 bg-background">

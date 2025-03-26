@@ -25,11 +25,11 @@ const TAB_ITEMS = [
     title: 'Snaps',
     icon: 'camera-outline'
   },
-  {
-    name: 'fetch',
-    title: 'Fetch', 
-    icon: 'cloud-download-outline'
-  },
+  // {
+  //   name: 'fetch',
+  //   title: 'Fetch', 
+  //   icon: 'cloud-download-outline'
+  // },
   {
     name: 'profile',
     title: 'Profile',
