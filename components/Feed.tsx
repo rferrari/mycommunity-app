@@ -43,7 +43,7 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
   ), []);
 
   const ItemSeparatorComponent = React.useCallback(() => (
-    <View className="h-2" />
+    <View className="h-0 my-4 border-b-muted border" />
   ), []);
 
   React.useEffect(() => {
@@ -63,11 +63,11 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
   const contentView = (
     <FlatList
       data={feedData}
+      showsVerticalScrollIndicator={false}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       ListHeaderComponent={ListHeaderComponent}
       ItemSeparatorComponent={ItemSeparatorComponent}
-      contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16 }}
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}

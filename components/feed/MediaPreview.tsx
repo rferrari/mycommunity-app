@@ -24,7 +24,7 @@ export function MediaPreview({
         {media.map((item, index) => (
           <View
             key={index}
-            className={`${media.length === 1 ? 'w-full' : 'w-[49%]'} aspect-square rounded-lg overflow-hidden relative bg-gray-100`}
+            className={`${media.length === 1 ? 'w-full' : 'w-[49%]'} aspect-square overflow-hidden relative bg-gray-100`}
           >
             {item.type === 'video' ? (
               <View className="w-full h-full">

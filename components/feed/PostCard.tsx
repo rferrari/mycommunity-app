@@ -1,14 +1,13 @@
-import React, { useCallback, useState } from 'react';
-import { Image, Pressable, View } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { formatDistanceToNow } from 'date-fns';
-import { Card, CardContent } from '../ui/card';
+import * as SecureStore from 'expo-secure-store';
+import React, { useCallback, useState } from 'react';
+import { Image, Pressable, View } from 'react-native';
+import { API_BASE_URL } from '~/lib/constants';
 import { Text } from '../ui/text';
 import { MediaPreview } from './MediaPreview';
-import type { Post, Media } from './types';
+import type { Media, Post } from './types';
 import { extractMediaFromBody } from './types';
-import * as SecureStore from 'expo-secure-store';
-import { API_BASE_URL } from '~/lib/constants';
 
 interface PostCardProps {
   post: Post;
@@ -30,7 +29,7 @@ export function PostCard({ post }: PostCardProps) {
     try {
       setIsVoting(true);
       setVoteError(null);
-      
+
       // Get stored credentials
       const storedUsername = await SecureStore.getItemAsync('lastLoggedInUser');
       if (!storedUsername) {
@@ -75,71 +74,68 @@ export function PostCard({ post }: PostCardProps) {
   const media = extractMediaFromBody(post.body);
 
   return (
-    <Card className="w-full mb-4">
-      <CardContent className="p-4">
-        <View className="flex-row items-start justify-between mb-3">
-          <View className="flex-row items-center">
-            <View className="h-10 w-10 mr-3 rounded-full overflow-hidden">
-              <Image
-                source={{ uri: `https://images.ecency.com/webp/u/${post.author}/avatar/small` }}
-                className="w-full h-full"
-                alt={`${post.author}'s avatar`}
-              />
-            </View>
-            <View>
-              <Text className="font-bold text-lg">{post.author}</Text>
-              <Text className="text-gray-500">@{post.author}</Text>
-            </View>
+    <View className="w-full mb-4">
+      <View className="flex-row items-center justify-between mb-3 px-2">
+        <View className="flex-row items-center">
+          <View className="h-12 w-12 mr-3 rounded-full overflow-hidden">
+            <Image
+              source={{ uri: `https://images.ecency.com/webp/u/${post.author}/avatar/small` }}
+              className="w-full h-full"
+              alt={`${post.author}'s avatar`}
+            />
           </View>
-          <Text className="text-gray-500 mt-1">
-            {formatDistanceToNow(new Date(post.created), { addSuffix: true })}
-          </Text>
-        </View>
-
-        <Text className="mb-3">{post.body.replace(/<iframe.*?<\/iframe>|!\[.*?\]\(.*?\)/g, '')}</Text>
-
-        {media.length > 0 && (
-          <MediaPreview
-            media={media}
-            onMediaPress={handleMediaPress}
-            selectedMedia={selectedMedia}
-            isModalVisible={isModalVisible}
-            onCloseModal={() => setIsModalVisible(false)}
-          />
-        )}
-
-        <View className="flex-row justify-between items-center">
-          {parseInt(post.total_payout_value) === 0 ? (
-            <Text className="text-gray-500 font-bold">
-              ${post.total_payout_value}
-            </Text>
-          ) : (
-            <Text className="text-gray-500 font-bold">
-              ${parseFloat(post.total_payout_value).toFixed(3)}
-            </Text>
-          )}
           <View>
-            {voteError && (
-              <Text className="text-red-500 text-xs mb-1">{voteError}</Text>
-            )}
-            <Pressable
-              onPress={handleVote}
-              className="flex-row items-center"
-              disabled={isVoting}
-            >
-              <FontAwesome
-                name={isLiked ? "heart" : "heart-o"}
-                size={20}
-                color={isLiked ? "#ff4444" : "#666666"}
-                style={{ marginRight: 4 }}
-              />
-              <Text className="text-gray-600">
-                {isVoting ? 'Voting...' : Math.floor(post.total_vote_weight / 1000000)}
-              </Text>
-            </Pressable>
+            <Text className="font-bold text-lg">@{post.author}</Text>
           </View>
         </View>
-      </CardContent>
-    </Card>
+        <Text className="text-gray-500">
+          {formatDistanceToNow(new Date(post.created), { addSuffix: true })}
+        </Text>
+      </View>
+
+      <Text className="mb-3 px-4">{post.body.replace(/<iframe.*?<\/iframe>|!\[.*?\]\(.*?\)/g, '')}</Text>
+
+      {media.length > 0 && (
+        <MediaPreview
+          media={media}
+          onMediaPress={handleMediaPress}
+          selectedMedia={selectedMedia}
+          isModalVisible={isModalVisible}
+          onCloseModal={() => setIsModalVisible(false)}
+        />
+      )}
+
+      <View className="flex-row justify-between items-center mx-2">
+        {parseInt(post.total_payout_value) === 0 ? (
+          <Text className="text-gray-500 font-bold">
+            ${post.total_payout_value}
+          </Text>
+        ) : (
+          <Text className="text-gray-500 font-bold">
+            ${parseFloat(post.total_payout_value).toFixed(3)}
+          </Text>
+        )}
+        <View>
+          {voteError && (
+            <Text className="text-red-500 text-xs mb-1">{voteError}</Text>
+          )}
+          <Pressable
+            onPress={handleVote}
+            className="flex-row items-center"
+            disabled={isVoting}
+          >
+            <FontAwesome
+              name={isLiked ? "heart" : "heart-o"}
+              size={20}
+              color={isLiked ? "#ff4444" : "#666666"}
+              style={{ marginRight: 4 }}
+            />
+            <Text className="text-gray-600">
+              {isVoting ? 'Voting...' : Math.floor(post.total_vote_weight / 1000000)}
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+    </View>
   );
 }
