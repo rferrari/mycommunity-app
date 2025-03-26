@@ -121,18 +121,18 @@ export function PostCard({ post }: PostCardProps) {
           )}
           <Pressable
             onPress={handleVote}
-            className="flex-row items-center"
+            className="flex-row items-center gap-2"
             disabled={isVoting}
           >
+            <Text className="text-gray-600">
+              {Math.floor(post.total_vote_weight / 1000000)}
+            </Text>
             <FontAwesome
               name={isLiked ? "heart" : "heart-o"}
               size={20}
               color={isLiked ? "#ff4444" : "#666666"}
               style={{ marginRight: 4 }}
             />
-            <Text className="text-gray-600">
-              {isVoting ? 'Voting...' : Math.floor(post.total_vote_weight / 1000000)}
-            </Text>
           </Pressable>
         </View>
       </View>
