@@ -132,11 +132,12 @@ export function AuthScreen() {
   };
 
   const StoredUsersView = () => (
-    <View className="w-full max-w-sm space-y-4">
-      {/* <Text className="text-2xl font-bold text-center text-foreground mb-4">
-        Stored Accounts
-      </Text> */}
-      <ScrollView className="max-h-40">
+    <View className="w-full max-w-sm">
+      <ScrollView 
+        className="max-h-[200px]" // Increased height and using arbitrary value
+        showsVerticalScrollIndicator={true} // Add scrollbar for better UX
+        bounces={false} // Prevent overscroll
+      >
         {storedUsers.map((user, index) => (
           <Pressable
             key={user}
@@ -179,23 +180,27 @@ export function AuthScreen() {
               Choose Your Path
             </Text>
             
-            {storedUsers.length > 0 && <StoredUsersView />}
+            {storedUsers.length > 0 && (
+              <View className="mb-8"> {/* Added margin bottom */}
+                <StoredUsersView />
+              </View>
+            )}
 
             <View className="space-y-4">
-              <Pressable
-                onPress={handleSpectator}
-                className="bg-foreground/10 px-8 py-4 rounded-lg"
-              >
-                <Text className="text-xl font-bold text-center text-foreground">
-                  Enter as Spectator
-                </Text>
-              </Pressable>
               <Pressable
                 onPress={handleLogin}
                 className="bg-foreground px-8 py-4 rounded-lg"
               >
                 <Text className="text-xl font-bold text-center text-background">
                   New Login
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={handleSpectator}
+                className="bg-foreground/10 px-8 py-4 rounded-lg"
+              >
+                <Text className="text-xl font-bold text-center text-foreground">
+                  Enter as Spectator
                 </Text>
               </Pressable>
             </View>
