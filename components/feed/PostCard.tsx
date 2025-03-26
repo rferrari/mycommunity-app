@@ -80,7 +80,7 @@ export function PostCard({ post }: PostCardProps) {
           <View className="h-12 w-12 mr-3 rounded-full overflow-hidden">
             <Image
               source={{ uri: `https://images.ecency.com/webp/u/${post.author}/avatar/small` }}
-              className="w-full h-full"
+              className="w-full h-full border border-muted rounded-full"
               alt={`${post.author}'s avatar`}
             />
           </View>
@@ -93,7 +93,7 @@ export function PostCard({ post }: PostCardProps) {
         </Text>
       </View>
 
-      <Text className="mb-3 px-4">{post.body.replace(/<iframe.*?<\/iframe>|!\[.*?\]\(.*?\)/g, '')}</Text>
+      <Text className="px-4">{post.body.replace(/<iframe.*?<\/iframe>|!\[.*?\]\(.*?\)/g, '')}</Text>
 
       {media.length > 0 && (
         <MediaPreview
