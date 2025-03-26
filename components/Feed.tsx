@@ -3,6 +3,7 @@ import { View, RefreshControl, FlatList, ActivityIndicator } from 'react-native'
 import { Text } from './ui/text';
 import { PostCard } from './feed/PostCard';
 import { API_BASE_URL } from '~/lib/constants';
+import { useColorScheme } from '~/lib/useColorScheme';
 import type { Post } from './feed/types';
 
 interface FeedProps {
@@ -13,6 +14,7 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
   const [feedData, setFeedData] = React.useState<Post[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
+  const { isDarkColorScheme } = useColorScheme();
 
   const fetchFeed = React.useCallback(async () => {
     try {
@@ -51,10 +53,14 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
     fetchFeed().finally(() => setIsLoading(false));
   }, [fetchFeed, refreshTrigger]);
 
+  // Get theme colors
+  const foregroundColor = isDarkColorScheme ? '#ffffff' : '#000000';
+  const backgroundColor = isDarkColorScheme ? '#1a1a1a' : '#ffffff';
+
   // Prepare the loading view component
   const loadingView = (
     <View className="w-full items-center justify-center p-4 bg-background">
-      <ActivityIndicator size="large" color="hsl(var(--foreground))" />
+      <ActivityIndicator size="large" color={foregroundColor} />
       <Text className="text-foreground mt-2">Loading posts...</Text>
     </View>
   );
@@ -72,9 +78,9 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
         <RefreshControl
           refreshing={isRefreshing}
           onRefresh={handleRefresh}
-          tintColor="hsl(var(--foreground))"
-          colors={["hsl(var(--foreground))"]}
-          progressBackgroundColor="hsl(var(--background))"
+          tintColor={foregroundColor}
+          colors={[foregroundColor]}
+          progressBackgroundColor={backgroundColor}
         />
       }
       removeClippedSubviews={true}
