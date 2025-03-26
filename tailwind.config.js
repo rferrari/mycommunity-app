@@ -61,5 +61,14 @@ module.exports = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+    // Ensure text components are properly handled
+    function({ addUtilities }) {
+      addUtilities({
+        '.text-inherit': {
+          color: 'inherit',
+        },
+      });
+    },
+  ],
 };

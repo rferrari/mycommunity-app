@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import '~/global.css';
 import { useColorScheme } from '~/lib/useColorScheme';
@@ -8,6 +8,10 @@ import { useColorScheme } from '~/lib/useColorScheme';
 export default function TabLayout() {
   const { isDarkColorScheme } = useColorScheme();
   
+  const renderTabLabel = (label: string, color: string) => (
+    <Text style={{ color }}>{label}</Text>
+  );
+
   return (
     <SafeAreaProvider>
       <View className="flex-1 bg-background">
@@ -19,12 +23,13 @@ export default function TabLayout() {
                 backgroundColor: isDarkColorScheme ? '#1a1a1a' : '#ffffff',
               },
               tabBarActiveTintColor: isDarkColorScheme ? '#ffffff' : '#000000',
+              tabBarInactiveTintColor: isDarkColorScheme ? '#666666' : '#999999',
             }}
           >
             <Tabs.Screen
               name="index"
               options={{
-                title: 'Feed',
+                tabBarLabel: ({ color }) => renderTabLabel('Feed', color),
                 tabBarIcon: ({ color }) => (
                   <TabBarIcon name="home-outline" color={color} />
                 ),
@@ -33,7 +38,7 @@ export default function TabLayout() {
             <Tabs.Screen
               name="fetch"
               options={{
-                title: 'Fetch',
+                tabBarLabel: ({ color }) => renderTabLabel('Fetch', color),
                 tabBarIcon: ({ color }) => (
                   <TabBarIcon name="cloud-download-outline" color={color} />
                 ),
@@ -42,7 +47,7 @@ export default function TabLayout() {
             <Tabs.Screen
               name="profile"
               options={{
-                title: 'Profile',
+                tabBarLabel: ({ color }) => renderTabLabel('Profile', color),
                 tabBarIcon: ({ color }) => (
                   <TabBarIcon name="person-outline" color={color} />
                 ),

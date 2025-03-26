@@ -1,12 +1,16 @@
 import { registerRootComponent } from 'expo';
 import { ExpoRoot } from 'expo-router';
-
-// https://docs.expo.dev/router/reference/troubleshooting/#expo_router_app_root-not-defined
+import React from 'react';
+import { CssTextProvider } from './components/ui/CssTextProvider';
 
 // Must be exported or Fast Refresh won't update the context
 export function App() {
   const ctx = require.context('./app');
-  return <ExpoRoot context={ctx} />;
+  return (
+    <CssTextProvider>
+      <ExpoRoot context={ctx} />
+    </CssTextProvider>
+  );
 }
 
 registerRootComponent(App);
