@@ -4,6 +4,7 @@ import { useColorScheme } from '~/lib/useColorScheme';
 import { Text } from './ui/text';
 import { PostCard } from './magazine/PostCard';
 import { API_BASE_URL } from '~/lib/constants';
+import { LoadingScreen } from './ui/LoadingScreen';
 import type { Post } from './magazine/types';
 
 interface MagazineProps {
@@ -92,5 +93,5 @@ export function Magazine({ refreshTrigger = 0 }: MagazineProps) {
   );
 
   // Return the appropriate view based on loading state
-  return isLoading ? loadingView : contentView;
+  return isLoading ? <LoadingScreen /> : contentView;
 }

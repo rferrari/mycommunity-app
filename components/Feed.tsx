@@ -2,9 +2,10 @@ import React from 'react';
 import { View, RefreshControl, FlatList, ActivityIndicator } from 'react-native';
 import { Text } from './ui/text';
 import { PostCard } from './feed/PostCard';
-import { API_BASE_URL } from '~/lib/constants';
-import { useColorScheme } from '~/lib/useColorScheme';
 import type { Post } from './feed/types';
+import { API_BASE_URL } from '~/lib/constants';
+import { LoadingScreen } from './ui/LoadingScreen';
+import { useColorScheme } from '~/lib/useColorScheme';
 
 interface FeedProps {
   refreshTrigger?: number;
@@ -59,9 +60,27 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
 
   // Prepare the loading view component
   const loadingView = (
-    <View className="w-full items-center justify-center p-4 bg-background">
-      <ActivityIndicator size="large" color={foregroundColor} />
-      <Text className="text-foreground mt-2">Kicking-flip-in...</Text>
+    <View className="flex-1 items-center justify-center p-4 bg-background">
+      <View className="items-center space-y-6">
+        <ActivityIndicator 
+          size="large" 
+          color={foregroundColor} 
+        />
+        <View className="items-center">
+          <Text 
+            className="text-4xl font-bold mb-2"
+            style={{ color: foregroundColor }}
+          >
+            LOADING
+          </Text>
+          <Text 
+            className="text-2xl font-medium animate-pulse"
+            style={{ color: foregroundColor }}
+          >
+            Kicking-flip-in...
+          </Text>
+        </View>
+      </View>
     </View>
   );
 
@@ -92,5 +111,5 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
   );
 
   // Return the appropriate view based on loading state
-  return isLoading ? loadingView : contentView;
+  return isLoading ? <LoadingScreen /> : contentView;
 }

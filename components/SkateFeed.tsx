@@ -3,6 +3,8 @@ import { View, RefreshControl, FlatList, ActivityIndicator } from 'react-native'
 import { Text } from './ui/text';
 import { PostCard } from './magazine/PostCard';
 import { API_BASE_URL } from '~/lib/constants';
+import { useColorScheme } from '~/lib/useColorScheme';
+import { LoadingScreen } from './ui/LoadingScreen';
 import type { Post } from './magazine/types';
 
 interface SkateFeedProps {
@@ -10,6 +12,7 @@ interface SkateFeedProps {
 }
 
 export function SkateFeed({ refreshTrigger = 0 }: SkateFeedProps) {
+  const { isDarkColorScheme } = useColorScheme();
   const [feedData, setFeedData] = React.useState<Post[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
@@ -51,15 +54,19 @@ export function SkateFeed({ refreshTrigger = 0 }: SkateFeedProps) {
     fetchFeed().finally(() => setIsLoading(false));
   }, [fetchFeed, refreshTrigger]);
 
-  // Prepare the loading view component
+  // Theme colors
+  const foregroundColor = isDarkColorScheme ? '#ffffff' : '#000000';
+  const backgroundColor = isDarkColorScheme ? '#1a1a1a' : '#ffffff';
+
+  // Updated loading view with direct colors
   const loadingView = (
     <View className="w-full items-center justify-center p-4 bg-background">
-      <ActivityIndicator size="large" color="hsl(var(--foreground))" />
+      <ActivityIndicator size="large" color={foregroundColor} />
       <Text className="text-foreground mt-2">Supporting Skaters...</Text>
     </View>
   );
 
-  // Prepare the content view component
+  // Updated content view with direct colors
   const contentView = (
     <FlatList
       data={feedData}
@@ -72,9 +79,9 @@ export function SkateFeed({ refreshTrigger = 0 }: SkateFeedProps) {
         <RefreshControl
           refreshing={isRefreshing}
           onRefresh={handleRefresh}
-          tintColor="hsl(var(--foreground))"
-          colors={["hsl(var(--foreground))"]}
-          progressBackgroundColor="hsl(var(--background))"
+          tintColor={foregroundColor}
+          colors={[foregroundColor]}
+          progressBackgroundColor={backgroundColor}
         />
       }
       removeClippedSubviews={true}
@@ -86,5 +93,5 @@ export function SkateFeed({ refreshTrigger = 0 }: SkateFeedProps) {
   );
 
   // Return the appropriate view based on loading state
-  return isLoading ? loadingView : contentView;
+  return isLoading ? <LoadingScreen /> : contentView;
 }
