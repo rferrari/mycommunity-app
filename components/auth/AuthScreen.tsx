@@ -9,6 +9,7 @@ import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
 
 const { height } = Dimensions.get('window');
+const STORED_USERS_KEY = 'stored_users';
 
 export function AuthScreen() {
   const { isDarkColorScheme } = useColorScheme();
@@ -23,12 +24,19 @@ export function AuthScreen() {
   React.useEffect(() => {
     const getStoredUsers = async () => {
       try {
+        const storedUsersJson = await SecureStore.getItemAsync(STORED_USERS_KEY);
         const lastUser = await SecureStore.getItemAsync('lastLoggedInUser');
+        
+        let users: string[] = storedUsersJson ? JSON.parse(storedUsersJson) : [];
+        
         if (lastUser) {
-          setStoredUsers(prev => [...new Set([lastUser, ...prev])]);
+          // Remove lastUser from the array if it exists
+          users = users.filter(user => user !== lastUser);
+          // Add lastUser to the beginning
+          users.unshift(lastUser);
         }
-        // You might need to implement a way to store/retrieve the list of all users
-        // This is just an example using the last logged-in user
+
+        setStoredUsers(users);
       } catch (error) {
         console.error('Error fetching stored users:', error);
       }
@@ -59,6 +67,26 @@ export function AuthScreen() {
     setShowLogin(true);
   };
 
+  const updateStoredUsers = async (username: string) => {
+    try {
+      let users = [...storedUsers];
+      
+      // Remove username if it already exists
+      users = users.filter(user => user !== username);
+      // Add username to the beginning
+      users.unshift(username);
+      
+      // Update state
+      setStoredUsers(users);
+      
+      // Save to storage
+      await SecureStore.setItemAsync(STORED_USERS_KEY, JSON.stringify(users));
+      await SecureStore.setItemAsync('lastLoggedInUser', username);
+    } catch (error) {
+      console.error('Error updating stored users:', error);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       if (!username || !password) {
@@ -66,13 +94,12 @@ export function AuthScreen() {
         return;
       }
 
-      // Convert username to lowercase before saving
       const normalizedUsername = username.toLowerCase().trim();
 
-      // Save credentials with lowercase username
+      // Save credentials
       await SecureStore.setItemAsync(normalizedUsername, password);
-      // Store the last logged in user in lowercase
-      await SecureStore.setItemAsync('lastLoggedInUser', normalizedUsername);
+      // Update stored users list
+      await updateStoredUsers(normalizedUsername);
 
       // Animate and navigate
       Animated.timing(slideAnim, {
@@ -92,7 +119,8 @@ export function AuthScreen() {
     try {
       const storedPassword = await SecureStore.getItemAsync(selectedUsername);
       if (storedPassword) {
-        await SecureStore.setItemAsync('lastLoggedInUser', selectedUsername);
+        // Update stored users order
+        await updateStoredUsers(selectedUsername);
         router.push('/(tabs)/home');
       } else {
         setMessage('No stored credentials found');
@@ -105,9 +133,9 @@ export function AuthScreen() {
 
   const StoredUsersView = () => (
     <View className="w-full max-w-sm space-y-4">
-      <Text className="text-2xl font-bold text-center text-foreground mb-4">
+      {/* <Text className="text-2xl font-bold text-center text-foreground mb-4">
         Stored Accounts
-      </Text>
+      </Text> */}
       <ScrollView className="max-h-40">
         {storedUsers.map((user, index) => (
           <Pressable

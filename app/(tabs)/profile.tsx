@@ -1,65 +1,128 @@
-import React, { useState } from 'react';
-import { View, ScrollView, TextInput } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, Image, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
 import * as SecureStore from 'expo-secure-store';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { router } from 'expo-router';
+import { API_BASE_URL } from '~/lib/constants';
+import { Ionicons } from '@expo/vector-icons';
+
+interface ProfileData {
+  name: string;
+  reputation: string;
+  followers: string;
+  followings: string;
+  total_posts: string;
+  posting_metadata: {
+    profile: {
+      name: string;
+      about: string;
+      profile_image: string;
+      cover_image: string;
+      location: string;
+    };
+  };
+}
+
+interface RewardsData {
+  summary: {
+    total_pending_payout: string;
+    pending_hbd: string;
+    pending_hp: string;
+    pending_posts_count: string;
+    total_author_rewards: string;
+    total_curator_payouts: string;
+  };
+}
+
+interface WalletData {
+  account_name: string;
+  hive: string;
+  hbd: string;
+  vests: string;
+  hp_equivalent: string;
+  hive_savings: string;
+  hbd_savings: string;
+}
 
 export default function ProfileScreen() {
   const { isDarkColorScheme } = useColorScheme();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const [searchUsername, setSearchUsername] = useState('');
-  const [foundPassword, setFoundPassword] = useState('');
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [rewardsData, setRewardsData] = useState<RewardsData | null>(null);
+  const [walletData, setWalletData] = useState<WalletData | null>(null);
+  const [showWallet, setShowWallet] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [username, setUsername] = useState<string | null>(null);
 
-  const saveCredentials = async () => {
-    try {
-      if (!username || !password) {
-        setMessage('Please enter both username and password');
-        return;
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      try {
+        const currentUser = await SecureStore.getItemAsync('lastLoggedInUser');
+        if (currentUser) {
+          setUsername(currentUser);
+        } else {
+          router.push('/'); // Redirect to landing if no user found
+        }
+      } catch (error) {
+        console.error('Error getting current user:', error);
+        router.push('/');
       }
+    };
 
-      await SecureStore.setItemAsync(username, password);
-      // Store the last logged in user
-      await SecureStore.setItemAsync('lastLoggedInUser', username);
-      setMessage('Credentials saved successfully!');
-      setUsername('');
-      setPassword('');
-    } catch (error) {
-      setMessage('Error saving credentials');
-      console.error(error);
-    }
-  };
+    getCurrentUser();
+  }, []);
 
-  const retrievePassword = async () => {
-    try {
-      if (!searchUsername) {
-        setMessage('Please enter a username to search');
-        return;
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (!username) return; // Don't fetch if no username
+
+      try {
+        const [profileResponse, rewardsResponse, walletResponse] = await Promise.all([
+          fetch(`${API_BASE_URL}/profile/${username}`),
+          fetch(`${API_BASE_URL}/wallet/${username}/rewards`),
+          fetch(`${API_BASE_URL}/wallet/${username}`)
+        ]);
+
+        const profileJson = await profileResponse.json();
+        const rewardsJson = await rewardsResponse.json();
+        const walletJson = await walletResponse.json();
+
+        if (profileJson.success) {
+          setProfileData(profileJson.data);
+        }
+        if (rewardsJson.success) {
+          setRewardsData(rewardsJson.data);
+        }
+        if (walletJson.success) {
+          setWalletData(walletJson.data);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-      const storedPassword = await SecureStore.getItemAsync(searchUsername);
-      if (storedPassword) {
-        setFoundPassword(storedPassword);
-        setMessage('Password retrieved successfully!');
-      } else {
-        setFoundPassword('');
-        setMessage('No password found for this username');
-      }
-    } catch (error) {
-      setMessage('Error retrieving password');
-      console.error(error);
-    }
-  };
+    fetchProfileData();
+  }, [username]);
 
   const handleLogout = async () => {
     try {
-      // Clear any stored credentials if needed
-      await SecureStore.deleteItemAsync('lastLoggedInUser');
+      // Get the last logged in user
+      const lastLoggedInUser = await SecureStore.getItemAsync('lastLoggedInUser');
+      
+      if (lastLoggedInUser) {
+        // Delete only this user's credentials
+        await SecureStore.deleteItemAsync(lastLoggedInUser);
+        // Clear last logged in user reference
+        await SecureStore.deleteItemAsync('lastLoggedInUser');
+        
+        setMessage('Logged out successfully');
+      }
+      
       // Navigate back to landing page
       router.push('/');
     } catch (error) {
@@ -68,68 +131,155 @@ export default function ProfileScreen() {
     }
   };
 
+  const handleQuit = () => {
+    // Simply navigate back to landing page without clearing credentials
+    router.push('/');
+  };
+
+  const WalletSection = () => (
+    <View className="w-full py-6 bg-foreground/5 rounded-xl">
+      <View className="flex-row items-center justify-between px-6">
+        <View className="flex-row items-center">
+          <Ionicons 
+            name="wallet-outline" 
+            size={24} 
+            color={isDarkColorScheme ? '#ffffff' : '#000000'} 
+            style={{ marginRight: 8 }}
+          />
+          <Text className="text-xl font-bold">Wallet</Text>
+        </View>
+        <Pressable onPress={() => setShowWallet(!showWallet)}>
+          <Ionicons 
+            name={showWallet ? "eye-outline" : "eye-off-outline"} 
+            size={24} 
+            color={isDarkColorScheme ? '#ffffff' : '#000000'} 
+          />
+        </Pressable>
+      </View>
+      {showWallet && walletData && (
+        <View className="px-6 mt-4 space-y-3">
+          <View className="flex-row justify-between">
+            <Text className="text-lg opacity-70">HIVE:</Text>
+            <Text className="text-lg font-medium">{walletData.hive}</Text>
+          </View>
+          <View className="flex-row justify-between">
+            <Text className="text-lg opacity-70">HBD:</Text>
+            <Text className="text-lg font-medium">{walletData.hbd}</Text>
+          </View>
+          <View className="flex-row justify-between">
+            <Text className="text-lg opacity-70">HP:</Text>
+            <Text className="text-lg font-medium">{walletData.hp_equivalent}</Text>
+          </View>
+          <View className="flex-row justify-between">
+            <Text className="text-lg opacity-70">Savings:</Text>
+            <View className="items-end">
+              <Text className="text-lg font-medium">{walletData.hive_savings} HIVE</Text>
+              <Text className="text-lg font-medium">{walletData.hbd_savings} HBD</Text>
+            </View>
+          </View>
+        </View>
+      )}
+    </View>
+  );
+
   return (
     <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
       <ScrollView className="flex-1">
-        <View className="p-6">
-          <Card className="w-full max-w-sm rounded-2xl mx-auto">
-            <CardHeader>
-              <CardTitle className='py-2 text-center'>Profile</CardTitle>
-            </CardHeader>
-            <CardContent className='gap-4'>
-              <View className='gap-4'>
-                <Text className='text-base font-medium'>Save Credentials</Text>
-                <TextInput
-                  className='w-full p-2 border border-input rounded-lg bg-background text-foreground'
-                  placeholder="Username"
-                  value={username}
-                  onChangeText={setUsername}
-                  placeholderTextColor={isDarkColorScheme ? '#666' : '#999'}
-                />
-                <TextInput
-                  className='w-full p-2 border border-input rounded-lg bg-background text-foreground'
-                  placeholder="Password"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry
-                  placeholderTextColor={isDarkColorScheme ? '#666' : '#999'}
-                />
-                <Button onPress={saveCredentials}>
-                  <Text>Save Credentials</Text>
-                </Button>
-              </View>
-              <View className='gap-4 mt-4'>
-                <Text className='text-base font-medium'>Retrieve Password</Text>
-                <TextInput
-                  className='w-full p-2 border border-input rounded-lg bg-background text-foreground'
-                  placeholder="Enter username to search"
-                  value={searchUsername}
-                  onChangeText={setSearchUsername}
-                  placeholderTextColor={isDarkColorScheme ? '#666' : '#999'}
-                />
-                <Button onPress={retrievePassword}>
-                  <Text>Find Password</Text>
-                </Button>
-                {foundPassword && (
-                  <View className='p-2 bg-muted rounded-lg'>
-                    <Text>Found Password: {foundPassword}</Text>
-                  </View>
+        <View className="p-2 space-y-4">
+          {/* Profile Info Section */}
+          {profileData && (
+            <View className="w-full">
+              <View className="items-center py-4">
+                {profileData.posting_metadata.profile.profile_image && (
+                  <Image
+                    source={{ uri: profileData.posting_metadata.profile.profile_image }}
+                    className="w-24 h-24 rounded-full"
+                    style={{ borderWidth: 3, borderColor: isDarkColorScheme ? '#ffffff20' : '#00000020' }}
+                  />
                 )}
+                <View className="items-center mt-2">
+                  <Text className="text-xl font-bold">{profileData.posting_metadata.profile.name}</Text>
+                  <Text className="text-sm opacity-70">@{profileData.name}</Text>
+                  <Text className="mt-2 text-center px-4">{profileData.posting_metadata.profile.about}</Text>
+                </View>
+                <View className="flex-row justify-around w-full mt-4">
+                  <View className="items-center">
+                    <Text className="font-bold">{profileData.followers}</Text>
+                    <Text>Followers</Text>
+                  </View>
+                  <View className="items-center">
+                    <Text className="font-bold">{profileData.followings}</Text>
+                    <Text>Following</Text>
+                  </View>
+                  <View className="items-center">
+                    <Text className="font-bold">{profileData.total_posts}</Text>
+                    <Text>Posts</Text>
+                  </View>
+                </View>
               </View>
-              <View className='mt-8'>
-                <Button 
-                  variant="destructive" 
-                  onPress={handleLogout}
-                  className="bg-red-600"
-                >
-                  <Text className="text-white">Logout</Text>
-                </Button>
+            </View>
+          )}
+
+          {/* Add Wallet Section here */}
+          {walletData && <WalletSection />}
+
+          {/* Rewards Section */}
+          {rewardsData && (
+            <View className="w-full py-6 bg-foreground/5 rounded-xl">
+              <View className="items-center mb-2">
+                <Ionicons 
+                  name="trophy-outline" 
+                  size={48} 
+                  color={isDarkColorScheme ? '#FFD700' : '#DAA520'} 
+                />
+                <Text className="text-xl font-bold mt-2">Rewards</Text>
               </View>
-              {message && (
-                <Text className='text-sm text-center mt-4'>{message}</Text>
-              )}
-            </CardContent>
-          </Card>
+              <View className="px-6 mt-4">
+                <View className="space-y-3">
+                  <View className="flex-row justify-between">
+                    <Text className="text-lg opacity-70">Pending Payout:</Text>
+                    <Text className="text-lg font-medium">{rewardsData.summary.total_pending_payout} HBD</Text>
+                  </View>
+                  <View className="flex-row justify-between">
+                    <Text className="text-lg opacity-70">Pending Posts:</Text>
+                    <Text className="text-lg font-medium">{rewardsData.summary.pending_posts_count}</Text>
+                  </View>
+                  <View className="flex-row justify-between">
+                    <Text className="text-lg opacity-70">Author Rewards:</Text>
+                    <Text className="text-lg font-medium">{rewardsData.summary.total_author_rewards}</Text>
+                  </View>
+                  <View className="flex-row justify-between">
+                    <Text className="text-lg opacity-70">Curator Payouts:</Text>
+                    <Text className="text-lg font-medium">{rewardsData.summary.total_curator_payouts}</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          )}
+
+          {/* Actions */}
+          <View className="px-2 space-y-3">
+            <Button 
+              onPress={handleQuit}
+              className="bg-white"
+            >
+              <Text className="text-gray-900 text-lg">Quit to Home</Text>
+            </Button>
+            
+            <View className="h-px bg-foreground/10" />
+            
+            <Button 
+              variant="destructive" 
+              onPress={handleLogout}
+              className="bg-red-500/80"
+            >
+              <Text className="text-white text-lg">Logout</Text>
+            </Button>
+
+            {message && (
+              <Text className="text-sm text-center opacity-70 mt-2">{message}</Text>
+            )}
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
