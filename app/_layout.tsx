@@ -22,6 +22,11 @@ const TAB_ITEMS = [
     icon: 'cloud-download-outline'
   },
   {
+    name: 'snapsfeed',
+    title: 'Snaps',
+    icon: 'cloud-download-outline'
+  },
+  {
     name: 'fetch',
     title: 'Fetch', 
     icon: 'cloud-download-outline'
