@@ -5,6 +5,7 @@ import React from 'react';
 import { MatrixRain } from '~/components/ui/loading-effects/MatrixRain';
 import { API_BASE_URL } from '~/lib/constants';
 import type { Post } from '~/components/magazine/types';
+import { AuthScreen } from '~/components/auth/AuthScreen';
 
 // Create a global cache for preloaded data with proper typing
 export const preloadedData = {
@@ -14,6 +15,7 @@ export const preloadedData = {
 
 export default function Index() {
   const pulseAnim = React.useRef(new Animated.Value(1)).current;
+  const [showAuth, setShowAuth] = React.useState(false);
 
   React.useEffect(() => {
     const preloadData = async () => {
@@ -75,7 +77,7 @@ export default function Index() {
   }, []);
 
   const handlePress = () => {
-    router.push('/(tabs)/home');
+    setShowAuth(true);
   };
 
   return (
@@ -100,6 +102,7 @@ export default function Index() {
           </Pressable>
         </View>
       </View>
+      {showAuth && <AuthScreen />}
     </View>
   );
 }
