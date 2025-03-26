@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, RefreshControl, FlatList, ActivityIndicator } from 'react-native';
+import { View, RefreshControl, FlatList, ActivityIndicator, Dimensions } from 'react-native';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { Text } from './ui/text';
 import { PostCard } from './magazine/PostCard';
@@ -10,6 +10,8 @@ import type { Post } from './magazine/types';
 interface MagazineProps {
   refreshTrigger?: number;
 }
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export function Magazine({ refreshTrigger = 0 }: MagazineProps) {
   const { isDarkColorScheme } = useColorScheme();
@@ -36,18 +38,14 @@ export function Magazine({ refreshTrigger = 0 }: MagazineProps) {
   }, [fetchFeed]);
 
   const renderItem = React.useCallback(({ item }: { item: Post }) => (
-    <PostCard key={item.permlink} post={item} />
+    <View style={{ width: SCREEN_WIDTH }}>
+      <PostCard post={item} />
+    </View>
   ), []);
 
   const keyExtractor = React.useCallback((item: Post) => item.permlink, []);
 
-  const ListHeaderComponent = React.useCallback(() => (
-    <Text className="text-2xl font-bold mb-4 px-4">Magazine</Text>
-  ), []);
-
-  const ItemSeparatorComponent = React.useCallback(() => (
-    <View className="h-0 my-4 border-b-muted border" />
-  ), []);
+  const ItemSeparatorComponent = React.useCallback(() => null, []);
 
   React.useEffect(() => {
     setIsLoading(true);
@@ -68,28 +66,39 @@ export function Magazine({ refreshTrigger = 0 }: MagazineProps) {
 
   // Prepare the content view component
   const contentView = (
-    <FlatList
-      data={feedData}
-      showsVerticalScrollIndicator={false}
-      renderItem={renderItem}
-      keyExtractor={keyExtractor}
-      ListHeaderComponent={ListHeaderComponent}
-      ItemSeparatorComponent={ItemSeparatorComponent}
-      refreshControl={
-        <RefreshControl
-          refreshing={isRefreshing}
-          onRefresh={handleRefresh}
-          tintColor={foregroundColor}
-          colors={[foregroundColor]}
-          progressBackgroundColor={backgroundColor}
-        />
-      }
-      removeClippedSubviews={true}
-      initialNumToRender={5}
-      maxToRenderPerBatch={3}
-      windowSize={7}
-      updateCellsBatchingPeriod={50}
-    />
+    <View className="flex-1">
+      {/* Fixed header */}
+      <Text className="text-2xl font-bold px-4 py-2">
+        Magazine
+      </Text>
+
+      {/* Horizontal scrolling content */}
+      <FlatList
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        data={feedData}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            tintColor={foregroundColor}
+            colors={[foregroundColor]}
+            progressBackgroundColor={backgroundColor}
+          />
+        }
+        removeClippedSubviews={true}
+        initialNumToRender={2}
+        maxToRenderPerBatch={1}
+        windowSize={3}
+        updateCellsBatchingPeriod={50}
+        decelerationRate="fast"
+        snapToInterval={SCREEN_WIDTH}
+        snapToAlignment="start"
+      />
+    </View>
   );
 
   // Return the appropriate view based on loading state
