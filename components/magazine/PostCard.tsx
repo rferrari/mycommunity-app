@@ -4,6 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 import React, { useCallback, useState } from 'react';
 import { DimensionValue, Image, Pressable, View } from 'react-native';
 import { API_BASE_URL } from '~/lib/constants';
+import { useColorScheme } from '~/lib/useColorScheme';
 import { Text } from '../ui/text';
 import { MediaPreview } from './MediaPreview';
 import type { Media, Post } from './types';
@@ -17,6 +18,7 @@ interface PostCardProps {
 }
 
 export function PostCard({ post }: PostCardProps) {
+  const { isDarkColorScheme } = useColorScheme();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
   const [isLiked, setIsLiked] = useState(false);
@@ -182,7 +184,7 @@ export function PostCard({ post }: PostCardProps) {
           {!isExpanded ? (
             <Text>{post.post_json_metadata.description || displayText}</Text>
           ) : (
-            <Text>{post.post_json_metadata.description || displayText}</Text>
+            <Text>{post.body}</Text>
             // <Markdown 
             //   style={markdownStyles}
             //   rules={markdownRules}
@@ -207,11 +209,28 @@ export function PostCard({ post }: PostCardProps) {
       {shouldShowReadMore && (
         <Pressable 
           onPress={() => setIsExpanded(true)}
-          className="px-4 py-2"
+          className={`
+            mx-4 my-3 px-4 py-2.5 rounded-lg 
+            flex-row items-center justify-center gap-2
+            ${isDarkColorScheme 
+              ? 'bg-zinc-800/80 active:bg-zinc-700/80 border border-zinc-700' 
+              : 'bg-zinc-100 active:bg-zinc-200 border border-zinc-200'
+            }
+          `}
         >
-          <Text className="text-blue-500">
+          <Text 
+            className={`
+              text-sm font-medium
+              ${isDarkColorScheme ? 'text-zinc-300' : 'text-zinc-600'}
+            `}
+          >
             Continue reading
           </Text>
+          <FontAwesome
+            name="angle-down"
+            size={14}
+            color={isDarkColorScheme ? '#d4d4d8' : '#52525b'}
+          />
         </Pressable>
       )}
 
