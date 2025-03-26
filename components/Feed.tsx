@@ -39,7 +39,7 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
   const keyExtractor = React.useCallback((item: Post) => item.permlink, []);
 
   const ListHeaderComponent = React.useCallback(() => (
-    <Text className="text-2xl font-bold mb-2 px-4">Latest Posts</Text>
+    <Text className="text-2xl font-bold mb-4 px-4">Latest Posts</Text>
   ), []);
 
   const ItemSeparatorComponent = React.useCallback(() => (
