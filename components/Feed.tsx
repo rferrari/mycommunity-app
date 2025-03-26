@@ -61,7 +61,7 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
   const loadingView = (
     <View className="w-full items-center justify-center p-4 bg-background">
       <ActivityIndicator size="large" color={foregroundColor} />
-      <Text className="text-foreground mt-2">Loading posts...</Text>
+      <Text className="text-foreground mt-2">Kicking-flip-in...</Text>
     </View>
   );
 
