@@ -65,7 +65,7 @@ export default function StyleScreen() {
 
         <View className="pt-6 space-y-4">
           <Button 
-            // onPress={() => router.push('/onboarding/experience')}
+            onPress={() => router.push('/(onboarding)/experience')}
             className="bg-foreground w-full"
             disabled={selectedStyles.length === 0}
           >

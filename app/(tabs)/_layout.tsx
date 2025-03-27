@@ -6,7 +6,7 @@ import { useColorScheme } from '~/lib/useColorScheme';
 
 const TAB_ITEMS = [
   {
-    name: 'home',
+    name: 'feed',
     title: 'Feed',
     icon: 'home-outline'
   },

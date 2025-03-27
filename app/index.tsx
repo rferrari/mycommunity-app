@@ -5,7 +5,7 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import React from 'react';
 import { Animated, Pressable, useColorScheme, View } from 'react-native';
 import { AuthScreen } from '~/components/auth/AuthScreen';
-import { Post } from '~/components/snaps/types';
+import { Post } from '~/components/feed/types';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { API_BASE_URL } from '~/lib/constants';
@@ -14,6 +14,7 @@ import { API_BASE_URL } from '~/lib/constants';
 export const preloadedData = {
   feed: null as Post[] | null,
   magazine: null as Post[] | null,
+  snaps: null as Post[] | null,
   // to do: others
 };
 
@@ -48,9 +49,10 @@ export default function Index() {
         const startTime = Date.now();
 
         // Start both requests in parallel but track them separately
-        const [feedPromise, magazinePromise] = [
+        const [feedPromise, magazinePromise, snapsPromise] = [
           fetch(`${API_BASE_URL}/feed`),
-          fetch(`${API_BASE_URL}/magazine`)
+          fetch(`${API_BASE_URL}/magazine`),
+          fetch(`${API_BASE_URL}/snaps`)
         ];
 
         // Handle feed request
@@ -73,8 +75,18 @@ export default function Index() {
           }
         });
 
+        // Handle snaps request
+        snapsPromise.then(async response => {
+          const data = await response.json();
+          if (data.success && Array.isArray(data.data)) {
+            preloadedData.snaps = data.data;
+            const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+            console.info(`Snaps loaded in ${elapsed}s:`, data.data.length, 'items');
+          }
+        });
+
         // Still wait for both to complete to catch any errors
-        await Promise.all([feedPromise, magazinePromise]);
+        await Promise.all([feedPromise, magazinePromise, snapsPromise]);
 
       } catch (error) {
         console.error('Preload error:', error);
