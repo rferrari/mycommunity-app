@@ -21,6 +21,11 @@ const TAB_ITEMS = [
     icon: 'image-outline' // Changed to differentiate from camera
   },
   {
+    name: 'experience',
+    title: 'Experience',
+    icon: 'image-outline' // Changed to differentiate from camera
+  },
+  {
     name: 'welcome',
     title: 'Welcome',
     icon: 'person-outline'
