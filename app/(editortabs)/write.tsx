@@ -14,7 +14,6 @@ export default function HomePage() {
 
   return (
     <View className="flex-1 bg-background">
-      
     </View>
   );
 }

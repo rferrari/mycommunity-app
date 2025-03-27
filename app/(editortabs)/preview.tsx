@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { Magazine } from '~/components/Magazine';
 import React from 'react';
 
-export default function MagazinePage() {
+export default function PreviewPostPage() {
   const [refreshKey, setRefreshKey] = React.useState(0);
 
   useFocusEffect(

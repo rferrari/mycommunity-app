@@ -16,13 +16,13 @@ const TAB_ITEMS = [
     icon: 'camera-outline'
   },
   {
-    name: 'Scheduler',
-    title: 'Mag',
+    name: 'scheduler',
+    title: 'Scheduler',
     icon: 'book-outline'
   },
   {
-    name: 'Post',
-    title: 'SkateFeed',
+    name: 'createPost',
+    title: 'Post',
     icon: 'bicycle-outline'
   },
 ] as const;

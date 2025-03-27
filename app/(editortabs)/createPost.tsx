@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { SkateFeed } from '~/components/SkateFeed';
 import React from 'react';
 
-export default function SkateFeedPage() {
+export default function CreatePostPage() {
   const [refreshKey, setRefreshKey] = React.useState(0);
 
   useFocusEffect(
@@ -15,7 +15,6 @@ export default function SkateFeedPage() {
 
   return (
     <View className="flex-1 bg-background">
-      <SkateFeed refreshTrigger={refreshKey} />
     </View>
   );
 }
