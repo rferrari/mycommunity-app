@@ -6,6 +6,7 @@ import { MatrixRain } from '../ui/loading-effects/MatrixRain';
 import * as SecureStore from 'expo-secure-store';
 import { LoginForm } from './LoginForm';
 import { PathSelection } from './PathSelection';
+import { Toast } from '../ui/toast';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android') {
@@ -23,6 +24,7 @@ export function AuthScreen() {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [message, setMessage] = React.useState('');
+  const [messageType, setMessageType] = React.useState<'error' | 'success' | 'info'>('error');
   const [storedUsers, setStoredUsers] = React.useState<string[]>([]);
   const [isVisible, setIsVisible] = React.useState(false);
 
@@ -88,6 +90,7 @@ export function AuthScreen() {
     try {
       if (!username || !password) {
         setMessage('Please enter both username and posting key');
+        setMessageType('error');
         return;
       }
 
@@ -110,6 +113,7 @@ export function AuthScreen() {
     } catch (error) {
       console.error('Error saving credentials:', error);
       setMessage('Error saving credentials');
+      setMessageType('error');
     }
   };
 
@@ -121,10 +125,12 @@ export function AuthScreen() {
         router.push('/(tabs)/home');
       } else {
         setMessage('No stored credentials found');
+        setMessageType('error');
       }
     } catch (error) {
       console.error('Error with quick login:', error);
       setMessage('Error logging in');
+      setMessageType('error');
     }
   };
 
@@ -136,6 +142,13 @@ export function AuthScreen() {
         transform: [{ translateY: isVisible ? 0 : height }]
       }}
     >
+      {message && (
+        <Toast 
+          message={message} 
+          type={messageType}
+          onHide={() => setMessage('')}
+        />
+      )}
       <MatrixRain />
       <View className="flex-1 items-center justify-center p-8">
         {!showLogin ? (
