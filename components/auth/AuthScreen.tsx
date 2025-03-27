@@ -80,7 +80,7 @@ export function AuthScreen() {
       setIsVisible(false);
       
       setTimeout(() => {
-        router.push('/(tabs)/home');
+        router.push('/(tabs)/feed');
       }, 500);
     } catch (error) {
       console.error('Error setting spectator mode:', error);
@@ -112,7 +112,7 @@ export function AuthScreen() {
       setIsVisible(false);
       
       setTimeout(() => {
-        router.push('/(tabs)/home');
+        router.push('/(tabs)/feed');
       }, 500);
     } catch (error) {
       console.error('Error saving credentials:', error);
@@ -126,7 +126,7 @@ export function AuthScreen() {
       const storedPassword = await SecureStore.getItemAsync(selectedUsername);
       if (storedPassword) {
         await updateStoredUsers(selectedUsername);
-        router.push('/(tabs)/home');
+        router.push('/(tabs)/feed');
       } else {
         setMessage('No stored credentials found');
         setMessageType('error');

@@ -38,14 +38,14 @@ export function Feed({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps) {
 
   const fetchFeed = React.useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/snaps`);
+      const response = await fetch(`${API_BASE_URL}/feed`);
       const data = await response.json();
       if (data.success && Array.isArray(data.data)) {
         return data.data as Post[];
       }
       return [] as Post[];
     } catch (error) {
-      console.error('Error fetching snaps:', error);
+      console.error('Error fetching feed:', error);
       return [] as Post[];
     }
   }, []);

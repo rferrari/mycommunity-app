@@ -13,8 +13,8 @@ import { API_BASE_URL } from '~/lib/constants';
 // Create a global cache for preloaded data with proper typing
 export const preloadedData = {
   feed: null as Post[] | null,
-  magazine: null as Post[] | null,
-  snaps: null as Post[] | null,
+  // magazine: null as Post[] | null,
+  // snaps: null as Post[] | null,
   // to do: others
 };
 
@@ -49,10 +49,13 @@ export default function Index() {
         const startTime = Date.now();
 
         // Start both requests in parallel but track them separately
-        const [feedPromise, magazinePromise, snapsPromise] = [
+        const [feedPromise, 
+          // magazinePromise, 
+          // snapsPromise
+        ] = [
           fetch(`${API_BASE_URL}/feed`),
-          fetch(`${API_BASE_URL}/magazine`),
-          fetch(`${API_BASE_URL}/snaps`)
+          // fetch(`${API_BASE_URL}/magazine`),
+          // fetch(`${API_BASE_URL}/snaps`)
         ];
 
         // Handle feed request
@@ -65,28 +68,31 @@ export default function Index() {
           }
         });
 
-        // Handle magazine request
-        magazinePromise.then(async response => {
-          const data = await response.json();
-          if (data.success && Array.isArray(data.data)) {
-            preloadedData.magazine = data.data;
-            const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-            console.info(`Magazine loaded in ${elapsed}s:`, data.data.length, 'items');
-          }
-        });
+        // // Handle magazine request
+        // magazinePromise.then(async response => {
+        //   const data = await response.json();
+        //   if (data.success && Array.isArray(data.data)) {
+        //     preloadedData.magazine = data.data;
+        //     const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+        //     console.info(`Magazine loaded in ${elapsed}s:`, data.data.length, 'items');
+        //   }
+        // });
 
-        // Handle snaps request
-        snapsPromise.then(async response => {
-          const data = await response.json();
-          if (data.success && Array.isArray(data.data)) {
-            preloadedData.snaps = data.data;
-            const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-            console.info(`Snaps loaded in ${elapsed}s:`, data.data.length, 'items');
-          }
-        });
+        // // Handle snaps request
+        // snapsPromise.then(async response => {
+        //   const data = await response.json();
+        //   if (data.success && Array.isArray(data.data)) {
+        //     preloadedData.snaps = data.data;
+        //     const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+        //     console.info(`Snaps loaded in ${elapsed}s:`, data.data.length, 'items');
+        //   }
+        // });
 
         // Still wait for both to complete to catch any errors
-        await Promise.all([feedPromise, magazinePromise, snapsPromise]);
+        await Promise.all([feedPromise, 
+          // magazinePromise, 
+          // snapsPromise
+        ]);
 
       } catch (error) {
         console.error('Preload error:', error);
@@ -106,7 +112,7 @@ export default function Index() {
         const lastLoggedInUser = await SecureStore.getItemAsync('lastLoggedInUser');
         if (lastLoggedInUser && lastLoggedInUser !== 'SPECTATOR') {
           // If we have a real user (not spectator), go directly to home
-          router.push('/(tabs)/home');
+          router.push('/(tabs)/feed');
         }
       } catch (error) {
         console.error('Error checking last user:', error);
