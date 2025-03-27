@@ -113,7 +113,7 @@ export function VideoBackgorundEffect() {
   );
 }
 
-export const matrixEffect: LoadingEffect = {
+export const videobgEffect: LoadingEffect = {
   id: 'videobg',
   component: VideoBackgorundEffect
 };
