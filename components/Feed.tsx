@@ -7,6 +7,7 @@ import type { Post } from './feed/types';
 import { API_BASE_URL } from '~/lib/constants';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useColorScheme } from '~/lib/useColorScheme';
+import { preloadedData } from '~/app/index';
 
 interface FeedProps {
   refreshTrigger?: number;
@@ -114,6 +115,20 @@ export function Feed({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps) {
   const ItemSeparatorComponent = React.useCallback(() => (
     <View className="h-0 my-4 border-b-muted border" />
   ), []);
+
+  React.useEffect(() => {
+    // If we have preloaded data, use it immediately without loading screen
+    if (preloadedData.feed) {
+      console.info('Using preloaded feed data:', preloadedData.feed.length);
+      setFeedData(preloadedData.feed);
+    } else {
+      // Only show loading screen if we need to fetch
+      setIsLoading(true);
+      console.info('No preloaded data, fetching feed');
+      fetchFeed().finally(() => setIsLoading(false));
+    }
+  }, [fetchFeed, refreshTrigger]);
+
 
   const NewPostsNotification = React.useCallback(() => (
     <Animated.View 
