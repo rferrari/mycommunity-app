@@ -1,14 +1,14 @@
-import { View, Animated, Pressable, useColorScheme } from 'react-native';
-import { router } from 'expo-router';
-import { Text } from '~/components/ui/text';
-import React from 'react';
-import { APP_NAME, API_BASE_URL } from '~/lib/constants';
-import type { Post } from '~/components/magazine/types';
-import { AuthScreen } from '~/components/auth/AuthScreen';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { useVideoPlayer, VideoView } from 'expo-video';
+import React from 'react';
+import { Animated, Pressable, useColorScheme, View } from 'react-native';
+import { AuthScreen } from '~/components/auth/AuthScreen';
+import type { Post } from '~/components/magazine/types';
 import { Button } from '~/components/ui/button';
+import { Text } from '~/components/ui/text';
+import { API_BASE_URL } from '~/lib/constants';
 
 // Create a global cache for preloaded data with proper typing
 export const preloadedData = {
@@ -136,7 +136,6 @@ export default function Index() {
   return (
     <View className="flex-1 bg-background">
       <BackgroundVideo />
-      {/* Add info button in top-right corner */}
       <Pressable
         onPress={handleInfoPress}
         className="absolute top-12 right-6 z-10"
@@ -156,6 +155,9 @@ export default function Index() {
             Login in / Sign up
           </Text>
         </Button>
+        <Text className='text-sm text-foreground/50 mt-2'>
+          Alpha
+        </Text>
       </View>
       {showAuth && <AuthScreen />}
     </View>
