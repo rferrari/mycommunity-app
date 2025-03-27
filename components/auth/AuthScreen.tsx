@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Animated, Pressable, Dimensions, ScrollView } from 'react-native';
+import { View, Animated, Pressable, Dimensions, ScrollView, LayoutAnimation, Platform, UIManager } from 'react-native';
 import { router } from 'expo-router';
 import { Text } from '../ui/text';
 import { Input } from '../ui/input';
@@ -8,17 +8,24 @@ import { MatrixRain } from '../ui/loading-effects/MatrixRain';
 import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
 
+// Enable LayoutAnimation for Android
+if (Platform.OS === 'android') {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
+
 const { height } = Dimensions.get('window');
 const STORED_USERS_KEY = 'stored_users';
 
 export function AuthScreen() {
   const { isDarkColorScheme } = useColorScheme();
-  const slideAnim = React.useRef(new Animated.Value(height)).current;
   const [showLogin, setShowLogin] = React.useState(false);
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [message, setMessage] = React.useState('');
   const [storedUsers, setStoredUsers] = React.useState<string[]>([]);
+  const [isVisible, setIsVisible] = React.useState(false);
 
   // Fetch stored users on mount
   React.useEffect(() => {
@@ -30,13 +37,15 @@ export function AuthScreen() {
         let users: string[] = storedUsersJson ? JSON.parse(storedUsersJson) : [];
         
         if (lastUser) {
-          // Remove lastUser from the array if it exists
           users = users.filter(user => user !== lastUser);
-          // Add lastUser to the beginning
           users.unshift(lastUser);
         }
 
         setStoredUsers(users);
+        
+        // Configure and trigger entrance animation
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setIsVisible(true);
       } catch (error) {
         console.error('Error fetching stored users:', error);
       }
@@ -44,28 +53,24 @@ export function AuthScreen() {
     getStoredUsers();
   }, []);
 
-  React.useEffect(() => {
-    Animated.spring(slideAnim, {
-      toValue: 0,
-      useNativeDriver: true,
-      tension: 20,
-      friction: 7
-    }).start();
-  }, []);
-
   const handleSpectator = async () => {
     try {
-      // Set lastLoggedInUser to 'SPECTATOR' mode (uppercase)
       await SecureStore.setItemAsync('lastLoggedInUser', 'SPECTATOR');
       
-      // Animate and navigate
-      Animated.timing(slideAnim, {
-        toValue: -height,
-        duration: 500,
-        useNativeDriver: true
-      }).start(() => {
+      // Configure exit animation
+      LayoutAnimation.configureNext(
+        LayoutAnimation.create(
+          500,
+          LayoutAnimation.Types.easeInEaseOut,
+          LayoutAnimation.Properties.opacity
+        )
+      );
+      setIsVisible(false);
+      
+      // Navigate after animation
+      setTimeout(() => {
         router.push('/(tabs)/home');
-      });
+      }, 500);
     } catch (error) {
       console.error('Error setting spectator mode:', error);
     }
@@ -109,14 +114,20 @@ export function AuthScreen() {
       // Update stored users list
       await updateStoredUsers(normalizedUsername);
 
-      // Animate and navigate
-      Animated.timing(slideAnim, {
-        toValue: -height,
-        duration: 500,
-        useNativeDriver: true
-      }).start(() => {
+      // Configure exit animation
+      LayoutAnimation.configureNext(
+        LayoutAnimation.create(
+          500,
+          LayoutAnimation.Types.easeInEaseOut,
+          LayoutAnimation.Properties.opacity
+        )
+      );
+      setIsVisible(false);
+      
+      // Navigate after animation
+      setTimeout(() => {
         router.push('/(tabs)/home');
-      });
+      }, 500);
     } catch (error) {
       console.error('Error saving credentials:', error);
       setMessage('Error saving credentials');
@@ -176,10 +187,11 @@ export function AuthScreen() {
   );
 
   return (
-    <Animated.View
+    <View 
       className="absolute inset-0 bg-background"
       style={{
-        transform: [{ translateY: slideAnim }]
+        opacity: isVisible ? 1 : 0,
+        transform: [{ translateY: isVisible ? 0 : height }]
       }}
     >
       <MatrixRain />
@@ -245,21 +257,15 @@ export function AuthScreen() {
             )}
             <Pressable
               onPress={handleSubmit}
-              className="bg-foreground px-8 py-4 rounded-lg mt-4"
+              className="bg-foreground px-8 py-4 rounded-lg"
             >
               <Text className="text-xl font-bold text-center text-background">
-                ENTER
+                Submit
               </Text>
             </Pressable>
           </View>
         )}
-        
-        {message && (
-          <Text className="text-sm text-center text-foreground/80 mt-4">
-            {message}
-          </Text>
-        )}
       </View>
-    </Animated.View>
+    </View>
   );
 }
