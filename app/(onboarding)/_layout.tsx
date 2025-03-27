@@ -79,12 +79,11 @@ export function OnboardingLayout() {
             animation: 'slide_from_right',
           }}
         >
-          <Stack.Screen name="welcome" />
+          <Stack.Screen name="home" />
+          <Stack.Screen name="about" />
           <Stack.Screen name="style" />
           <Stack.Screen name="experience" />
-          <Stack.Screen name="spots" />
-          <Stack.Screen name="media" />
-          <Stack.Screen name="complete" />
+          <Stack.Screen name="welcome" />
         </Stack>
       </View>
     </SafeAreaProvider>
