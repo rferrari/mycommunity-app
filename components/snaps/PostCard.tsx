@@ -85,6 +85,13 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
     }
   };
 
+  const calculateTotalValue = (post: Post) => {
+    const pending = parseFloat(post.pending_payout_value);
+    const total = parseFloat(post.total_payout_value);
+    const curator = parseFloat(post.curator_payout_value);
+    return (pending + total + curator).toFixed(3);
+  };
+
   const media = extractMediaFromBody(post.body);
   const postContent = post.body.replace(/<iframe.*?<\/iframe>|!\[.*?\]\(.*?\)/g, '').trim();
 
@@ -123,15 +130,9 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
       )}
 
       <View className="flex-row justify-between items-center mx-2">
-        {parseFloat(post.total_payout_value) === 0 ? (
-          <Text className="text-gray-500 font-bold text-xl">
-            ${post.total_payout_value}
-          </Text>
-        ) : (
-          <Text className="text-green-500 font-bold text-xl">
-            ${parseFloat(post.total_payout_value).toFixed(3)}
-          </Text>
-        )}
+        <Text className={`font-bold text-xl ${parseFloat(calculateTotalValue(post)) > 0 ? 'text-green-500' : 'text-gray-500'}`}>
+          ${calculateTotalValue(post)}
+        </Text>
         <View>
           {voteError && (
             <Text className="text-red-500 text-xs mb-1">{voteError}</Text>
