@@ -2,7 +2,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { formatDistanceToNow } from 'date-fns';
 import * as SecureStore from 'expo-secure-store';
 import React, { useCallback, useState, useEffect } from 'react';
-import { Image, Pressable, View } from 'react-native';
+import { Image, Pressable, View, Linking } from 'react-native';
 import { API_BASE_URL } from '~/lib/constants';
 import { Text } from '../ui/text';
 import { MediaPreview } from './MediaPreview';
@@ -94,6 +94,21 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
 
   const media = extractMediaFromBody(post.body);
   const postContent = post.body.replace(/<iframe.*?<\/iframe>|!\[.*?\]\(.*?\)/g, '').trim();
+  const linkRegex = /(https?:\/\/[^\s]+)/g;
+  const postContentWithLinks = postContent.split(linkRegex).map((part, index) => {
+    if (linkRegex.test(part)) {
+      return (
+        <Text
+          key={index}
+          className="text-blue-500 underline"
+          onPress={() => Linking.openURL(part)}
+        >
+          {part}
+        </Text>
+      );
+    }
+    return <Text key={index}>{part}</Text>;
+  });
 
   return (
     <View className="w-full mb-4">
@@ -116,7 +131,7 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
       </View>
 
       {postContent !== '' && (
-        <Text className="px-2 mb-2">{postContent}</Text>
+        <Text className="px-2 mb-2">{postContentWithLinks}</Text>
       )}
 
       {media.length > 0 && (
