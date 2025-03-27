@@ -13,6 +13,7 @@ import { API_BASE_URL } from '~/lib/constants';
 // Create a global cache for preloaded data with proper typing
 export const preloadedData = {
   feed: null as Post[] | null,
+  trending: null as Post[] | null,
   // magazine: null as Post[] | null,
   // snaps: null as Post[] | null,
   // to do: others
@@ -49,11 +50,14 @@ export default function Index() {
         const startTime = Date.now();
 
         // Start both requests in parallel but track them separately
-        const [feedPromise, 
+        const [
+          feedPromise, 
+          trendingPromise, 
           // magazinePromise, 
           // snapsPromise
         ] = [
           fetch(`${API_BASE_URL}/feed`),
+          fetch(`${API_BASE_URL}/feed/trending`),
           // fetch(`${API_BASE_URL}/magazine`),
           // fetch(`${API_BASE_URL}/snaps`)
         ];
@@ -65,6 +69,16 @@ export default function Index() {
             preloadedData.feed = data.data;
             const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
             console.info(`Feed loaded in ${elapsed}s:`, data.data.length, 'items');
+          }
+        });
+
+        // Handle trending request
+        trendingPromise.then(async response => {
+          const data = await response.json();
+          if (data.success && Array.isArray(data.data)) {
+            preloadedData.trending = data.data;
+            const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+            console.info(`Trending loaded in ${elapsed}s:`, data.data.length, 'items');
           }
         });
 
@@ -89,7 +103,9 @@ export default function Index() {
         // });
 
         // Still wait for both to complete to catch any errors
-        await Promise.all([feedPromise, 
+        await Promise.all([
+          feedPromise, 
+          trendingPromise, 
           // magazinePromise, 
           // snapsPromise
         ]);

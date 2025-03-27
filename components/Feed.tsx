@@ -94,13 +94,13 @@ export function Feed({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps) {
     return () => clearInterval(pollTimer);
   }, [checkForNewPosts, pollInterval]);
 
-  // Initial fetch
-  React.useEffect(() => {
-    setIsLoading(true);
-    fetchFeed()
-      .then(data => setFeedData(data))
-      .finally(() => setIsLoading(false));
-  }, [fetchFeed, refreshTrigger]);
+  // // Initial fetch
+  // React.useEffect(() => {
+  //   setIsLoading(true);
+  //   fetchFeed()
+  //     .then(data => setFeedData(data))
+  //     .finally(() => setIsLoading(false));
+  // }, [fetchFeed, refreshTrigger]);
 
   const renderItem = React.useCallback(({ item }: { item: Post }) => (
     <PostCard key={item.permlink} post={item} currentUsername={username} />

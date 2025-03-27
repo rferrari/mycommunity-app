@@ -36,7 +36,7 @@ export function Trending({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps
     getCurrentUser();
   }, []);
 
-  const fetchFeed = React.useCallback(async () => {
+  const fetchFeedTrending = React.useCallback(async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/feed/trending`);
       const data = await response.json();
@@ -51,7 +51,7 @@ export function Trending({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps
   }, []);
 
   const checkForNewPosts = React.useCallback(async () => {
-    const newData = await fetchFeed();
+    const newData = await fetchFeedTrending();
     if (newData.length > 0) {
       const existingIds = new Set(feedData.map((post: Post) => post.permlink));
       const newItems = newData.filter((post: Post) => !existingIds.has(post.permlink));
@@ -82,11 +82,11 @@ export function Trending({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps
 
   const handleRefresh = React.useCallback(async () => {
     setIsRefreshing(true);
-    const data = await fetchFeed();
+    const data = await fetchFeedTrending();
     setFeedData(data);
     setNewPosts([]);
     setIsRefreshing(false);
-  }, [fetchFeed]);
+  }, [fetchFeedTrending]);
 
   // Set up polling
   React.useEffect(() => {
@@ -95,12 +95,12 @@ export function Trending({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps
   }, [checkForNewPosts, pollInterval]);
 
   // Initial fetch
-  React.useEffect(() => {
-    setIsLoading(true);
-    fetchFeed()
-      .then(data => setFeedData(data))
-      .finally(() => setIsLoading(false));
-  }, [fetchFeed, refreshTrigger]);
+  // React.useEffect(() => {
+  //   setIsLoading(true);
+  //   fetchFeedTrending()
+  //     .then(data => setFeedData(data))
+  //     .finally(() => setIsLoading(false));
+  // }, [fetchFeedTrending, refreshTrigger]);
 
   const renderItem = React.useCallback(({ item }: { item: Post }) => (
     <PostCard key={item.permlink} post={item} currentUsername={username} />
@@ -109,7 +109,7 @@ export function Trending({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps
   const keyExtractor = React.useCallback((item: Post) => item.permlink, []);
 
   const ListHeaderComponent = React.useCallback(() => (
-    <Text className="text-2xl font-bold mb-4 px-4">Latest Posts</Text>
+    <Text className="text-2xl font-bold mb-4 px-4">Trending Posts</Text>
   ), []);
 
   const ItemSeparatorComponent = React.useCallback(() => (
@@ -118,16 +118,16 @@ export function Trending({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps
 
   React.useEffect(() => {
     // If we have preloaded data, use it immediately without loading screen
-    if (preloadedData.feed) {
-      console.info('Using preloaded feed data:', preloadedData.feed.length);
-      setFeedData(preloadedData.feed);
+    if (preloadedData.trending) {
+      console.info('Using preloaded trending data:', preloadedData.trending.length);
+      setFeedData(preloadedData.trending);
     } else {
       // Only show loading screen if we need to fetch
       setIsLoading(true);
-      console.info('No preloaded data, fetching feed');
-      fetchFeed().finally(() => setIsLoading(false));
+      console.info('No preloaded data, fetching trending');
+      fetchFeedTrending().finally(() => setIsLoading(false));
     }
-  }, [fetchFeed, refreshTrigger]);
+  }, [fetchFeedTrending, refreshTrigger]);
 
 
   const NewPostsNotification = React.useCallback(() => (
