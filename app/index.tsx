@@ -5,7 +5,7 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import React from 'react';
 import { Animated, Pressable, useColorScheme, View } from 'react-native';
 import { AuthScreen } from '~/components/auth/AuthScreen';
-import type { Post } from '~/components/magazine/types';
+import { Post } from '~/components/snaps/types';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { API_BASE_URL } from '~/lib/constants';
