@@ -13,6 +13,7 @@ import * as SecureStore from 'expo-secure-store';
 export const preloadedData = {
   feed: null as Post[] | null,
   magazine: null as Post[] | null,
+  // to do: others
 };
 
 export default function Index() {

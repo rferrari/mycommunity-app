@@ -146,7 +146,9 @@ export function AuthScreen() {
         showsVerticalScrollIndicator={true}
         bounces={false}
       >
-        {storedUsers.map((user, index) => (
+        {storedUsers
+            .filter(user => user !== "SPECTATOR")
+            .map((user, index) => (
           <Pressable
             key={user}
             onPress={() => handleQuickLogin(user)}

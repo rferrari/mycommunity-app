@@ -64,7 +64,8 @@ export default function ProfileScreen() {
         const currentUser = await SecureStore.getItemAsync('lastLoggedInUser');
         if (currentUser) {
           setUsername(currentUser);
-  
+          
+          // If SPECTATOR, set skeleton data
           if (currentUser === 'SPECTATOR') {
             setProfileData({
               name: 'SPECTATOR',
@@ -76,13 +77,13 @@ export default function ProfileScreen() {
                 profile: {
                   name: 'Spectator Mode',
                   about: 'Browse and explore content without logging in.',
-                  profile_image: '',
+                  profile_image: '', // Will use fallback icon
                   cover_image: '',
                   location: '',
                 }
               }
             });
-  
+
             setWalletData({
               account_name: 'SPECTATOR',
               hive: '0.000',
@@ -92,7 +93,7 @@ export default function ProfileScreen() {
               hive_savings: '0.000',
               hbd_savings: '0.000'
             });
-  
+
             setRewardsData({
               summary: {
                 total_pending_payout: '0.000',
@@ -103,7 +104,7 @@ export default function ProfileScreen() {
                 total_curator_payouts: '0.000'
               }
             });
-  
+
             setIsLoading(false);
             return;
           }
@@ -117,15 +118,9 @@ export default function ProfileScreen() {
         setIsInitializing(false);
       }
     };
-  
+
     getCurrentUser();
   }, []);
-  
-  // Don't render anything until user status is determined
-  if (isInitializing) {
-    return null;
-  }
-  
 
   useEffect(() => {
     const fetchProfileData = async () => {

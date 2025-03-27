@@ -1,33 +1,33 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Tabs, Stack } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useColorScheme } from '~/lib/useColorScheme';
 
 const TAB_ITEMS = [
   {
-    name: 'home',
-    title: 'What Is Skate Hive',
+    name: 'write',
+    title: 'Write',
     icon: 'home-outline'
   },
   {
-    name: 'about',
-    title: 'About',
+    name: 'preview',
+    title: 'Preview',
+    icon: 'camera-outline'
+  },
+  {
+    name: 'Scheduler',
+    title: 'Mag',
+    icon: 'book-outline'
+  },
+  {
+    name: 'Post',
+    title: 'SkateFeed',
     icon: 'bicycle-outline'
   },
-  {
-    name: 'style',
-    title: 'Style',
-    icon: 'image-outline' // Changed to differentiate from camera
-  },
-  {
-    name: 'welcome',
-    title: 'Welcome',
-    icon: 'person-outline'
-  }
 ] as const;
 
-export default function TabOnboardLayout() {
+export default function TabLayout() {
   const { isDarkColorScheme } = useColorScheme();
   
   return (
@@ -67,26 +67,4 @@ function TabBarIcon(props: {
   color: string;
 }) {
   return <Ionicons size={24} style={{ marginBottom: -3 }} {...props} />;
-}
-
-export function OnboardingLayout() {
-  return (
-    <SafeAreaProvider>
-      <View className="flex-1 bg-background">
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            animation: 'slide_from_right',
-          }}
-        >
-          <Stack.Screen name="welcome" />
-          <Stack.Screen name="style" />
-          <Stack.Screen name="experience" />
-          <Stack.Screen name="spots" />
-          <Stack.Screen name="media" />
-          <Stack.Screen name="complete" />
-        </Stack>
-      </View>
-    </SafeAreaProvider>
-  );
 }
