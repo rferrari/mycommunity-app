@@ -1,13 +1,13 @@
+import React, { useCallback, useState, useEffect } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { formatDistanceToNow } from 'date-fns';
 import * as SecureStore from 'expo-secure-store';
-import React, { useCallback, useState, useEffect } from 'react';
 import { Image, Pressable, View, Linking } from 'react-native';
 import { API_BASE_URL } from '~/lib/constants';
 import { Text } from '../ui/text';
 import { MediaPreview } from './MediaPreview';
-import type { Media, Post } from './types';
-import { extractMediaFromBody } from './types';
+import type { Media, Post } from '../../lib/types';
+import { extractMediaFromBody } from '~/lib/utils';
 
 interface PostCardProps {
   post: Post;

@@ -6,6 +6,7 @@ import { MatrixRain } from '../ui/loading-effects/MatrixRain';
 import * as SecureStore from 'expo-secure-store';
 import { LoginForm } from './LoginForm';
 import { PathSelection } from './PathSelection';
+import { STORED_USERS_KEY} from '~/lib/constants';
 import { Toast } from '../ui/toast';
 import { hive_keys_from_login } from '~/lib/hive-utils';
 
@@ -17,7 +18,6 @@ if (Platform.OS === 'android') {
 }
 
 const { height } = Dimensions.get('window');
-const STORED_USERS_KEY = 'stored_users';
 
 export function AuthScreen() {
   const { isDarkColorScheme } = useColorScheme();

@@ -6,7 +6,7 @@ import { Button } from '~/components/ui/button';
 import * as SecureStore from 'expo-secure-store';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { router } from 'expo-router';
-import { API_BASE_URL } from '~/lib/constants';
+import { API_BASE_URL, STORED_USERS_KEY } from '~/lib/constants';
 import { Ionicons } from '@expo/vector-icons';
 
 interface ProfileData {
@@ -33,6 +33,7 @@ export default function ProfileScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [username, setUsername] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [storedUsers, setStoredUsers] = React.useState<string[]>([]);
 
   useEffect(() => {
     const getCurrentUser = async () => {
@@ -97,13 +98,26 @@ export default function ProfileScreen() {
   const handleLogout = async () => {
     try {
       const lastLoggedInUser = await SecureStore.getItemAsync('lastLoggedInUser');
-      
+      const storedUsersJson = await SecureStore.getItemAsync(STORED_USERS_KEY);
+      let users: string[] = storedUsersJson ? JSON.parse(storedUsersJson) : [];
+  
       if (lastLoggedInUser) {
-        await SecureStore.deleteItemAsync(lastLoggedInUser);
+        // Remove the user from the stored users list
+        users = users.filter(user => user !== lastLoggedInUser);
+  
+        // Update the stored users
+        await SecureStore.setItemAsync(STORED_USERS_KEY, JSON.stringify(users));
+  
+        // Delete the last logged in user
         await SecureStore.deleteItemAsync('lastLoggedInUser');
+  
+        // Delete the user's stored data
+        await SecureStore.deleteItemAsync(lastLoggedInUser);
+  
+        setStoredUsers(users);
         setMessage('Logged out successfully');
       }
-      
+  
       router.push('/');
     } catch (error) {
       console.error('Error logging out:', error);

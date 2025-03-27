@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, Modal, Pressable, View } from 'react-native';
 import { VideoPlayer } from './VideoPlayer';
-import type { Media } from './types';
+import type { Media } from '../../lib/types';
 
 interface MediaPreviewProps {
   media: Media[];

@@ -3,7 +3,7 @@ import { View, RefreshControl, FlatList, ActivityIndicator, Pressable, Animated 
 import * as SecureStore from 'expo-secure-store';
 import { Text } from './ui/text';
 import { PostCard } from './feed/PostCard';
-import type { Post } from './feed/types';
+import type { Post } from '../lib/types';
 import { API_BASE_URL } from '~/lib/constants';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useColorScheme } from '~/lib/useColorScheme';
