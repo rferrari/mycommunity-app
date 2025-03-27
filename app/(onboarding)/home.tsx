@@ -29,7 +29,7 @@ export default function HomePage() {
         </Text>
         <View className="pt-6 space-y-4">
           <Button
-            onPress={() => router.push('/(onboarding)/profile')}
+            onPress={() => router.push('/(onboarding)/about')}
             className="bg-foreground w-full"
           >
             <Text className="text-xl font-bold text-background">
