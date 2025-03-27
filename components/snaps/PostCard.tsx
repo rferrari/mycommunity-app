@@ -137,21 +137,21 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
           {voteError && (
             <Text className="text-red-500 text-xs mb-1">{voteError}</Text>
           )}
-          <Pressable
+            <Pressable
             onPress={handleVote}
-            className="flex-row items-center gap-2"
+            className="flex-row items-center gap-1"
             disabled={isVoting}
-          >
-            <Text className="text-gray-600 text-xl">
+            >
+            <Text className={`text-xl font-bold ${isLiked ? 'text-green-500' : 'text-gray-600'}`}>
               {voteCount}
             </Text>
             <FontAwesome
-              name={isLiked ? "heart" : "heart-o"}
+              name={"arrow-up"}
               size={20}
-              color={isLiked ? "#ff4444" : "#666666"}
+              color={isLiked ? "#32CD32" : "#666666"}
               style={{ marginRight: 4 }}
             />
-          </Pressable>
+            </Pressable>
         </View>
       </View>
     </View>
