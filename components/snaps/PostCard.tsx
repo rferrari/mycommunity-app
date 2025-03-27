@@ -50,6 +50,10 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
         return;
       }
 
+      // Optimistically update the UI
+      const previousLikedState = isLiked;
+      setIsLiked(!isLiked);
+
       const response = await fetch(`${API_BASE_URL}/vote`, {
         method: 'POST',
         headers: {
@@ -60,16 +64,16 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
           author: post.author,
           permlink: post.permlink,
           posting_key: password,
-          weight: isLiked ? 0 : 10000 // Toggle between like and unlike
+          weight: previousLikedState ? 0 : 10000 // Use previous state to determine weight
         })
       });
 
       if (!response.ok) {
         const error = await response.text();
+        // Revert the optimistic update if the request failed
+        setIsLiked(previousLikedState);
         throw new Error(error);
       }
-
-      setIsLiked(!isLiked);
     } catch (error) {
       console.error('Vote error:', error);
       setVoteError(error instanceof Error ? error.message : 'Failed to vote');
