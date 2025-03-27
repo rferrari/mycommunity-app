@@ -26,7 +26,7 @@ export function LoadingScreen() {
   const pulseAnim = React.useRef(new Animated.Value(1)).current;
   const fadeAnim = React.useRef(new Animated.Value(1)).current;
 
-  const BackgroundEffect = getLoadingEffect("matrix").component;
+  const BackgroundEffect = getLoadingEffect("videobg").component;
 
   React.useEffect(() => {
     // Pulse animation
