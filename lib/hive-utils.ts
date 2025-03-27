@@ -1,4 +1,4 @@
-var dhive = require("@hiveio/dhive");
+// var dhive = require("@hiveio/dhive");
 
 export function hive_keys_from_login(
     username: string,
@@ -8,6 +8,8 @@ export function hive_keys_from_login(
     active_key: string;
     memo_key: string;
     } {
+
+    const dhive = require("@hiveio/dhive");
 
     // Check if username and password are provided
     if (!username || !password) {

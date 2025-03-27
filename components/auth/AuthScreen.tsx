@@ -97,7 +97,9 @@ export function AuthScreen() {
 
       const normalizedUsername = username.toLowerCase().trim();
 
-      console.dir(hive_keys_from_login(normalizedUsername, password));
+      console.dir(
+        hive_keys_from_login(normalizedUsername, password)
+      );
 
       await SecureStore.setItemAsync(normalizedUsername, password);
       await updateStoredUsers(normalizedUsername);
