@@ -83,6 +83,7 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
   };
 
   const media = extractMediaFromBody(post.body);
+  const postContent = post.body.replace(/<iframe.*?<\/iframe>|!\[.*?\]\(.*?\)/g, '').trim();
 
   return (
     <View className="w-full mb-4">
@@ -104,7 +105,9 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
         </Text>
       </View>
 
-      <Text className="px-4">{post.body.replace(/<iframe.*?<\/iframe>|!\[.*?\]\(.*?\)/g, '')}</Text>
+      {postContent !== '' && (
+        <Text className="px-2 mb-2">{postContent}</Text>
+      )}
 
       {media.length > 0 && (
         <MediaPreview
@@ -117,12 +120,12 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
       )}
 
       <View className="flex-row justify-between items-center mx-2">
-        {parseInt(post.total_payout_value) === 0 ? (
-          <Text className="text-gray-500 font-bold">
+        {parseFloat(post.total_payout_value) === 0 ? (
+          <Text className="text-gray-500 font-bold text-xl">
             ${post.total_payout_value}
           </Text>
         ) : (
-          <Text className="text-gray-500 font-bold">
+          <Text className="text-green-500 font-bold text-xl">
             ${parseFloat(post.total_payout_value).toFixed(3)}
           </Text>
         )}
@@ -135,7 +138,7 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
             className="flex-row items-center gap-2"
             disabled={isVoting}
           >
-            <Text className="text-gray-600">
+            <Text className="text-gray-600 text-xl">
               {post.votes.length}
             </Text>
             <FontAwesome
