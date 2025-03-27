@@ -2,18 +2,37 @@ import { View, Animated, Pressable, useColorScheme } from 'react-native';
 import { router } from 'expo-router';
 import { Text } from '~/components/ui/text';
 import React from 'react';
-import { MatrixRain } from '~/components/ui/loading-effects/MatrixRain';
 import { APP_NAME, API_BASE_URL } from '~/lib/constants';
 import type { Post } from '~/components/magazine/types';
 import { AuthScreen } from '~/components/auth/AuthScreen';
 import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { Button } from '~/components/ui/button';
 
 // Create a global cache for preloaded data with proper typing
 export const preloadedData = {
   feed: null as Post[] | null,
   magazine: null as Post[] | null,
   // to do: others
+};
+
+const BackgroundVideo = () => {
+  const player = useVideoPlayer(require('../assets/videos/background.mov'), player => {
+    player.loop = true;
+    player.play();
+  });
+
+  return (
+    <View className="absolute inset-0">
+      <VideoView
+        style={{ width: '100%', height: '100%' }}
+        contentFit='cover'
+        player={player}
+      />
+      <View className="absolute inset-0 bg-black/10" />
+    </View>
+  );
 };
 
 export default function Index() {
@@ -27,7 +46,7 @@ export default function Index() {
     const preloadData = async () => {
       try {
         const startTime = Date.now();
-        
+
         // Start both requests in parallel but track them separately
         const [feedPromise, magazinePromise] = [
           fetch(`${API_BASE_URL}/feed`),
@@ -84,7 +103,7 @@ export default function Index() {
 
     // Check last user when component mounts
     checkLastUser();
-    
+
     // Start preloading data as well
     preloadData();
   }, []);
@@ -116,39 +135,27 @@ export default function Index() {
 
   return (
     <View className="flex-1 bg-background">
-      <MatrixRain />
+      <BackgroundVideo />
       {/* Add info button in top-right corner */}
-      <Pressable 
+      <Pressable
         onPress={handleInfoPress}
         className="absolute top-12 right-6 z-10"
       >
         <View className="bg-foreground/20 rounded-full p-2">
-          <Ionicons 
-            name="information-circle-outline" 
-            size={24} 
-            color={isDarkColorScheme ? '#ffffff' : '#000000'} 
+          <Ionicons
+            name="information-circle-outline"
+            size={24}
+            color={isDarkColorScheme ? '#ffffff' : '#000000'}
           />
         </View>
       </Pressable>
-      
-      <View className="flex-1 items-center justify-center">
-        <View className="items-center space-y-8">
-          <Text className="text-6xl font-bold text-foreground">
-            {APP_NAME}
+
+      <View className="flex-1 items-center justify-end pb-12 px-4">
+        <Button className="font-bold w-full opacity-90 text-black" size={"xl"} onPress={handlePress}>
+          <Text>
+            Login in / Sign up
           </Text>
-          <Pressable onPress={handlePress}>
-            <Animated.View 
-              className="bg-foreground px-8 py-4 rounded-lg"
-              style={{
-                transform: [{ scale: pulseAnim }]
-              }}
-            >
-              <Text className="text-2xl font-bold text-background">
-                START
-              </Text>
-            </Animated.View>
-          </Pressable>
-        </View>
+        </Button>
       </View>
       {showAuth && <AuthScreen />}
     </View>
