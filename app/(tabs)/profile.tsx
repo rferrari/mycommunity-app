@@ -226,7 +226,7 @@ export default function ProfileScreen() {
           )}
 
           {/* Actions */}
-          <View className="px-2 space-y-3">
+          <View className="px-2 flex flex-col gap-1">
             <Button 
               onPress={handleQuit}
               className="bg-white"
