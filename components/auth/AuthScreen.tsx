@@ -190,7 +190,9 @@ export function AuthScreen() {
             
             {storedUsers.length > 0 && (
               <View className="mb-8"> {/* Added margin bottom */}
-                <StoredUsersView />
+                <Text>
+                  <StoredUsersView />
+                </Text>
               </View>
             )}
 

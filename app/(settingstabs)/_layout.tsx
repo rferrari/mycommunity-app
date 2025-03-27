@@ -6,33 +6,28 @@ import { useColorScheme } from '~/lib/useColorScheme';
 
 const TAB_ITEMS = [
   {
-    name: 'home',
-    title: 'Feed',
-    icon: 'home-outline'
+    name: 'appsetSettings',
+    title: 'Settings',
+    icon: 'settings-outline'
   },
   {
-    name: 'snapsfeed',
-    title: 'Snaps',
-    icon: 'camera-outline'
+    name: 'appsetAudio',
+    title: 'Audio',
+    icon: 'musical-notes-outline'
   },
   {
-    name: 'magazine',
-    title: 'Mag',
-    icon: 'book-outline'
+    name: 'appsetVideo',
+    title: 'Video',
+    icon: 'videocam-outline'
   },
   {
-    name: 'skatefeed',
-    title: 'SkateFeed',
-    icon: 'bicycle-outline'
-  },
-  {
-    name: 'profile',
-    title: 'Profile',
-    icon: 'person-outline'
+    name: 'appsetOutros',
+    title: 'Outros',
+    icon: 'apps-outline'
   }
 ] as const;
 
-export default function TabLayout() {
+export default function TabSettinsLayout() {
   const { isDarkColorScheme } = useColorScheme();
   
   return (
