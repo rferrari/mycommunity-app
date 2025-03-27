@@ -9,48 +9,55 @@ interface PathSelectionProps {
   onLogin: () => void;
   onSpectator: () => Promise<void>;
   onQuickLogin: (username: string) => Promise<void>;
+  onDeleteAllUsers: () => void;
   isDarkColorScheme: boolean;
 }
 
-export function PathSelection({ 
-  storedUsers, 
-  onLogin, 
-  onSpectator, 
+export function PathSelection({
+  storedUsers,
+  onLogin,
+  onSpectator,
   onQuickLogin,
-  isDarkColorScheme 
+  onDeleteAllUsers,
+  isDarkColorScheme
 }: PathSelectionProps) {
   return (
     <View className="w-full max-w-sm space-y-8">
       <Text className="text-4xl font-bold text-center text-foreground mb-8">
         Choose Your Path
       </Text>
-      
+
       {storedUsers.length > 0 && (
         <View className="mb-8">
-          <StoredUsersView 
-            users={storedUsers} 
+          <StoredUsersView
+            users={storedUsers}
             onQuickLogin={onQuickLogin}
             isDarkColorScheme={isDarkColorScheme}
           />
         </View>
       )}
 
-      <View className="space-y-4">
+      <View className="w-full gap-2">
         <Button
           onPress={onLogin}
-          variant="default"
-          size="xl"
         >
-          <Text className="text-xl font-bold text-center text-background">
+          <Text>
             New Login
+          </Text>
+        </Button>
+        <Button
+          variant="destructive"
+          onPress={onDeleteAllUsers}
+        >
+          <Text>
+            Delete All Stored Users
           </Text>
         </Button>
         <Button
           onPress={onSpectator}
           variant="ghost"
-          size="xl"
         >
-          <Text className="text-xl font-bold text-center text-foreground">
+          <Text>
             Enter as Spectator
           </Text>
         </Button>

@@ -134,6 +134,20 @@ export function AuthScreen() {
     }
   };
 
+  const handleDeleteAllUsers = async () => {
+    try {
+      await SecureStore.deleteItemAsync(STORED_USERS_KEY);
+      await SecureStore.deleteItemAsync('lastLoggedInUser');
+      setStoredUsers([]);
+      setMessage('All users deleted successfully');
+      setMessageType('success');
+    } catch (error) {
+      console.error('Error deleting users:', error);
+      setMessage('Error deleting users');
+      setMessageType('error');
+    }
+  };
+
   return (
     <View 
       className="absolute inset-0 bg-background"
@@ -157,6 +171,7 @@ export function AuthScreen() {
             onLogin={() => setShowLogin(true)}
             onSpectator={handleSpectator}
             onQuickLogin={handleQuickLogin}
+            onDeleteAllUsers={handleDeleteAllUsers}
             isDarkColorScheme={isDarkColorScheme}
           />
         ) : (
