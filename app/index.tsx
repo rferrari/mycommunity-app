@@ -149,8 +149,8 @@ export default function Index() {
         </View>
       </Pressable>
 
-      <View className="flex-1 items-center justify-end pb-12 px-4">
-        <Button className="font-bold w-full opacity-95" size={"xl"} onPress={handlePress}>
+      <View className="flex-1 items-center justify-end pb-8 px-4">
+        <Button className="font-bold w-full opacity-95 border border-muted-foreground" size={"xl"} onPress={handlePress}>
           <Text>
             Login in / Sign up
           </Text>
