@@ -1,7 +1,7 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { formatDistanceToNow } from 'date-fns';
 import * as SecureStore from 'expo-secure-store';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Image, Pressable, View } from 'react-native';
 import { API_BASE_URL } from '~/lib/constants';
 import { Text } from '../ui/text';
@@ -11,14 +11,23 @@ import { extractMediaFromBody } from './types';
 
 interface PostCardProps {
   post: Post;
+  currentUsername: string | null;
 }
 
-export function PostCard({ post }: PostCardProps) {
+export function PostCard({ post, currentUsername }: PostCardProps) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
-  const [isLiked, setIsLiked] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
   const [voteError, setVoteError] = useState<string | null>(null);
+  const [isLiked, setIsLiked] = useState(false);
+
+  // Check if user has already voted on this post
+  useEffect(() => {
+    if (currentUsername && post.votes) {
+      const hasVoted = post.votes.some(vote => vote.voter === currentUsername && vote.weight > 0);
+      setIsLiked(hasVoted);
+    }
+  }, [post.votes, currentUsername]);
 
   const handleMediaPress = useCallback((media: Media) => {
     setSelectedMedia(media);
@@ -30,14 +39,12 @@ export function PostCard({ post }: PostCardProps) {
       setIsVoting(true);
       setVoteError(null);
 
-      // Get stored credentials
-      const storedUsername = await SecureStore.getItemAsync('lastLoggedInUser');
-      if (!storedUsername) {
+      if (!currentUsername) {
         setVoteError('Please login first');
         return;
       }
 
-      const password = await SecureStore.getItemAsync(storedUsername);
+      const password = await SecureStore.getItemAsync(currentUsername);
       if (!password) {
         setVoteError('Invalid credentials');
         return;
@@ -49,7 +56,7 @@ export function PostCard({ post }: PostCardProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          voter: storedUsername,
+          voter: currentUsername,
           author: post.author,
           permlink: post.permlink,
           posting_key: password,

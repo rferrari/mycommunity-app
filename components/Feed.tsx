@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, RefreshControl, FlatList, ActivityIndicator, Pressable, Animated } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 import { Text } from './ui/text';
 import { PostCard } from './snaps/PostCard';
 import type { Post } from './snaps/types';
@@ -17,8 +18,22 @@ export function Feed({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps) {
   const [newPosts, setNewPosts] = React.useState<Post[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
+  const [username, setUsername] = React.useState<string | null>(null);
   const { isDarkColorScheme } = useColorScheme();
   const notificationOpacity = React.useRef(new Animated.Value(0)).current;
+
+  // Get current user
+  React.useEffect(() => {
+    const getCurrentUser = async () => {
+      try {
+        const currentUser = await SecureStore.getItemAsync('lastLoggedInUser');
+        setUsername(currentUser);
+      } catch (error) {
+        console.error('Error getting current user:', error);
+      }
+    };
+    getCurrentUser();
+  }, []);
 
   const fetchFeed = React.useCallback(async () => {
     try {
@@ -87,8 +102,8 @@ export function Feed({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps) {
   }, [fetchFeed, refreshTrigger]);
 
   const renderItem = React.useCallback(({ item }: { item: Post }) => (
-    <PostCard key={item.permlink} post={item} />
-  ), []);
+    <PostCard key={item.permlink} post={item} currentUsername={username} />
+  ), [username]);
 
   const keyExtractor = React.useCallback((item: Post) => item.permlink, []);
 
