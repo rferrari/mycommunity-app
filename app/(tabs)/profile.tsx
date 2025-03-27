@@ -218,7 +218,7 @@ export default function ProfileScreen() {
                   className="bg-foreground w-full"
                 >
                   <Text className="text-background text-lg font-bold">
-                    Join Waiting List
+                    Create SkateHive Account
                   </Text>
                 </Button>
               </View>
