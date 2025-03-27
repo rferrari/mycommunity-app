@@ -20,6 +20,7 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
   const [isVoting, setIsVoting] = useState(false);
   const [voteError, setVoteError] = useState<string | null>(null);
   const [isLiked, setIsLiked] = useState(false);
+  const [voteCount, setVoteCount] = useState(post.votes.length);
 
   // Check if user has already voted on this post
   useEffect(() => {
@@ -53,6 +54,7 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
       // Optimistically update the UI
       const previousLikedState = isLiked;
       setIsLiked(!isLiked);
+      setVoteCount(prevCount => previousLikedState ? prevCount - 1 : prevCount + 1);
 
       const response = await fetch(`${API_BASE_URL}/vote`, {
         method: 'POST',
@@ -72,6 +74,7 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
         const error = await response.text();
         // Revert the optimistic update if the request failed
         setIsLiked(previousLikedState);
+        setVoteCount(prevCount => previousLikedState ? prevCount + 1 : prevCount - 1);
         throw new Error(error);
       }
     } catch (error) {
@@ -139,7 +142,7 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
             disabled={isVoting}
           >
             <Text className="text-gray-600 text-xl">
-              {post.votes.length}
+              {voteCount}
             </Text>
             <FontAwesome
               name={isLiked ? "heart" : "heart-o"}
