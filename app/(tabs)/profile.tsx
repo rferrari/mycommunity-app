@@ -121,11 +121,7 @@ export default function ProfileScreen() {
     getCurrentUser();
   }, []);
   
-  // Don't render anything until user status is determined
-  if (isInitializing) {
-    return null;
-  }
-  
+
 
   useEffect(() => {
     const fetchProfileData = async () => {
