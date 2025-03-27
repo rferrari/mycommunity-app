@@ -30,7 +30,7 @@ const BackgroundVideo = () => {
         contentFit='cover'
         player={player}
       />
-      <View className="absolute inset-0 bg-black/10" />
+      <View className="absolute inset-0 bg-black/20" />
     </View>
   );
 };
@@ -151,7 +151,7 @@ export default function Index() {
       </Pressable>
 
       <View className="flex-1 items-center justify-end pb-12 px-4">
-        <Button className="font-bold w-full opacity-90 text-black" size={"xl"} onPress={handlePress}>
+        <Button className="font-bold w-full opacity-95" size={"xl"} onPress={handlePress}>
           <Text>
             Login in / Sign up
           </Text>
