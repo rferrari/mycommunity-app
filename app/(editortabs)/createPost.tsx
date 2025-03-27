@@ -1,9 +1,9 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { View } from 'react-native';
-import { SkateFeed } from '~/components/SkateFeed';
+import { Feed } from '~/components/Feed';
 import React from 'react';
 
-export default function CreatePostPage() {
+export default function PostPage() {
   const [refreshKey, setRefreshKey] = React.useState(0);
 
   useFocusEffect(
@@ -15,6 +15,7 @@ export default function CreatePostPage() {
 
   return (
     <View className="flex-1 bg-background">
+      <Feed refreshTrigger={refreshKey} />
     </View>
   );
 }

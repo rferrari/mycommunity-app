@@ -1,12 +1,11 @@
 import React from 'react';
 import { View, RefreshControl, FlatList, ActivityIndicator } from 'react-native';
 import { Text } from './ui/text';
-import { PostCard } from './feed/PostCard';
-import type { Post } from './feed/types';
+import { PostCard } from './snaps/PostCard';
+import type { Post } from './snaps/types';
 import { API_BASE_URL } from '~/lib/constants';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useColorScheme } from '~/lib/useColorScheme';
-import { preloadedData } from '~/app/index';
 
 interface FeedProps {
   refreshTrigger?: number;
@@ -20,13 +19,13 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
 
   const fetchFeed = React.useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/feed`);
+      const response = await fetch(`${API_BASE_URL}/snaps`);
       const data = await response.json();
       if (data.success && Array.isArray(data.data)) {
         setFeedData(data.data);
       }
     } catch (error) {
-      console.error('Error fetching feed:', error);
+      console.error('Error fetching snaps:', error);
     }
   }, []);
 
@@ -51,16 +50,8 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
   ), []);
 
   React.useEffect(() => {
-    // If we have preloaded data, use it immediately without loading screen
-    if (preloadedData.feed) {
-      console.info('Using preloaded feed data:', preloadedData.feed.length);
-      setFeedData(preloadedData.feed);
-    } else {
-      // Only show loading screen if we need to fetch
-      setIsLoading(true);
-      console.info('No preloaded data, fetching feed');
-      fetchFeed().finally(() => setIsLoading(false));
-    }
+    setIsLoading(true);
+    fetchFeed().finally(() => setIsLoading(false));
   }, [fetchFeed, refreshTrigger]);
 
   // Get theme colors

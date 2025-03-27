@@ -11,21 +11,6 @@ const TAB_ITEMS = [
     icon: 'home-outline'
   },
   {
-    name: 'snapsfeed',
-    title: 'Snaps',
-    icon: 'camera-outline'
-  },
-  {
-    name: 'magazine',
-    title: 'Mag',
-    icon: 'book-outline'
-  },
-  {
-    name: 'skatefeed',
-    title: 'SkateFeed',
-    icon: 'bicycle-outline'
-  },
-  {
     name: 'profile',
     title: 'Profile',
     icon: 'person-outline'
