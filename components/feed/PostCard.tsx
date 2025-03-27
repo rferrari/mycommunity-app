@@ -6,6 +6,7 @@ import { Image, Pressable, View, Linking } from 'react-native';
 import { API_BASE_URL } from '~/lib/constants';
 import { Text } from '../ui/text';
 import { MediaPreview } from './MediaPreview';
+import { Toast } from '../ui/toast';
 import type { Media, Post } from '../../lib/types';
 import { extractMediaFromBody } from '~/lib/utils';
 
@@ -41,6 +42,11 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
       setVoteError(null);
 
       if (!currentUsername) {
+        setVoteError('Please login first');
+        return;
+      }
+
+      if (currentUsername === "SPECTATOR") {
         setVoteError('Please login first');
         return;
       }
@@ -111,64 +117,70 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
   });
 
   return (
-    <View className="w-full mb-4">
-      <View className="flex-row items-center justify-between mb-3 px-2">
-        <View className="flex-row items-center">
-          <View className="h-12 w-12 mr-3 rounded-full overflow-hidden">
-            <Image
-              source={{ uri: `https://images.ecency.com/webp/u/${post.author}/avatar/small` }}
-              className="w-full h-full border border-muted rounded-full"
-              alt={`${post.author}'s avatar`}
-            />
+    <>
+      <View className="w-full mb-4">
+        <View className="flex-row items-center justify-between mb-3 px-2">
+          <View className="flex-row items-center">
+            <View className="h-12 w-12 mr-3 rounded-full overflow-hidden">
+              <Image
+                source={{ uri: `https://images.ecency.com/webp/u/${post.author}/avatar/small` }}
+                className="w-full h-full border border-muted rounded-full"
+                alt={`${post.author}'s avatar`}
+              />
+            </View>
+            <View>
+              <Text className="font-bold text-lg">@{post.author}</Text>
+            </View>
           </View>
+          <Text className="text-gray-500">
+            {formatDistanceToNow(new Date(post.created), { addSuffix: true })}
+          </Text>
+        </View>
+
+        {postContent !== '' && (
+          <Text className="px-2 mb-2">{postContentWithLinks}</Text>
+        )}
+
+        {media.length > 0 && (
+          <MediaPreview
+            media={media}
+            onMediaPress={handleMediaPress}
+            selectedMedia={selectedMedia}
+            isModalVisible={isModalVisible}
+            onCloseModal={() => setIsModalVisible(false)}
+          />
+        )}
+
+        <View className="flex-row justify-between items-center mx-2">
+          <Text className={`font-bold text-xl ${parseFloat(calculateTotalValue(post)) > 0 ? 'text-green-500' : 'text-gray-500'}`}>
+            ${calculateTotalValue(post)}
+          </Text>
           <View>
-            <Text className="font-bold text-lg">@{post.author}</Text>
+            <Pressable
+              onPress={handleVote}
+              className="flex-row items-center gap-1"
+              disabled={isVoting}
+            >
+              <Text className={`text-xl font-bold ${isLiked ? 'text-green-500' : 'text-gray-600'}`}>
+                {voteCount}
+              </Text>
+              <FontAwesome
+                name={"arrow-up"}
+                size={20}
+                color={isLiked ? "#32CD32" : "#666666"}
+                style={{ marginRight: 4 }}
+              />
+            </Pressable>
           </View>
         </View>
-        <Text className="text-gray-500">
-          {formatDistanceToNow(new Date(post.created), { addSuffix: true })}
-        </Text>
       </View>
-
-      {postContent !== '' && (
-        <Text className="px-2 mb-2">{postContentWithLinks}</Text>
-      )}
-
-      {media.length > 0 && (
-        <MediaPreview
-          media={media}
-          onMediaPress={handleMediaPress}
-          selectedMedia={selectedMedia}
-          isModalVisible={isModalVisible}
-          onCloseModal={() => setIsModalVisible(false)}
+      {voteError && (
+        <Toast
+          message={voteError}
+          type={'error'}
+          onHide={() => setVoteError(null)}
         />
       )}
-
-      <View className="flex-row justify-between items-center mx-2">
-        <Text className={`font-bold text-xl ${parseFloat(calculateTotalValue(post)) > 0 ? 'text-green-500' : 'text-gray-500'}`}>
-          ${calculateTotalValue(post)}
-        </Text>
-        <View>
-          {voteError && (
-            <Text className="text-red-500 text-xs mb-1">{voteError}</Text>
-          )}
-            <Pressable
-            onPress={handleVote}
-            className="flex-row items-center gap-1"
-            disabled={isVoting}
-            >
-            <Text className={`text-xl font-bold ${isLiked ? 'text-green-500' : 'text-gray-600'}`}>
-              {voteCount}
-            </Text>
-            <FontAwesome
-              name={"arrow-up"}
-              size={20}
-              color={isLiked ? "#32CD32" : "#666666"}
-              style={{ marginRight: 4 }}
-            />
-            </Pressable>
-        </View>
-      </View>
-    </View>
+    </>
   );
 }
