@@ -179,7 +179,7 @@ export function Trending({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps
   // Prepare the content view component
   const contentView = (
     <View className="flex-1">
-      <NewPostsNotification />
+      {/* <NewPostsNotification /> */}
       <FlatList
         data={feedData}
         showsVerticalScrollIndicator={false}

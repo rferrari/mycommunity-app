@@ -94,7 +94,7 @@ export function Feed({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps) {
     return () => clearInterval(pollTimer);
   }, [checkForNewPosts, pollInterval]);
 
-  // // Initial fetch
+  // Initial fetch
   // React.useEffect(() => {
   //   setIsLoading(true);
   //   fetchFeed()
@@ -109,7 +109,7 @@ export function Feed({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps) {
   const keyExtractor = React.useCallback((item: Post) => item.permlink, []);
 
   const ListHeaderComponent = React.useCallback(() => (
-    <Text className="text-2xl font-bold mb-4 px-4">Latest Posts</Text>
+    <Text className="text-2xl font-bold mb-4 px-4">Feed</Text>
   ), []);
 
   const ItemSeparatorComponent = React.useCallback(() => (
@@ -179,7 +179,7 @@ export function Feed({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps) {
   // Prepare the content view component
   const contentView = (
     <View className="flex-1">
-      <NewPostsNotification />
+      {/* <NewPostsNotification /> */}
       <FlatList
         data={feedData}
         showsVerticalScrollIndicator={false}

@@ -16,9 +16,9 @@ const TAB_ITEMS = [
     icon: 'flame-outline'
   },
   {
-    name: 'wallet',
-    title: 'Wallet',
-    icon: 'wallet-outline'
+    name: 'rewards',
+    title: 'Rewards',
+    icon: 'trophy-outline'
   },
   {
     name: 'profile',

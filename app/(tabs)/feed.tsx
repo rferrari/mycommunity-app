@@ -1,3 +1,4 @@
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { View } from 'react-native';
 import { Feed } from '~/components/Feed';
@@ -13,8 +14,10 @@ export default function FeedPage() {
   );
 
   return (
-    <View className="flex-1 bg-background">
-      <Feed refreshTrigger={refreshKey} />
-    </View>
+    <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
+      <View className="flex-1 bg-background">
+        <Feed refreshTrigger={refreshKey} />
+      </View>
+    </SafeAreaView>
   );
 }

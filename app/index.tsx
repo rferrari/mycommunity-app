@@ -51,16 +51,16 @@ export default function Index() {
 
         // Start both requests in parallel but track them separately
         const [
-          feedPromise, 
-          trendingPromise, 
+          feedPromise,
+          trendingPromise,
           // magazinePromise, 
           // snapsPromise
         ] = [
-          fetch(`${API_BASE_URL}/feed`),
-          fetch(`${API_BASE_URL}/feed/trending`),
-          // fetch(`${API_BASE_URL}/magazine`),
-          // fetch(`${API_BASE_URL}/snaps`)
-        ];
+            fetch(`${API_BASE_URL}/feed`),
+            fetch(`${API_BASE_URL}/feed/trending`),
+            // fetch(`${API_BASE_URL}/magazine`),
+            // fetch(`${API_BASE_URL}/snaps`)
+          ];
 
         // Handle feed request
         feedPromise.then(async response => {
@@ -81,6 +81,45 @@ export default function Index() {
             console.info(`Trending loaded in ${elapsed}s:`, data.data.length, 'items');
           }
         });
+
+        // // Update preload data contents every 5 minutes
+        // setInterval(async () => {
+        //   const [
+        //     feedPromise,
+        //     trendingPromise,
+        //     // magazinePromise, 
+        //     // snapsPromise
+        //   ] = [
+        //       fetch(`${API_BASE_URL}/feed`),
+        //       fetch(`${API_BASE_URL}/feed/trending`),
+        //       // fetch(`${API_BASE_URL}/magazine`),
+        //       // fetch(`${API_BASE_URL}/snaps`)
+        //     ];
+        //   try {
+        //     const response = await feedPromise;
+        //     const data = await response.json();
+        //     if (data.success && Array.isArray(data.data)) {
+        //       preloadedData.feed = data.data;
+        //       const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+        //       console.info(`Feed updated in ${elapsed}s:`, data.data.length, 'items');
+        //     }
+        //   } catch (error) {
+        //     console.error('Error fetching Feed contents:', error);
+        //   }
+
+        //   try {
+        //     const response = await trendingPromise;
+        //     const data = await response.json();
+        //     if (data.success && Array.isArray(data.data)) {
+        //       preloadedData.trending = data.data;
+        //       const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+        //       console.info(`Trending updated in ${elapsed}s:`, data.data.length, 'items');
+        //     }
+        //   } catch (error) {
+        //     console.error('Error fetching Trending contents:', error);
+        //   }
+
+        // }, 5 * 60 * 1000); // 5 minutes in milliseconds
 
         // // Handle magazine request
         // magazinePromise.then(async response => {
@@ -104,8 +143,8 @@ export default function Index() {
 
         // Still wait for both to complete to catch any errors
         await Promise.all([
-          feedPromise, 
-          trendingPromise, 
+          feedPromise,
+          trendingPromise,
           // magazinePromise, 
           // snapsPromise
         ]);
