@@ -43,7 +43,7 @@ export function PostCard({ post }: PostCardProps) {
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/v1/vote`, {
+      const response = await fetch(`${API_BASE_URL}/vote`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
