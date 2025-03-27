@@ -11,6 +11,11 @@ const TAB_ITEMS = [
     icon: 'home-outline'
   },
   {
+    name: 'wallet',
+    title: 'Wallet',
+    icon: 'wallet-outline'
+  },
+  {
     name: 'profile',
     title: 'Profile',
     icon: 'person-outline'
