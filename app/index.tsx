@@ -4,19 +4,17 @@ import * as SecureStore from 'expo-secure-store';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import React from 'react';
 import { Animated, Pressable, useColorScheme, View } from 'react-native';
-import { AuthScreen } from '~/components/auth/AuthScreen';
 import { Post } from '~/lib/types';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { API_BASE_URL } from '~/lib/constants';
+import { useAuth } from '~/lib/auth-provider';
+import { getFeed, getTrending } from '~/lib/api';
 
 // Create a global cache for preloaded data with proper typing
 export const preloadedData = {
   feed: null as Post[] | null,
   trending: null as Post[] | null,
-  // magazine: null as Post[] | null,
-  // snaps: null as Post[] | null,
-  // to do: others
 };
 
 const BackgroundVideo = () => {
@@ -39,147 +37,45 @@ const BackgroundVideo = () => {
 
 export default function Index() {
   const pulseAnim = React.useRef(new Animated.Value(1)).current;
-  const [showAuth, setShowAuth] = React.useState(false);
-
   const colorScheme = useColorScheme();
   const isDarkColorScheme = colorScheme === 'dark';
+  const { isAuthenticated, isLoading } = useAuth();
 
   React.useEffect(() => {
     const preloadData = async () => {
       try {
         const startTime = Date.now();
+        const [feedPromise, trendingPromise] = [
+          getFeed(),
+          getTrending(),
+        ];
 
-        // Start both requests in parallel but track them separately
-        const [
-          feedPromise,
-          trendingPromise,
-          // magazinePromise, 
-          // snapsPromise
-        ] = [
-            fetch(`${API_BASE_URL}/feed`),
-            fetch(`${API_BASE_URL}/feed/trending`),
-            // fetch(`${API_BASE_URL}/magazine`),
-            // fetch(`${API_BASE_URL}/snaps`)
-          ];
-
-        // Handle feed request
-        feedPromise.then(async response => {
-          const data = await response.json();
-          if (data.success && Array.isArray(data.data)) {
-            preloadedData.feed = data.data;
-            const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-            console.info(`Feed loaded in ${elapsed}s:`, data.data.length, 'items');
-          }
+        feedPromise.then(data => {
+          preloadedData.feed = data;
+          const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+          console.info(`Feed loaded in ${elapsed}s:`, data.length, 'items');
         });
 
-        // Handle trending request
-        trendingPromise.then(async response => {
-          const data = await response.json();
-          if (data.success && Array.isArray(data.data)) {
-            preloadedData.trending = data.data;
-            const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-            console.info(`Trending loaded in ${elapsed}s:`, data.data.length, 'items');
-          }
+        trendingPromise.then(data => {
+          preloadedData.trending = data;
+          const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+          console.info(`Trending loaded in ${elapsed}s:`, data.length, 'items');
         });
 
-        // // Update preload data contents every 5 minutes
-        // setInterval(async () => {
-        //   const [
-        //     feedPromise,
-        //     trendingPromise,
-        //     // magazinePromise, 
-        //     // snapsPromise
-        //   ] = [
-        //       fetch(`${API_BASE_URL}/feed`),
-        //       fetch(`${API_BASE_URL}/feed/trending`),
-        //       // fetch(`${API_BASE_URL}/magazine`),
-        //       // fetch(`${API_BASE_URL}/snaps`)
-        //     ];
-        //   try {
-        //     const response = await feedPromise;
-        //     const data = await response.json();
-        //     if (data.success && Array.isArray(data.data)) {
-        //       preloadedData.feed = data.data;
-        //       const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-        //       console.info(`Feed updated in ${elapsed}s:`, data.data.length, 'items');
-        //     }
-        //   } catch (error) {
-        //     console.error('Error fetching Feed contents:', error);
-        //   }
-
-        //   try {
-        //     const response = await trendingPromise;
-        //     const data = await response.json();
-        //     if (data.success && Array.isArray(data.data)) {
-        //       preloadedData.trending = data.data;
-        //       const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-        //       console.info(`Trending updated in ${elapsed}s:`, data.data.length, 'items');
-        //     }
-        //   } catch (error) {
-        //     console.error('Error fetching Trending contents:', error);
-        //   }
-
-        // }, 5 * 60 * 1000); // 5 minutes in milliseconds
-
-        // // Handle magazine request
-        // magazinePromise.then(async response => {
-        //   const data = await response.json();
-        //   if (data.success && Array.isArray(data.data)) {
-        //     preloadedData.magazine = data.data;
-        //     const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-        //     console.info(`Magazine loaded in ${elapsed}s:`, data.data.length, 'items');
-        //   }
-        // });
-
-        // // Handle snaps request
-        // snapsPromise.then(async response => {
-        //   const data = await response.json();
-        //   if (data.success && Array.isArray(data.data)) {
-        //     preloadedData.snaps = data.data;
-        //     const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-        //     console.info(`Snaps loaded in ${elapsed}s:`, data.data.length, 'items');
-        //   }
-        // });
-
-        // Still wait for both to complete to catch any errors
-        await Promise.all([
-          feedPromise,
-          trendingPromise,
-          // magazinePromise, 
-          // snapsPromise
-        ]);
-
+        await Promise.all([feedPromise, trendingPromise]);
       } catch (error) {
         console.error('Preload error:', error);
       }
     };
 
-    const checkLastUser = async () => {
-      try {
-        // Check if user manually quit
-        const manualQuit = await SecureStore.getItemAsync('manualQuit');
-        if (manualQuit === 'true') {
-          // Clear the flag and don't auto-login
-          await SecureStore.deleteItemAsync('manualQuit');
-          return;
-        }
-
-        const lastLoggedInUser = await SecureStore.getItemAsync('lastLoggedInUser');
-        if (lastLoggedInUser && lastLoggedInUser !== 'SPECTATOR') {
-          // If we have a real user (not spectator), go directly to home
-          router.push('/(tabs)/feed');
-        }
-      } catch (error) {
-        console.error('Error checking last user:', error);
-      }
-    };
-
-    // Check last user when component mounts
-    checkLastUser();
-
-    // Start preloading data as well
     preloadData();
   }, []);
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/(tabs)/feed');
+    }
+  }, [isAuthenticated]);
 
   React.useEffect(() => {
     Animated.loop(
@@ -199,12 +95,20 @@ export default function Index() {
   }, []);
 
   const handlePress = () => {
-    setShowAuth(true);
+    router.push('/login');
   };
 
   const handleInfoPress = () => {
     router.push('/about');
   };
+
+  if (isLoading || isAuthenticated) {
+    return (
+      <View className="flex-1 bg-background">
+        <BackgroundVideo />
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-background">
@@ -232,7 +136,6 @@ export default function Index() {
           Alpha
         </Text>
       </View>
-      {showAuth && <AuthScreen />}
     </View>
   );
 }

@@ -3,12 +3,10 @@ import { View, Animated, Dimensions, LayoutAnimation, Platform, UIManager } from
 import { router } from 'expo-router';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { MatrixRain } from '../ui/loading-effects/MatrixRain';
-import * as SecureStore from 'expo-secure-store';
 import { LoginForm } from './LoginForm';
 import { PathSelection } from './PathSelection';
-import { STORED_USERS_KEY} from '~/lib/constants';
 import { Toast } from '../ui/toast';
-import { hive_keys_from_login } from '~/lib/hive-utils';
+import { useAuth } from '~/lib/auth-provider';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android') {
@@ -21,54 +19,22 @@ const { height } = Dimensions.get('window');
 
 export function AuthScreen() {
   const { isDarkColorScheme } = useColorScheme();
+  const { storedUsers, login, loginStoredUser, enterSpectatorMode, deleteAllStoredUsers } = useAuth();
   const [showLogin, setShowLogin] = React.useState(false);
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [message, setMessage] = React.useState('');
   const [messageType, setMessageType] = React.useState<'error' | 'success' | 'info'>('error');
-  const [storedUsers, setStoredUsers] = React.useState<string[]>([]);
   const [isVisible, setIsVisible] = React.useState(false);
 
   React.useEffect(() => {
-    const getStoredUsers = async () => {
-      try {
-        const storedUsersJson = await SecureStore.getItemAsync(STORED_USERS_KEY);
-        const lastUser = await SecureStore.getItemAsync('lastLoggedInUser');
-        
-        let users: string[] = storedUsersJson ? JSON.parse(storedUsersJson) : [];
-        
-        if (lastUser) {
-          users = users.filter(user => user !== lastUser);
-          users.unshift(lastUser);
-        }
-
-        setStoredUsers(users);
-        
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-        setIsVisible(true);
-      } catch (error) {
-        console.error('Error fetching stored users:', error);
-      }
-    };
-    getStoredUsers();
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setIsVisible(true);
   }, []);
-
-  const updateStoredUsers = async (username: string) => {
-    try {
-      let users = [...storedUsers];
-      users = users.filter(user => user !== username);
-      users.unshift(username);
-      setStoredUsers(users);
-      await SecureStore.setItemAsync(STORED_USERS_KEY, JSON.stringify(users));
-      await SecureStore.setItemAsync('lastLoggedInUser', username);
-    } catch (error) {
-      console.error('Error updating stored users:', error);
-    }
-  };
 
   const handleSpectator = async () => {
     try {
-      await SecureStore.setItemAsync('lastLoggedInUser', 'SPECTATOR');
+      await enterSpectatorMode();
       
       LayoutAnimation.configureNext(
         LayoutAnimation.create(
@@ -83,7 +49,9 @@ export function AuthScreen() {
         router.push('/(tabs)/feed');
       }, 500);
     } catch (error) {
-      console.error('Error setting spectator mode:', error);
+      console.error('Error entering spectator mode:', error);
+      setMessage('Error entering spectator mode');
+      setMessageType('error');
     }
   };
 
@@ -95,14 +63,7 @@ export function AuthScreen() {
         return;
       }
 
-      const normalizedUsername = username.toLowerCase().trim();
-
-      console.dir(
-        hive_keys_from_login(normalizedUsername, password)
-      );
-
-      await SecureStore.setItemAsync(normalizedUsername, password);
-      await updateStoredUsers(normalizedUsername);
+      await login(username, password);
 
       LayoutAnimation.configureNext(
         LayoutAnimation.create(
@@ -117,22 +78,16 @@ export function AuthScreen() {
         router.push('/(tabs)/feed');
       }, 500);
     } catch (error) {
-      console.error('Error saving credentials:', error);
-      setMessage('Error saving credentials');
+      console.error('Error logging in:', error);
+      setMessage('Invalid credentials');
       setMessageType('error');
     }
   };
 
   const handleQuickLogin = async (selectedUsername: string) => {
     try {
-      const storedPassword = await SecureStore.getItemAsync(selectedUsername);
-      if (storedPassword) {
-        await updateStoredUsers(selectedUsername);
-        router.push('/(tabs)/feed');
-      } else {
-        setMessage('No stored credentials found');
-        setMessageType('error');
-      }
+      await loginStoredUser(selectedUsername);
+      router.push('/(tabs)/feed');
     } catch (error) {
       console.error('Error with quick login:', error);
       setMessage('Error logging in');
@@ -142,9 +97,7 @@ export function AuthScreen() {
 
   const handleDeleteAllUsers = async () => {
     try {
-      await SecureStore.deleteItemAsync(STORED_USERS_KEY);
-      await SecureStore.deleteItemAsync('lastLoggedInUser');
-      setStoredUsers([]);
+      await deleteAllStoredUsers();
       setMessage('All users deleted successfully');
       setMessageType('success');
     } catch (error) {
