@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, ScrollView, ActivityIndicator, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '~/components/ui/text';
-import { API_BASE_URL } from '~/lib/constants';
+import { API_BASE_URL, API_BASE____ } from '~/lib/constants';
 import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
 
 interface LeaderboardProps {
-    // currentUsername: string | null;
+    currentUsername: string | null;
 }
 
 interface LeaderboardData {
@@ -29,10 +29,10 @@ interface LeaderboardData {
     points: number;
     giveth_donations_usd: number;
     giveth_donations_amount: number;
-  }
+}
 
 export function Leaderboard(
-    // { currentUsername }: LeaderboardProps
+    { currentUsername }: LeaderboardProps
 ) {
     const [skaters, setSkaters] = useState<LeaderboardData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -41,14 +41,27 @@ export function Leaderboard(
     useEffect(() => {
         const fetchSkaters = async () => {
             try {
-                const response = await fetch(`http://192.168.0.14:3000/api/skatehive`);
+                const response = await fetch(`${API_BASE____}/skatehive`);
                 const data = await response.json();
                 const sortedData = data.sort((
-                    a:LeaderboardData, 
-                    b:LeaderboardData) => b.points - a.points);
+                    a: LeaderboardData,
+                    b: LeaderboardData) => b.points - a.points);
 
-                 // Show top 10 results
-                const top10Results = sortedData.slice(0, 10);
+                // Find the current user's position in the leaderboard
+                const currentUserIndex = sortedData.findIndex((user: LeaderboardData) => user.hive_author === currentUsername);
+                const currentUserPosition = currentUserIndex + 1; // Add 1 because indices are 0-based
+
+                // Show top 10 results
+                let top10Results = sortedData.slice(0, 10);
+
+                // Add the current user's position to the top 10 results at the 11th position
+                if (currentUserIndex > 10) {
+                    top10Results.push(sortedData[currentUserIndex]);
+                } else if (currentUserIndex < 10) {
+                    // If the current user is already in the top 10, remove them and add them at the 11th position
+                    top10Results = [...top10Results.filter((user: LeaderboardData) => user.hive_author !== currentUsername), sortedData[currentUserIndex]];
+                }
+
                 setSkaters(top10Results);
                 setIsLoading(false);
             } catch (error) {

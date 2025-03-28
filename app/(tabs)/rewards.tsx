@@ -330,7 +330,7 @@ export default function WalletScreen() {
                 )}
               </View>
 
-                <Leaderboard />
+                <Leaderboard currentUsername={'vaipraonde'} />
 
             </View>
           </View>

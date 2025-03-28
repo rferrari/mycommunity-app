@@ -1,6 +1,11 @@
 export const APP_NAME="SkateHive";
 export const STORED_USERS_KEY = 'myc_users';
+
+
+export const API_BASE____ = 'http://192.168.0.14:3000/api';
 export const API_BASE_URL = 'http://192.168.0.14:3000/api/v1';
+
+
 
 export const NAV_THEME = {
   light: {
