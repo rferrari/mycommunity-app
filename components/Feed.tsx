@@ -7,7 +7,7 @@ import type { Post } from '../lib/types';
 import { API_BASE_URL } from '~/lib/constants';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useColorScheme } from '~/lib/useColorScheme';
-import { preloadedData } from '~/app/index';
+import { preloadedData } from '~/lib/preloaded-data';
 
 interface FeedProps {
   refreshTrigger?: number;
@@ -94,14 +94,6 @@ export function Feed({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps) {
     return () => clearInterval(pollTimer);
   }, [checkForNewPosts, pollInterval]);
 
-  // Initial fetch
-  // React.useEffect(() => {
-  //   setIsLoading(true);
-  //   fetchFeed()
-  //     .then(data => setFeedData(data))
-  //     .finally(() => setIsLoading(false));
-  // }, [fetchFeed, refreshTrigger]);
-
   const renderItem = React.useCallback(({ item }: { item: Post }) => (
     <PostCard key={item.permlink} post={item} currentUsername={username} />
   ), [username]);
@@ -117,18 +109,29 @@ export function Feed({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps) {
   ), []);
 
   React.useEffect(() => {
-    // If we have preloaded data, use it immediately without loading screen
-    if (preloadedData.feed) {
-      console.info('Using preloaded feed data:', preloadedData.feed.length);
-      setFeedData(preloadedData.feed);
-    } else {
-      // Only show loading screen if we need to fetch
+    try {
+      // If we have preloaded data, use it immediately without loading screen
+      if (preloadedData?.feed?.length) {
+        console.info('Using preloaded feed data:', preloadedData.feed.length);
+        setFeedData(preloadedData.feed);
+      } else {
+        // Only show loading screen if we need to fetch
+        setIsLoading(true);
+        console.info('No preloaded data, fetching feed');
+        fetchFeed().then(data => {
+          setFeedData(data);
+          setIsLoading(false);
+        });
+      }
+    } catch (error) {
+      console.error('Error loading feed data:', error);
       setIsLoading(true);
-      console.info('No preloaded data, fetching feed');
-      fetchFeed().finally(() => setIsLoading(false));
+      fetchFeed().then(data => {
+        setFeedData(data);
+        setIsLoading(false);
+      });
     }
   }, [fetchFeed, refreshTrigger]);
-
 
   const NewPostsNotification = React.useCallback(() => (
     <Animated.View 

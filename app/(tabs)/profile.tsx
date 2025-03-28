@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Image, Pressable, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, ScrollView, Image, ActivityIndicator, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
-import * as SecureStore from 'expo-secure-store';
 import { useColorScheme } from '~/lib/useColorScheme';
-import { router } from 'expo-router';
-import { API_BASE_URL, STORED_USERS_KEY } from '~/lib/constants';
-import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from '~/lib/auth-provider';
+import { API_BASE_URL } from '~/lib/constants';
 
 interface ProfileData {
   name: string;
@@ -19,66 +19,46 @@ interface ProfileData {
     profile: {
       name: string;
       about: string;
-      profile_image: string;
-      cover_image: string;
-      location: string;
-    };
-  };
+      profile_image?: string;
+      cover_image?: string;
+      location?: string;
+    }
+  }
 }
 
 export default function ProfileScreen() {
   const { isDarkColorScheme } = useColorScheme();
+  const { username, logout } = useAuth();
   const [message, setMessage] = useState('');
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [username, setUsername] = useState<string | null>(null);
-  const [isInitializing, setIsInitializing] = useState(true);
-  const [storedUsers, setStoredUsers] = React.useState<string[]>([]);
-
-  useEffect(() => {
-    const getCurrentUser = async () => {
-      try {
-        const currentUser = await SecureStore.getItemAsync('lastLoggedInUser');
-        if (currentUser) {
-          setUsername(currentUser);
-  
-          if (currentUser === 'SPECTATOR') {
-            setProfileData({
-              name: 'SPECTATOR',
-              reputation: '0',
-              followers: '0',
-              followings: '0',
-              total_posts: '0',
-              posting_metadata: {
-                profile: {
-                  name: 'Spectator Mode',
-                  about: 'Browse and explore content without logging in.',
-                  profile_image: '',
-                  cover_image: '',
-                  location: '',
-                }
-              }
-            });
-            setIsLoading(false);
-            return;
-          }
-        }
-      } catch (error) {
-        console.error('Error getting current user:', error);
-        router.push('/');
-      } finally {
-        setIsInitializing(false);
-      }
-    };
-  
-    getCurrentUser();
-  }, []);
   
   useEffect(() => {
     const fetchProfileData = async () => {
       if (!username) return;
 
       try {
+        if (username === 'SPECTATOR') {
+          setProfileData({
+            name: 'SPECTATOR',
+            reputation: '0',
+            followers: '0',
+            followings: '0',
+            total_posts: '0',
+            posting_metadata: {
+              profile: {
+                name: 'Spectator Mode',
+                about: 'Browse and explore content without logging in.',
+                profile_image: '',
+                cover_image: '',
+                location: '',
+              }
+            }
+          });
+          setIsLoading(false);
+          return;
+        }
+
         const profileResponse = await fetch(`${API_BASE_URL}/profile/${username}`);
         const profileJson = await profileResponse.json();
 
@@ -97,27 +77,7 @@ export default function ProfileScreen() {
 
   const handleLogout = async () => {
     try {
-      const lastLoggedInUser = await SecureStore.getItemAsync('lastLoggedInUser');
-      const storedUsersJson = await SecureStore.getItemAsync(STORED_USERS_KEY);
-      let users: string[] = storedUsersJson ? JSON.parse(storedUsersJson) : [];
-  
-      if (lastLoggedInUser) {
-        // Remove the user from the stored users list
-        users = users.filter(user => user !== lastLoggedInUser);
-  
-        // Update the stored users
-        await SecureStore.setItemAsync(STORED_USERS_KEY, JSON.stringify(users));
-  
-        // Delete the last logged in user
-        await SecureStore.deleteItemAsync('lastLoggedInUser');
-  
-        // Delete the user's stored data
-        await SecureStore.deleteItemAsync(lastLoggedInUser);
-  
-        setStoredUsers(users);
-        setMessage('Logged out successfully');
-      }
-  
+      await logout();
       router.push('/');
     } catch (error) {
       console.error('Error logging out:', error);
@@ -127,10 +87,9 @@ export default function ProfileScreen() {
 
   const handleQuit = async () => {
     try {
-      await SecureStore.setItemAsync('manualQuit', 'true');
-      router.push('/');
+      await router.push('/');
     } catch (error) {
-      console.error('Error setting quit flag:', error);
+      console.error('Error quitting:', error);
     }
   };
 
@@ -163,7 +122,7 @@ export default function ProfileScreen() {
     ) : null;
   };
 
-  if (isInitializing || (isLoading && !username)) {
+  if (isLoading) {
     return (
       <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
         <View className="flex-1 items-center justify-center">

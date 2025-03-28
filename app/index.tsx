@@ -8,6 +8,7 @@ import { Post } from '~/lib/types';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { API_BASE_URL } from '~/lib/constants';
+import { useAuth } from '~/lib/auth-provider';
 
 // Create a global cache for preloaded data with proper typing
 export const preloadedData = {
@@ -37,6 +38,7 @@ export default function Index() {
   const pulseAnim = React.useRef(new Animated.Value(1)).current;
   const colorScheme = useColorScheme();
   const isDarkColorScheme = colorScheme === 'dark';
+  const { isAuthenticated, isLoading } = useAuth();
 
   React.useEffect(() => {
     const preloadData = async () => {
@@ -71,26 +73,14 @@ export default function Index() {
       }
     };
 
-    const checkLastUser = async () => {
-      try {
-        const manualQuit = await SecureStore.getItemAsync('manualQuit');
-        if (manualQuit === 'true') {
-          await SecureStore.deleteItemAsync('manualQuit');
-          return;
-        }
-
-        const lastLoggedInUser = await SecureStore.getItemAsync('lastLoggedInUser');
-        if (lastLoggedInUser && lastLoggedInUser !== 'SPECTATOR') {
-          router.push('/(tabs)/feed');
-        }
-      } catch (error) {
-        console.error('Error checking last user:', error);
-      }
-    };
-
-    checkLastUser();
     preloadData();
   }, []);
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/(tabs)/feed');
+    }
+  }, [isAuthenticated]);
 
   React.useEffect(() => {
     Animated.loop(
@@ -116,6 +106,14 @@ export default function Index() {
   const handleInfoPress = () => {
     router.push('/about');
   };
+
+  if (isLoading || isAuthenticated) {
+    return (
+      <View className="flex-1 bg-background">
+        <BackgroundVideo />
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-background">

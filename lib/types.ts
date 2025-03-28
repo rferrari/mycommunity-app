@@ -73,3 +73,8 @@ export interface Media {
   type: 'image' | 'video';
   url: string;
 }
+
+export interface PreloadedData {
+  feed: Post[];
+  trending: Post[];
+}
