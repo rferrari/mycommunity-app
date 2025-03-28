@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import React from 'react';
-import { Animated, Pressable, useColorScheme, View } from 'react-native';
+import { Pressable, useColorScheme, View } from 'react-native';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { useAuth } from '~/lib/auth-provider';
@@ -26,7 +26,6 @@ const BackgroundVideo = () => {
 };
 
 export default function Index() {
-  const pulseAnim = React.useRef(new Animated.Value(1)).current;
   const colorScheme = useColorScheme();
   const isDarkColorScheme = colorScheme === 'dark';
   const { isAuthenticated, isLoading } = useAuth();
@@ -36,23 +35,6 @@ export default function Index() {
       router.push('/(tabs)/feed');
     }
   }, [isAuthenticated]);
-
-  React.useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, []);
 
   const handlePress = () => {
     router.push('/login');

@@ -4,7 +4,7 @@ import {
   Animated,
   FlatList,
   RefreshControl,
-  View
+  View,
 } from "react-native";
 import { getTrending } from "~/lib/api";
 import { useAuth } from "~/lib/auth-provider";
@@ -12,6 +12,7 @@ import { useColorScheme } from "~/lib/useColorScheme";
 import type { Post } from "../lib/types";
 import { PostCard } from "./feed/PostCard";
 import { Text } from "./ui/text";
+import { LoadingScreen } from "./ui/LoadingScreen";
 
 interface FeedProps {
   refreshTrigger?: number;
@@ -52,16 +53,6 @@ export function Trending({
       }
     }
   }, [feedData, notificationOpacity]);
-
-  const showNewPosts = React.useCallback(() => {
-    setFeedData((prev) => [...newPosts, ...prev]);
-    setNewPosts([]);
-    Animated.timing(notificationOpacity, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }, [newPosts, notificationOpacity]);
 
   const handleRefresh = React.useCallback(async () => {
     setIsRefreshing(true);
@@ -136,9 +127,5 @@ export function Trending({
     </View>
   );
 
-  return isLoading ? (
-    <ActivityIndicator size="large" color={foregroundColor} />
-  ) : (
-    contentView
-  );
+  return isLoading ? <LoadingScreen /> : contentView;
 }

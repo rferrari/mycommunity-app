@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { View, ScrollView, ActivityIndicator, Pressable } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text } from '~/components/ui/text';
-import { Leaderboard } from '~/components/Leaderboard/leaderboard';
-import { useColorScheme } from '~/lib/useColorScheme';
-import { Ionicons } from '@expo/vector-icons';
-import { useAuth } from '~/lib/auth-provider';
-import { getBalance, getRewards } from '~/lib/api';
+import React, { useState, useEffect } from "react";
+import { View, ScrollView, ActivityIndicator, Pressable } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Text } from "~/components/ui/text";
+import { Leaderboard } from "~/components/Leaderboard/leaderboard";
+import { useColorScheme } from "~/lib/useColorScheme";
+import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "~/lib/auth-provider";
+import { getBalance, getRewards } from "~/lib/api";
+import { LoadingScreen } from "~/components/ui/LoadingScreen";
 
 interface BalancetData {
   account_name: string;
@@ -66,15 +67,15 @@ export default function WalletScreen() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (username === 'SPECTATOR') {
+    if (username === "SPECTATOR") {
       setBalancetData({
-        account_name: 'SPECTATOR',
-        hive: '0.000',
-        hbd: '0.000',
-        vests: '0.000000',
-        hp_equivalent: '0.000',
-        hive_savings: '0.000',
-        hbd_savings: '0.000'
+        account_name: "SPECTATOR",
+        hive: "0.000",
+        hbd: "0.000",
+        vests: "0.000000",
+        hp_equivalent: "0.000",
+        hive_savings: "0.000",
+        hbd_savings: "0.000",
       });
 
       // Sample pending posts data
@@ -140,12 +141,12 @@ export default function WalletScreen() {
       // Sample rewards data
       const rewardsData: RewardsData = {
         summary: {
-          total_pending_payout: '0.000',
-          pending_hbd: '0.000',
-          pending_hp: '0.000',
+          total_pending_payout: "0.000",
+          pending_hbd: "0.000",
+          pending_hp: "0.000",
           pending_posts_count: `${pendingPosts.length}`,
-          total_author_rewards: '0.000',
-          total_curator_payouts: '0.000',
+          total_author_rewards: "0.000",
+          total_curator_payouts: "0.000",
         },
         pending_posts: pendingPosts,
       };
@@ -158,13 +159,13 @@ export default function WalletScreen() {
 
   useEffect(() => {
     const fetchBalancetData = async () => {
-      if (!username || username === 'SPECTATOR') return;
+      if (!username || username === "SPECTATOR") return;
 
       try {
         setIsLoading(true);
         const [rewardsData, balanceData] = await Promise.all([
           getRewards(username),
-          getBalance(username)
+          getBalance(username),
         ]);
 
         if (rewardsData) {
@@ -174,7 +175,7 @@ export default function WalletScreen() {
           setBalancetData(balanceData);
         }
       } catch (error) {
-        console.error('Error fetching balance data:', error);
+        console.error("Error fetching balance data:", error);
       } finally {
         setIsLoading(false);
       }
@@ -184,65 +185,74 @@ export default function WalletScreen() {
   }, [username]);
 
   if (isLoading) {
-    return (
-      <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
-        <ActivityIndicator
-          size="large"
-          color={isDarkColorScheme ? '#ffffff' : '#000000'}
-        />
-      </SafeAreaView>
-    );
+    return <LoadingScreen />;
   }
 
   return (
-    <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
+    <SafeAreaView edges={["bottom"]} className="flex-1 bg-background">
       <ScrollView className="flex-1">
         <View className="p-2 space-y-4">
           {/* Profile Info Section */}
           <View className="w-full">
             <View className="items-center py-4">
-
-
               {/* Header */}
               {/* <Text className="text-2xl font-bold">Rewards</Text> */}
 
               {/* Rewards Section */}
               {rewardsData && (
                 <View className="w-full py-4">
-
                   <View className="items-center">
                     <View
                       className="w-24 h-24 rounded-full bg-foreground/10 items-center justify-center"
-                      style={{ borderWidth: 3, borderColor: isDarkColorScheme ? '#ffffff20' : '#00000020' }}
+                      style={{
+                        borderWidth: 3,
+                        borderColor: isDarkColorScheme
+                          ? "#ffffff20"
+                          : "#00000020",
+                      }}
                     >
                       <Ionicons
                         name="trophy-outline"
                         size={48}
-                        color={isDarkColorScheme ? '#FFD700' : '#DAA520'}
+                        color={isDarkColorScheme ? "#FFD700" : "#DAA520"}
                       />
                     </View>
                     <Text className="text-xl font-bold mt-2">Rewards</Text>
                   </View>
 
-
-
                   <View className="px-6 mt-4">
                     <View className="space-y-3">
                       <View className="flex-row justify-between">
-                        <Text className="text-lg opacity-70">Pending Payout:</Text>
-                        <Text className="text-lg font-medium">{rewardsData.summary.total_pending_payout} HBD</Text>
+                        <Text className="text-lg opacity-70">
+                          Pending Payout:
+                        </Text>
+                        <Text className="text-lg font-medium">
+                          {rewardsData.summary.total_pending_payout} HBD
+                        </Text>
                       </View>
                       <View className="flex-row justify-between">
-                        <Text className="text-lg opacity-70">Pending Posts:</Text>
-                        <Text className="text-lg font-medium">{rewardsData.summary.pending_posts_count}</Text>
+                        <Text className="text-lg opacity-70">
+                          Pending Posts:
+                        </Text>
+                        <Text className="text-lg font-medium">
+                          {rewardsData.summary.pending_posts_count}
+                        </Text>
                       </View>
                       <View className="flex-row justify-between">
-                        <Text className="text-lg opacity-70">Author Rewards:</Text>
-                        <Text className="text-lg font-medium">{rewardsData.summary.total_author_rewards}</Text>
+                        <Text className="text-lg opacity-70">
+                          Author Rewards:
+                        </Text>
+                        <Text className="text-lg font-medium">
+                          {rewardsData.summary.total_author_rewards}
+                        </Text>
                       </View>
                       <View className="flex-row justify-between">
-                        <Text className="text-lg opacity-70">Curator Payouts:</Text>
-                        <Text className="text-lg font-medium">{rewardsData.summary.total_curator_payouts}</Text>
+                        <Text className="text-lg opacity-70">
+                          Curator Payouts:
+                        </Text>
+                        <Text className="text-lg font-medium">
+                          {rewardsData.summary.total_curator_payouts}
+                        </Text>
                       </View>
                     </View>
                   </View>
@@ -250,29 +260,40 @@ export default function WalletScreen() {
                   <View className="px-6 mt-4">
                     <View className="space-y-3">
                       <View className="flex-row justify-between">
-                        <Text className="text-lg opacity-70">Pending Posts:</Text>
+                        <Text className="text-lg opacity-70">
+                          Pending Posts:
+                        </Text>
                       </View>
                       {rewardsData.pending_posts.map((post, index) => (
                         <View key={index} className="flex-row justify-between">
-                          <Text className="text-lg opacity-70">{post.title}</Text>
+                          <Text className="text-lg opacity-70">
+                            {post.title}
+                          </Text>
                           <View className="flex-row space-x-2">
-                            <Text className="text-lg opacity-70">Pending Payout Value:</Text>
-                            <Text className="text-lg font-medium">{post.pending_payout_value}</Text>
+                            <Text className="text-lg opacity-70">
+                              Pending Payout Value:
+                            </Text>
+                            <Text className="text-lg font-medium">
+                              {post.pending_payout_value}
+                            </Text>
                           </View>
                           <View className="flex-row space-x-2">
-                            <Text className="text-lg opacity-70">Remaining Till Cashout:</Text>
+                            <Text className="text-lg opacity-70">
+                              Remaining Till Cashout:
+                            </Text>
                             <Text className="text-lg font-medium">
-                              {post.remaining_till_cashout.days} days, {post.remaining_till_cashout.hours} hours, {post.remaining_till_cashout.minutes} minutes, {post.remaining_till_cashout.seconds} seconds
+                              {post.remaining_till_cashout.days} days,{" "}
+                              {post.remaining_till_cashout.hours} hours,{" "}
+                              {post.remaining_till_cashout.minutes} minutes,{" "}
+                              {post.remaining_till_cashout.seconds} seconds
                             </Text>
                           </View>
                         </View>
                       ))}
                     </View>
                   </View>
-
                 </View>
               )}
-
 
               {/* Wallet Section */}
               <View className="w-full py-6 bg-foreground/5 rounded-xl">
@@ -284,7 +305,7 @@ export default function WalletScreen() {
                     <Ionicons
                       name={showWallet ? "eye-outline" : "eye-off-outline"}
                       size={24}
-                      color={isDarkColorScheme ? '#ffffff' : '#000000'}
+                      color={isDarkColorScheme ? "#ffffff" : "#000000"}
                     />
                   </Pressable>
                 </View>
@@ -292,29 +313,38 @@ export default function WalletScreen() {
                   <View className="px-6 mt-4 space-y-3">
                     <View className="flex-row justify-between">
                       <Text className="text-lg opacity-70">HIVE:</Text>
-                      <Text className="text-lg font-medium">{balanceData.hive}</Text>
+                      <Text className="text-lg font-medium">
+                        {balanceData.hive}
+                      </Text>
                     </View>
                     <View className="flex-row justify-between">
                       <Text className="text-lg opacity-70">HBD:</Text>
-                      <Text className="text-lg font-medium">{balanceData.hbd}</Text>
+                      <Text className="text-lg font-medium">
+                        {balanceData.hbd}
+                      </Text>
                     </View>
                     <View className="flex-row justify-between">
                       <Text className="text-lg opacity-70">HP:</Text>
-                      <Text className="text-lg font-medium">{balanceData.hp_equivalent}</Text>
+                      <Text className="text-lg font-medium">
+                        {balanceData.hp_equivalent}
+                      </Text>
                     </View>
                     <View className="flex-row justify-between">
                       <Text className="text-lg opacity-70">Savings:</Text>
                       <View className="items-end">
-                        <Text className="text-lg font-medium">{balanceData.hive_savings} HIVE</Text>
-                        <Text className="text-lg font-medium">{balanceData.hbd_savings} HBD</Text>
+                        <Text className="text-lg font-medium">
+                          {balanceData.hive_savings} HIVE
+                        </Text>
+                        <Text className="text-lg font-medium">
+                          {balanceData.hbd_savings} HBD
+                        </Text>
                       </View>
                     </View>
                   </View>
                 )}
               </View>
 
-                <Leaderboard />
-
+              <Leaderboard />
             </View>
           </View>
         </View>
