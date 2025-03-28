@@ -3,9 +3,9 @@ import { View, ScrollView, ActivityIndicator, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '~/components/ui/text';
 import { useColorScheme } from '~/lib/useColorScheme';
-import { API_BASE_URL } from '~/lib/constants';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '~/lib/auth-provider';
+import { getBalance, getRewards } from '~/lib/api';
 
 interface BalancetData {
   account_name: string;
@@ -160,20 +160,17 @@ export default function WalletScreen() {
       if (!username || username === 'SPECTATOR') return;
 
       try {
-        const [rewardsResponse, balanceResponse] = await Promise.all([
-          fetch(`${API_BASE_URL}/balance/${username}/rewards`),
-          fetch(`${API_BASE_URL}/balance/${username}`)
+        setIsLoading(true);
+        const [rewardsData, balanceData] = await Promise.all([
+          getRewards(username),
+          getBalance(username)
         ]);
 
-        const rewardsJson = await rewardsResponse.json();
-        const balanceJson = await balanceResponse.json();
-
-        if (rewardsJson.success) {
-          setRewardsData(rewardsJson.data);
-          console.dir(rewardsData)
+        if (rewardsData) {
+          setRewardsData(rewardsData);
         }
-        if (balanceJson.success) {
-          setBalancetData(balanceJson.data);
+        if (balanceData) {
+          setBalancetData(balanceData);
         }
       } catch (error) {
         console.error('Error fetching balance data:', error);

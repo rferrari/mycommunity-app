@@ -9,6 +9,7 @@ import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { API_BASE_URL } from '~/lib/constants';
 import { useAuth } from '~/lib/auth-provider';
+import { getFeed, getTrending } from '~/lib/api';
 
 // Create a global cache for preloaded data with proper typing
 export const preloadedData = {
@@ -45,26 +46,20 @@ export default function Index() {
       try {
         const startTime = Date.now();
         const [feedPromise, trendingPromise] = [
-          fetch(`${API_BASE_URL}/feed`),
-          fetch(`${API_BASE_URL}/feed/trending`),
+          getFeed(),
+          getTrending(),
         ];
 
-        feedPromise.then(async response => {
-          const data = await response.json();
-          if (data.success && Array.isArray(data.data)) {
-            preloadedData.feed = data.data;
-            const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-            console.info(`Feed loaded in ${elapsed}s:`, data.data.length, 'items');
-          }
+        feedPromise.then(data => {
+          preloadedData.feed = data;
+          const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+          console.info(`Feed loaded in ${elapsed}s:`, data.length, 'items');
         });
 
-        trendingPromise.then(async response => {
-          const data = await response.json();
-          if (data.success && Array.isArray(data.data)) {
-            preloadedData.trending = data.data;
-            const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-            console.info(`Trending loaded in ${elapsed}s:`, data.data.length, 'items');
-          }
+        trendingPromise.then(data => {
+          preloadedData.trending = data;
+          const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+          console.info(`Trending loaded in ${elapsed}s:`, data.length, 'items');
         });
 
         await Promise.all([feedPromise, trendingPromise]);
