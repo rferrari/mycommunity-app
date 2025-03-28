@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, RefreshControl, FlatList, ActivityIndicator, Pressable, Animated } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
+import { View, RefreshControl, FlatList } from 'react-native';
 import { Text } from './ui/text';
 import { PostCard } from './feed/PostCard';
 import type { Post } from '../lib/types';
@@ -8,6 +7,7 @@ import { LoadingScreen } from './ui/LoadingScreen';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { preloadedData } from '~/lib/preloaded-data';
 import { getFeed } from '~/lib/api';
+import { useAuth } from '~/lib/auth-provider';
 
 interface FeedProps {
   refreshTrigger?: number;
@@ -16,73 +16,32 @@ interface FeedProps {
 
 export function Feed({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps) {
   const [feedData, setFeedData] = React.useState<Post[]>([]);
-  const [newPosts, setNewPosts] = React.useState<Post[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
-  const [username, setUsername] = React.useState<string | null>(null);
   const { isDarkColorScheme } = useColorScheme();
-  const notificationOpacity = React.useRef(new Animated.Value(0)).current;
-
-  // Get current user
-  React.useEffect(() => {
-    const getCurrentUser = async () => {
-      try {
-        const currentUser = await SecureStore.getItemAsync('lastLoggedInUser');
-        setUsername(currentUser);
-      } catch (error) {
-        console.error('Error getting current user:', error);
-      }
-    };
-    getCurrentUser();
-  }, []);
+  const { username } = useAuth();
 
   const fetchFeed = React.useCallback(async () => {
     return getFeed();
   }, []);
 
-  const checkForNewPosts = React.useCallback(async () => {
-    const newData = await fetchFeed();
-    if (newData.length > 0) {
-      const existingIds = new Set(feedData.map((post: Post) => post.permlink));
-      const newItems = newData.filter((post: Post) => !existingIds.has(post.permlink));
-      
-      if (newItems.length > 0) {
-        setNewPosts(newItems);
-        // Animate notification
-        Animated.sequence([
-          Animated.timing(notificationOpacity, {
-            toValue: 1,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-        ]).start();
-      }
-    }
-  }, [feedData, notificationOpacity]);
-
-  const showNewPosts = React.useCallback(() => {
-    setFeedData(prev => [...newPosts, ...prev]);
-    setNewPosts([]);
-    Animated.timing(notificationOpacity, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }, [newPosts, notificationOpacity]);
-
   const handleRefresh = React.useCallback(async () => {
     setIsRefreshing(true);
     const data = await fetchFeed();
     setFeedData(data);
-    setNewPosts([]);
     setIsRefreshing(false);
   }, [fetchFeed]);
 
   // Set up polling
   React.useEffect(() => {
-    const pollTimer = setInterval(checkForNewPosts, pollInterval);
+    const pollTimer = setInterval(async () => {
+      const newData = await fetchFeed();
+      if (newData.length > 0) {
+        setFeedData(newData);
+      }
+    }, pollInterval);
     return () => clearInterval(pollTimer);
-  }, [checkForNewPosts, pollInterval]);
+  }, [fetchFeed, pollInterval]);
 
   const renderItem = React.useCallback(({ item }: { item: Post }) => (
     <PostCard key={item.permlink} post={item} currentUsername={username} />
@@ -123,56 +82,13 @@ export function Feed({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps) {
     }
   }, [fetchFeed, refreshTrigger]);
 
-  const NewPostsNotification = React.useCallback(() => (
-    <Animated.View 
-      style={{ opacity: notificationOpacity }}
-      className="absolute top-0 left-0 right-0 z-50"
-    >
-      <Pressable
-        onPress={showNewPosts}
-        className="mx-4 mt-4 p-3 bg-primary rounded-lg flex-row justify-center items-center"
-      >
-        <Text className="text-white font-medium">
-          {newPosts.length} new {newPosts.length === 1 ? 'post' : 'posts'} available
-        </Text>
-      </Pressable>
-    </Animated.View>
-  ), [newPosts.length, notificationOpacity, showNewPosts]);
-
   // Get theme colors
   const foregroundColor = isDarkColorScheme ? '#ffffff' : '#000000';
   const backgroundColor = isDarkColorScheme ? '#1a1a1a' : '#ffffff';
 
-  // Prepare the loading view component
-  const loadingView = (
-    <View className="flex-1 items-center justify-center p-4 bg-background">
-      <View className="items-center space-y-6">
-        <ActivityIndicator 
-          size="large" 
-          color={foregroundColor} 
-        />
-        <View className="items-center">
-          <Text 
-            className="text-4xl font-bold mb-2"
-            style={{ color: foregroundColor }}
-          >
-            LOADING
-          </Text>
-          <Text 
-            className="text-2xl font-medium animate-pulse"
-            style={{ color: foregroundColor }}
-          >
-            Kicking-flip-in...
-          </Text>
-        </View>
-      </View>
-    </View>
-  );
-
   // Prepare the content view component
   const contentView = (
     <View className="flex-1">
-      {/* <NewPostsNotification /> */}
       <FlatList
         data={feedData}
         showsVerticalScrollIndicator={false}

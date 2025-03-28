@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, RefreshControl, FlatList, ActivityIndicator, Pressable, Animated } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
 import { Text } from './ui/text';
 import { PostCard } from './feed/PostCard';
 import type { Post } from '../lib/types';
@@ -8,6 +7,7 @@ import { LoadingScreen } from './ui/LoadingScreen';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { preloadedData } from '~/lib/preloaded-data';
 import { getTrending } from '~/lib/api';
+import { useAuth } from '~/lib/auth-provider';
 
 interface FeedProps {
   refreshTrigger?: number;
@@ -19,22 +19,9 @@ export function Trending({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps
   const [newPosts, setNewPosts] = React.useState<Post[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
-  const [username, setUsername] = React.useState<string | null>(null);
   const { isDarkColorScheme } = useColorScheme();
+  const { username } = useAuth();
   const notificationOpacity = React.useRef(new Animated.Value(0)).current;
-
-  // Get current user
-  React.useEffect(() => {
-    const getCurrentUser = async () => {
-      try {
-        const currentUser = await SecureStore.getItemAsync('lastLoggedInUser');
-        setUsername(currentUser);
-      } catch (error) {
-        console.error('Error getting current user:', error);
-      }
-    };
-    getCurrentUser();
-  }, []);
 
   const fetchFeedTrending = React.useCallback(async () => {
     return getTrending();
@@ -84,14 +71,6 @@ export function Trending({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps
     return () => clearInterval(pollTimer);
   }, [checkForNewPosts, pollInterval]);
 
-  // Initial fetch
-  // React.useEffect(() => {
-  //   setIsLoading(true);
-  //   fetchFeedTrending()
-  //     .then(data => setFeedData(data))
-  //     .finally(() => setIsLoading(false));
-  // }, [fetchFeedTrending, refreshTrigger]);
-
   const renderItem = React.useCallback(({ item }: { item: Post }) => (
     <PostCard key={item.permlink} post={item} currentUsername={username} />
   ), [username]);
@@ -118,7 +97,6 @@ export function Trending({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps
       fetchFeedTrending().finally(() => setIsLoading(false));
     }
   }, [fetchFeedTrending, refreshTrigger]);
-
 
   const NewPostsNotification = React.useCallback(() => (
     <Animated.View 
