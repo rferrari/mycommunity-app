@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Pressable } from 'react-native';
 import { TextClassContext } from '~/components/ui/text';
 import { cn } from '~/lib/utils';
+import * as Haptics from 'expo-haptics';
 
 const buttonVariants = cva(
   'group flex items-center justify-center rounded-xl web:ring-offset-background web:transition-colors web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2',
@@ -24,10 +25,20 @@ const buttonVariants = cva(
         xl: 'h-14 rounded-xl px-10 native:h-16 native:px-12',
         icon: 'h-10 w-10',
       },
+      haptic: {
+        none: '',
+        light: '',
+        medium: '',
+        heavy: '',
+        success: '',
+        warning: '',
+        error: '',
+      },
     },
     defaultVariants: {
       variant: 'default',
       size: 'default',
+      haptic: 'none',
     },
   }
 );
@@ -63,7 +74,31 @@ type ButtonProps = React.ComponentPropsWithoutRef<typeof Pressable> &
   VariantProps<typeof buttonVariants>;
 
 const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
-  ({ className, variant, size, ...props }, ref) => {
+  ({ className, variant, size, haptic, ...props }, ref) => {
+    const handlePress = React.useCallback((e: any) => {
+      switch (haptic) {
+        case 'light':
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          break;
+        case 'medium':
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          break;
+        case 'heavy':
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+          break;
+        case 'success':
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          break;
+        case 'warning':
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+          break;
+        case 'error':
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          break;
+      }
+      props.onPress?.(e);
+    }, [haptic, props.onPress]);
+
     return (
       <TextClassContext.Provider
         value={cn(
@@ -74,11 +109,12 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
         <Pressable
           className={cn(
             props.disabled && 'opacity-50 web:pointer-events-none',
-            buttonVariants({ variant, size, className })
+            buttonVariants({ variant, size, haptic, className })
           )}
           ref={ref}
           role='button'
           {...props}
+          onPress={handlePress}
         />
       </TextClassContext.Provider>
     );

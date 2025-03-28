@@ -69,7 +69,7 @@ export default function Index() {
       </Pressable>
 
       <View className="flex-1 items-center justify-end pb-8 px-4">
-        <Button className="font-bold w-full opacity-95 border border-muted-foreground" size={"xl"} onPress={handlePress}>
+        <Button className="font-bold w-full opacity-95 border border-muted-foreground" size={"xl"} onPress={handlePress} haptic={"success"}>
           <Text>
             Login in / Sign up
           </Text>
