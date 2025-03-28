@@ -30,7 +30,7 @@ export default function WelcomeScreen() {
       </View>
 
       <Button 
-        onPress={() => router.push('/(editortabs)/write')}
+        onPress={() => router.push('/(createpost)/start')}
         className="bg-foreground w-full"
       >
         <Text className="text-xl font-bold text-background">

@@ -177,7 +177,7 @@ export function AuthScreen() {
             onLogin={() => setShowLogin(true)}
             onSpectator={handleSpectator}
             onQuickLogin={handleQuickLogin}
-            onDeleteAllUsers={handleDeleteAllUsers}
+            // onDeleteAllUsers={handleDeleteAllUsers}
             isDarkColorScheme={isDarkColorScheme}
           />
         ) : (

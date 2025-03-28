@@ -58,6 +58,15 @@ export function LoginForm({
           Submit
         </Text>
       </Button>
+      
+      <Button
+        variant="default"
+        size="xl"
+      >
+        <Text className="">
+          Back
+        </Text>
+      </Button>
     </View>
   );
 }

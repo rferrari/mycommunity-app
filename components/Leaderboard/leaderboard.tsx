@@ -35,6 +35,11 @@ export function Leaderboard(
     { currentUsername }: LeaderboardProps
 ) {
     const [skaters, setSkaters] = useState<LeaderboardData[]>([]);
+
+    const [currentUserPosition, setCurrentUserPosition] = useState<string>("1000");
+    const [currentUserName, setCurrentUserName] = useState<string | null>("");
+    const [currentUserScore, setCurrentUserScore] = useState<string | null>("");
+
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -49,17 +54,17 @@ export function Leaderboard(
 
                 // Find the current user's position in the leaderboard
                 const currentUserIndex = sortedData.findIndex((user: LeaderboardData) => user.hive_author === currentUsername);
-                const currentUserPosition = currentUserIndex + 1; // Add 1 because indices are 0-based
+
 
                 // Show top 10 results
                 let top10Results = sortedData.slice(0, 10);
 
                 // Add the current user's position to the top 10 results at the 11th position
                 if (currentUserIndex > 10) {
-                    top10Results.push(sortedData[currentUserIndex]);
-                } else if (currentUserIndex < 10) {
-                    // If the current user is already in the top 10, remove them and add them at the 11th position
-                    top10Results = [...top10Results.filter((user: LeaderboardData) => user.hive_author !== currentUsername), sortedData[currentUserIndex]];
+                    // top10Results.push(sortedData[currentUserIndex]);
+                    setCurrentUserPosition(currentUserIndex + 1); // Add 1 because indices are 0-based
+                    setCurrentUserName(currentUsername)
+                    setCurrentUserScore("1000")
                 }
 
                 setSkaters(top10Results);
@@ -92,16 +97,26 @@ export function Leaderboard(
 
     return (
         <SafeAreaView>
-            <View style={{ padding: 20, paddingTop: 0 }}>
-                <Text>Leaderboard</Text>
-                <ScrollView>
-                    {skaters.map((skater, index) => (
-                        <View key={skater.id} style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
-                            <Text style={{ fontWeight: 'bold' }}>{index + 1}. {skater.hive_author}</Text>
-                            <Text>Score: {skater.points}</Text>
-                        </View>
-                    ))}
-                </ScrollView>
+            <View className="px-6 mt-4">
+                <View className="space-y-3">
+                    <View className="flex-row items-center">
+                        <Text className="text-xl font-bold">Leaderboard</Text>
+                    </View>
+                    <View className="flex-row justify-between">
+
+                        <ScrollView >
+                            {skaters.map((skater, index) => (
+                                <View key={skater.id} style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
+                                    <Text style={{ fontWeight: 'bold' }}>{index + 1}.  {skater.hive_author}</Text>
+                                    <Text>Score: {skater.points}</Text>
+                                </View>
+                            ))}
+
+                            <Text style={{ fontWeight: 'bold' }}>{currentUserPosition}.  {currentUsername}</Text>
+                            <Text>Score: {currentUserScore}</Text>
+                        </ScrollView>
+                    </View>
+                </View>
             </View>
         </SafeAreaView>
     );

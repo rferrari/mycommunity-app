@@ -6,33 +6,38 @@ import { useColorScheme } from '~/lib/useColorScheme';
 
 const TAB_ITEMS = [
   {
-    name: 'feed',
-    title: 'Feed',
-    icon: 'home-outline'
+    name: 'home',
+    title: 'Wallet',
+    icon: 'apps-outline'
   },
   {
-    name: 'trending',
-    title: 'Trending',
-    icon: 'flame-outline'
+    name: 'invest',
+    title: 'Invest',
+    icon: 'apps-outline'
   },
   {
-    name: 'New',
-    title: '+',
-    icon: 'add-outline'
+    name: 'powerup',
+    title: 'Power Up',
+    icon: 'apps-outline'
   },
   {
-    name: 'rewards',
-    title: 'Rewards',
-    icon: 'trophy-outline'
+    name: 'send',
+    title: 'Send',
+    icon: 'apps-outline'
   },
   {
-    name: 'profile',
-    title: 'Profile',
-    icon: 'person-outline'
+    name: 'receive',
+    title: 'Receive',
+    icon: 'apps-outline'
+  },
+  {
+    name: 'close',
+    title: 'close',
+    icon: 'apps-outline'
   }
 ] as const;
 
-export default function TabLayout() {
+export default function TabSettinsLayout() {
   const { isDarkColorScheme } = useColorScheme();
   
   return (

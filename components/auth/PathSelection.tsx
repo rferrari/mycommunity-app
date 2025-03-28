@@ -9,7 +9,7 @@ interface PathSelectionProps {
   onLogin: () => void;
   onSpectator: () => Promise<void>;
   onQuickLogin: (username: string) => Promise<void>;
-  onDeleteAllUsers: () => void;
+  // onDeleteAllUsers: () => void;
   isDarkColorScheme: boolean;
 }
 
@@ -18,7 +18,7 @@ export function PathSelection({
   onLogin,
   onSpectator,
   onQuickLogin,
-  onDeleteAllUsers,
+  // onDeleteAllUsers,
   isDarkColorScheme
 }: PathSelectionProps) {
   return (
@@ -42,17 +42,10 @@ export function PathSelection({
           onPress={onLogin}
         >
           <Text>
-            New Login
+            I have an account
           </Text>
         </Button>
-        <Button
-          variant="destructive"
-          onPress={onDeleteAllUsers}
-        >
-          <Text>
-            Delete All Stored Users
-          </Text>
-        </Button>
+        
         <Button
           onPress={onSpectator}
           variant="ghost"

@@ -5,7 +5,7 @@ import { Text } from '~/components/ui/text';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function AppSettingsAudio() {
+export default function WalletHomePage() {
   const { isDarkColorScheme } = useColorScheme();
 
   return (
@@ -14,33 +14,36 @@ export default function AppSettingsAudio() {
         <View className="p-4">
           {/* Header */}
           <View className="flex-row items-center mb-6">
-            <Ionicons
-              name="volume-high-outline"
-              size={24}
-              color={isDarkColorScheme ? '#ffffff' : '#000000'}
+            <Ionicons 
+              name="volume-high-outline" 
+              size={24} 
+              color={isDarkColorScheme ? '#ffffff' : '#000000'} 
             />
             <Text className="text-xl font-bold ml-2">
-              Audio Settings
+              Wallet
             </Text>
           </View>
-
-          <Button
-            variant="destructive"
-            onPress={onDeleteAllUsers}
-          >
-            <Text>
-              Delete All Stored Users
-            </Text>
-          </Button>
 
           {/* Settings Sections */}
           <View className="space-y-6">
             <View className="bg-foreground/5 rounded-lg p-4">
               <Text className="text-lg font-bold mb-4">
-                Sound Controls
+                Receive Hive
               </Text>
             </View>
           </View>
+
+{/* Settings Sections */}
+<View className="space-y-6">
+            <View className="bg-foreground/5 rounded-lg p-4">
+              <Text className="text-lg font-bold mb-4">
+              Receive HBD
+              </Text>
+            </View>
+          </View>
+
+          
+
         </View>
       </ScrollView>
     </SafeAreaView>

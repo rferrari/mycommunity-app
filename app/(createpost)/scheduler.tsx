@@ -9,7 +9,7 @@ import { router } from 'expo-router';
 import { API_BASE_URL } from '~/lib/constants';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function SchedulerScreen() {
+export default function CreatePostSchedulerPage() {
 
   return (
     <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
