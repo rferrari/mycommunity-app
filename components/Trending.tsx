@@ -5,7 +5,6 @@ import { PostCard } from './feed/PostCard';
 import type { Post } from '../lib/types';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useColorScheme } from '~/lib/useColorScheme';
-import { preloadedData } from '~/lib/preloaded-data';
 import { getTrending } from '~/lib/api';
 import { useAuth } from '~/lib/auth-provider';
 
@@ -17,7 +16,7 @@ interface FeedProps {
 export function Trending({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps) {
   const [feedData, setFeedData] = React.useState<Post[]>([]);
   const [newPosts, setNewPosts] = React.useState<Post[]>([]);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
   const { isDarkColorScheme } = useColorScheme();
   const { username } = useAuth();
@@ -86,16 +85,15 @@ export function Trending({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps
   ), []);
 
   React.useEffect(() => {
-    // If we have preloaded data, use it immediately without loading screen
-    if (preloadedData.trending) {
-      console.info('Using preloaded trending data:', preloadedData.trending.length);
-      setFeedData(preloadedData.trending);
-    } else {
-      // Only show loading screen if we need to fetch
-      setIsLoading(true);
-      console.info('No preloaded data, fetching trending');
-      fetchFeedTrending().finally(() => setIsLoading(false));
-    }
+    setIsLoading(true);
+    console.info('Fetching trending data');
+    fetchFeedTrending()
+      .then(data => {
+        if (data) {
+          setFeedData(data);
+        }
+      })
+      .finally(() => setIsLoading(false));
   }, [fetchFeedTrending, refreshTrigger]);
 
   const NewPostsNotification = React.useCallback(() => (

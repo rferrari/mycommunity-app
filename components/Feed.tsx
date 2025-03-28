@@ -5,7 +5,6 @@ import { PostCard } from './feed/PostCard';
 import type { Post } from '../lib/types';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { useColorScheme } from '~/lib/useColorScheme';
-import { preloadedData } from '~/lib/preloaded-data';
 import { getFeed } from '~/lib/api';
 import { useAuth } from '~/lib/auth-provider';
 
@@ -16,7 +15,7 @@ interface FeedProps {
 
 export function Feed({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps) {
   const [feedData, setFeedData] = React.useState<Post[]>([]);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
   const { isDarkColorScheme } = useColorScheme();
   const { username } = useAuth();
@@ -58,28 +57,15 @@ export function Feed({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps) {
   ), []);
 
   React.useEffect(() => {
-    try {
-      // If we have preloaded data, use it immediately without loading screen
-      if (preloadedData?.feed?.length) {
-        console.info('Using preloaded feed data:', preloadedData.feed.length);
-        setFeedData(preloadedData.feed);
-      } else {
-        // Only show loading screen if we need to fetch
-        setIsLoading(true);
-        console.info('No preloaded data, fetching feed');
-        fetchFeed().then(data => {
+    setIsLoading(true);
+    console.info('Fetching feed data');
+    fetchFeed()
+      .then(data => {
+        if (data) {
           setFeedData(data);
-          setIsLoading(false);
-        });
-      }
-    } catch (error) {
-      console.error('Error loading feed data:', error);
-      setIsLoading(true);
-      fetchFeed().then(data => {
-        setFeedData(data);
-        setIsLoading(false);
-      });
-    }
+        }
+      })
+      .finally(() => setIsLoading(false));
   }, [fetchFeed, refreshTrigger]);
 
   // Get theme colors
