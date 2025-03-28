@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, ScrollView, ActivityIndicator, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '~/components/ui/text';
+import { Leaderboard } from '~/components/Leaderboard/leaderboard';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '~/lib/auth-provider';
@@ -311,6 +312,8 @@ export default function WalletScreen() {
                   </View>
                 )}
               </View>
+
+                <Leaderboard />
 
             </View>
           </View>
