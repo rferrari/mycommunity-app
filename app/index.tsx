@@ -1,23 +1,26 @@
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { useVideoPlayer, VideoView } from 'expo-video';
-import React from 'react';
-import { Pressable, useColorScheme, View } from 'react-native';
-import { Button } from '~/components/ui/button';
-import { Text } from '~/components/ui/text';
-import { useAuth } from '~/lib/auth-provider';
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { useVideoPlayer, VideoView } from "expo-video";
+import React from "react";
+import { Pressable, useColorScheme, View } from "react-native";
+import { Button } from "~/components/ui/button";
+import { Text } from "~/components/ui/text";
+import { useAuth } from "~/lib/auth-provider";
 
 const BackgroundVideo = () => {
-  const player = useVideoPlayer(require('../assets/videos/background.mov'), player => {
-    player.loop = true;
-    player.play();
-  });
+  const player = useVideoPlayer(
+    require("../assets/videos/background.mov"),
+    (player) => {
+      player.loop = true;
+      player.play();
+    }
+  );
 
   return (
     <View className="absolute inset-0">
       <VideoView
-        style={{ width: '100%', height: '100%' }}
-        contentFit='cover'
+        style={{ width: "100%", height: "100%" }}
+        contentFit="cover"
         player={player}
       />
       <View className="absolute inset-0 bg-black/20" />
@@ -27,21 +30,21 @@ const BackgroundVideo = () => {
 
 export default function Index() {
   const colorScheme = useColorScheme();
-  const isDarkColorScheme = colorScheme === 'dark';
+  const isDarkColorScheme = colorScheme === "dark";
   const { isAuthenticated, isLoading } = useAuth();
 
   React.useEffect(() => {
     if (isAuthenticated) {
-      router.push('/(tabs)/feed');
+      router.push("/(tabs)/feed");
     }
   }, [isAuthenticated]);
 
   const handlePress = () => {
-    router.push('/login');
+    router.push("/login");
   };
 
   const handleInfoPress = () => {
-    router.push('/about');
+    router.push("/about");
   };
 
   if (isLoading || isAuthenticated) {
@@ -63,20 +66,21 @@ export default function Index() {
           <Ionicons
             name="information-circle-outline"
             size={24}
-            color={isDarkColorScheme ? '#ffffff' : '#000000'}
+            color={isDarkColorScheme ? "#ffffff" : "#000000"}
           />
         </View>
       </Pressable>
 
       <View className="flex-1 items-center justify-end pb-8 px-4">
-        <Button className="font-bold w-full opacity-95 border border-muted-foreground" size={"xl"} onPress={handlePress} haptic={"success"}>
-          <Text>
-            Login in / Sign up
-          </Text>
+        <Button
+          className="font-bold w-full border border-muted-foreground transition-all duration-[20ms] active:scale-[0.975]"
+          size="xl"
+          onPress={handlePress}
+          haptic="success"
+        >
+          <Text>Login in / Sign up</Text>
         </Button>
-        <Text className='text-sm text-foreground/50 mt-2'>
-          Alpha
-        </Text>
+        <Text className="text-sm text-foreground/50 mt-2">Alpha</Text>
       </View>
     </View>
   );
