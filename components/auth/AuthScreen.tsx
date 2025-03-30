@@ -11,8 +11,6 @@ import {
 import { useColorScheme } from '~/lib/useColorScheme';
 import { MatrixRain } from '../ui/loading-effects/MatrixRain';
 import { LoginForm } from './LoginForm';
-import { Button } from '../ui/button';
-import { Text } from '../ui/text';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android') {
@@ -25,8 +23,7 @@ const { height } = Dimensions.get('window');
 
 export function AuthScreen() {
   const { isDarkColorScheme } = useColorScheme();
-  const { storedUsers, login, loginStoredUser, enterSpectatorMode, deleteAllStoredUsers } = useAuth();
-  const [showLogin, setShowLogin] = React.useState(true);
+  const { storedUsers, login, loginStoredUser, enterSpectatorMode } = useAuth();
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [message, setMessage] = React.useState('');
@@ -131,17 +128,6 @@ export function AuthScreen() {
     }
   };
 
-  const handleDeleteAllUsers = async () => {
-    try {
-      await deleteAllStoredUsers();
-      setMessage('All users deleted successfully');
-      setMessageType('success');
-    } catch (error) {
-      setMessage('Error deleting users');
-      setMessageType('error');
-    }
-  };
-
   return (
     <View
       className="absolute inset-0 bg-background"
@@ -152,39 +138,18 @@ export function AuthScreen() {
     >
       <MatrixRain />
       <View className="flex-1 items-center justify-center p-8">
-        {!showLogin ? (
-          // <PathSelection
-          //   storedUsers={storedUsers}
-          //   onLogin={() => setShowLogin(true)}
-          //   onSpectator={handleSpectator}
-          //   onQuickLogin={handleQuickLogin}
-          //   onDeleteAllUsers={handleDeleteAllUsers}
-          //   isDarkColorScheme={isDarkColorScheme}
-          // />
-          <></>
-        ) : (
-          <>
-            <LoginForm
-              username={username}
-              password={password}
-              message={message}
-              onUsernameChange={(text) => setUsername(text.toLowerCase())}
-              onPasswordChange={setPassword}
-              onSubmit={handleSubmit}
-              isDarkColorScheme={isDarkColorScheme}
-            />
-
-            <Button className="mt-10"
-              onPress={handleSpectator}
-              variant="default"
-              size="xl"
-            >
-              <Text className="text-xl font-bold text-center text-background">
-                Enter as Spectator
-              </Text>
-            </Button>
-          </>
-        )}
+        <LoginForm
+          username={username}
+          password={password}
+          message={message}
+          onUsernameChange={(text) => setUsername(text.toLowerCase())}
+          onPasswordChange={setPassword}
+          onSubmit={handleSubmit}
+          onSpectator={handleSpectator}
+          storedUsers={storedUsers}
+          onQuickLogin={handleQuickLogin}
+          isDarkColorScheme={isDarkColorScheme}
+        />
       </View>
     </View>
   );
