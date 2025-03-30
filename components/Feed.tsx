@@ -53,7 +53,7 @@ export function Feed({ refreshTrigger = 0, pollInterval = 30000 }: FeedProps) {
   ), []);
 
   const ItemSeparatorComponent = React.useCallback(() => (
-    <View className="h-0 my-4 border-b-muted border" />
+    <View className="h-0 my-4 border border-muted" />
   ), []);
 
   React.useEffect(() => {

@@ -1,6 +1,3 @@
-// var dhive = require("@hiveio/dhive");
-const { Client, PrivateKey } = require("@hiveio/dhive");
-
 // Define custom error classes for better error handling
 export class HiveError extends Error {
   constructor(message: string) {
@@ -30,9 +27,6 @@ export class InvalidKeyError extends HiveError {
   }
 }
 
-// Initialize the dhive client
-const client = new Client(['https://api.hive.blog']);
-
 /**
  * Validates if the posting key provided is valid for the given username
  * @param username Hive username
@@ -52,6 +46,11 @@ export async function validate_posting_key(
     if (!postingPrivateKey.startsWith('5')) {
       throw new InvalidKeyFormatError();
     }
+
+    const { Client, PrivateKey } = require("@hiveio/dhive");
+
+
+    const client = new Client(['https://api.hive.blog']);
 
     // Retrieve account details
     const [account] = await client.database.getAccounts([username]);
