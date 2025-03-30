@@ -344,7 +344,9 @@ export default function WalletScreen() {
                 )}
               </View>
 
-              <Leaderboard />
+              {/* Display Learderboard */}
+              <Leaderboard currentUsername={username}/>
+
             </View>
           </View>
         </View>

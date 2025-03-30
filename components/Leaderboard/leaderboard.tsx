@@ -4,9 +4,10 @@ import { Text } from '~/components/ui/text';
 import { API_BASE_URL } from '~/lib/constants';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from "~/lib/useColorScheme";
+import { Crown } from 'lucide-react-native';
 
 interface LeaderboardProps {
-    // currentUsername: string | null;
+    currentUsername: string | null;
 }
 
 interface LeaderboardData {
@@ -31,12 +32,15 @@ interface LeaderboardData {
 }
 
 export function Leaderboard(
-    // { currentUsername }: LeaderboardProps
+    { currentUsername }: LeaderboardProps
 ) {
     const { isDarkColorScheme } = useColorScheme();
     const [skaters, setSkaters] = useState<LeaderboardData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
+    const [currentUserPosition, setCurrentUserPosition] = useState<string>("1000");
+    const [currentUserName, setCurrentUserName] = useState<string | null>("");
+    const [currentUserScore, setCurrentUserScore] = useState<string | null>("");
 
     useEffect(() => {
         const fetchSkaters = async () => {
@@ -49,6 +53,18 @@ export function Leaderboard(
 
                 // Show top 10 results
                 const top10Results = sortedData.slice(0, 10);
+
+                // Find the current user's position in the leaderboard
+                const currentUserIndex = sortedData.findIndex((user: LeaderboardData) => user.hive_author === currentUsername);
+
+                // Add the current user's position to the top 10 results at the 11th position
+                if (currentUserIndex > 10) {
+                    // top10Results.push(sortedData[currentUserIndex]);
+                    setCurrentUserPosition(currentUserIndex + 1); // Add 1 because indices are 0-based
+                    setCurrentUserName(currentUsername)
+                    setCurrentUserScore(sortedData[currentUserIndex + 1].points)
+                }
+
                 setSkaters(top10Results);
                 setIsLoading(false);
             } catch (error) {
@@ -141,16 +157,26 @@ export function Leaderboard(
                                 #{index + 1}
                             </Text>
 
-                            <Image
-                                source={{ uri: `https://images.hive.blog/u/${skater.hive_author}/avatar/small` }}
-                                style={{
-                                    width: isTopThree ? 40 : 40,
-                                    height: isTopThree ? 40 : 40,
-                                    borderRadius: 50,
-                                    borderWidth: 3,
-                                    borderColor: isTopOne ? '#ff9800' : '#ccc',
-                                }}
-                            />
+                            <View className="h-12 w-12 mr-3 rounded-full relative">
+                                <Image
+                                    source={{ uri: `https://images.hive.blog/u/${skater.hive_author}/avatar/small` }}
+                                    // className="w-full h-full border-2 border-[#FFCC00] rounded-full"
+                                    style={{
+                                        width: isTopThree ? 40 : 40,
+                                        height: isTopThree ? 40 : 40,
+                                        borderRadius: 50,
+                                        borderWidth: 3,
+                                        // borderColor: isTopOne ? '#FFCC00' : '#ccc',
+                                    }}
+                                    alt={`${skater.hive_author}'s avatar`}
+                                />
+                                {/* Crown positioned absolutely on top of the avatar */}
+                                {isTopOne && (
+                                    <View className="absolute -top-4 left-1/2 -translate-x-1/2">
+                                        <Crown size={18} color="#FFCC00" strokeWidth={2} />
+                                    </View>
+                                )}
+                            </View>
 
 
                             <Text style={{
@@ -170,9 +196,75 @@ export function Leaderboard(
                             }}>
                                 {skater.points.toFixed(0)}
                             </Text>
+
                         </View>
                     );
                 })}
+
+                {/* Current logged in user position */}
+                <View
+                    key={currentUserPosition}
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: 10,
+                        marginVertical: 4,
+                        borderBottomWidth: 1,
+                        borderBottomColor: '#ccc',
+                        borderRadius: 0,
+                    }}>
+
+
+                    <Text style={{
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                        color: '#eee',
+                        width: 50,
+                        textAlign: 'center',
+                    }}>
+                        #{currentUserPosition}
+                    </Text>
+
+                    <View className="h-12 w-12 mr-3 rounded-full relative">
+                        <Image
+                            source={{ uri: `https://images.hive.blog/u/${currentUserName}/avatar/small` }}
+                            // className="w-full h-full border-2 border-[#FFCC00] rounded-full"
+                            style={{
+                                width: 40,
+                                height: 40,
+                                borderRadius: 50,
+                                borderWidth: 3,
+                                // borderColor: isTopOne ? '#FFCC00' : '#ccc',
+                            }}
+                            alt={`${currentUserName}'s avatar`}
+                        />
+                    </View>
+
+
+                    <Text style={{
+                        fontSize: 16,
+                        paddingLeft: 10,
+                        fontWeight: 'bold',
+                        flex: 1,
+                        textAlign: 'left',
+                        color: '#eee',
+                    }}>
+                        {currentUserName}
+                    </Text>
+                    <Text style={{
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                        color: '#fff',
+                    }}>
+                        {/* {currentUserScore?.toFixed(0)} */}
+                        {currentUserScore}
+                    </Text>
+
+                </View>
+
+                {/* <Text style={{ fontWeight: 'bold' }}>{currentUserPosition}.  {currentUsername}</Text> */}
+                {/* <Text>{currentUserScore}</Text> */}
             </View>
 
         </View >
