@@ -11,7 +11,8 @@ import {
 import { useColorScheme } from '~/lib/useColorScheme';
 import { MatrixRain } from '../ui/loading-effects/MatrixRain';
 import { LoginForm } from './LoginForm';
-import { PathSelection } from './PathSelection';
+import { Button } from '../ui/button';
+import { Text } from '../ui/text';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android') {

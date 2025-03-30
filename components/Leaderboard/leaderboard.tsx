@@ -5,6 +5,7 @@ import { Text } from '~/components/ui/text';
 import { API_BASE_URL } from '~/lib/constants';
 import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
+import { useColorScheme } from "~/lib/useColorScheme";
 
 interface LeaderboardProps {
     // currentUsername: string | null;
@@ -29,11 +30,12 @@ interface LeaderboardData {
     points: number;
     giveth_donations_usd: number;
     giveth_donations_amount: number;
-  }
+}
 
 export function Leaderboard(
     // { currentUsername }: LeaderboardProps
 ) {
+    const { isDarkColorScheme } = useColorScheme();
     const [skaters, setSkaters] = useState<LeaderboardData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
@@ -41,13 +43,13 @@ export function Leaderboard(
     useEffect(() => {
         const fetchSkaters = async () => {
             try {
-                const response = await fetch(`http://192.168.0.14:3000/api/skatehive`);
+                const response = await fetch(`${API_BASE_URL}/leaderboard`);
                 const data = await response.json();
                 const sortedData = data.sort((
-                    a:LeaderboardData, 
-                    b:LeaderboardData) => b.points - a.points);
+                    a: LeaderboardData,
+                    b: LeaderboardData) => b.points - a.points);
 
-                 // Show top 10 results
+                // Show top 10 results
                 const top10Results = sortedData.slice(0, 10);
                 setSkaters(top10Results);
                 setIsLoading(false);
@@ -78,18 +80,61 @@ export function Leaderboard(
     }
 
     return (
-        <SafeAreaView>
-            <View style={{ padding: 20, paddingTop: 0 }}>
-                <Text>Leaderboard</Text>
-                <ScrollView>
-                    {skaters.map((skater, index) => (
-                        <View key={skater.id} style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
-                            <Text style={{ fontWeight: 'bold' }}>{index + 1}. {skater.hive_author}</Text>
-                            <Text>Score: {skater.points}</Text>
-                        </View>
-                    ))}
-                </ScrollView>
+        <View className="w-full py-4">
+            <View className="items-center">
+                <View
+                    className="w-24 h-24 rounded-full bg-foreground/10 items-center justify-center"
+                    style={{
+                        borderWidth: 3,
+                        borderColor: isDarkColorScheme
+                            ? "#ffffff20"
+                            : "#00000020",
+                    }}
+                >
+                    <Ionicons
+                        name="podium-outline"
+                        size={48}
+                        color={isDarkColorScheme ? "#FFD700" : "#DAA520"}
+                    />
+                </View>
+                <Text className="text-xl font-bold mt-2">Leaderboard</Text>
             </View>
-        </SafeAreaView>
+
+
+            <View>
+                {/* Heading */}
+                <View key={'skater'} style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    padding: 10,
+                    borderBottomWidth: 1,
+                    borderBottomColor: '#ccc',
+                }}>
+                    <Text style={{ fontWeight: 'bold' }}>Skater</Text>
+                    <Text style={{ fontWeight: 'bold' }}>Score</Text>
+                </View>
+
+                {/* Content */}
+                {skaters.map((skater, index) => (
+                    <View key={skater.id} style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        padding: 10,
+                        borderBottomWidth: 1,
+                        borderBottomColor: '#ccc',
+                    }}>
+                        <Text style={{ 
+                            // fontFamily: 'Consolas', 
+                            fontWeight: 'bold' }}>{index + 1}. {skater.hive_author}</Text>
+                        <Text style={{ 
+                            // fontFamily: 'Consolas', 
+                            // letterSpacing: 1.5,
+                            fontWeight: 'bold',
+                             }}>{skater.points.toFixed(0)}</Text>
+                    </View>
+                ))}
+            </View>
+
+        </View >
     );
 }
