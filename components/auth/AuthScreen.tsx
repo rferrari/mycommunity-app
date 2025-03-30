@@ -5,8 +5,14 @@ import { useColorScheme } from '~/lib/useColorScheme';
 import { MatrixRain } from '../ui/loading-effects/MatrixRain';
 import { LoginForm } from './LoginForm';
 import { PathSelection } from './PathSelection';
-import { Toast } from '../ui/toast';
 import { useAuth } from '~/lib/auth-provider';
+import { 
+  HiveError, 
+  InvalidKeyFormatError, 
+  AccountNotFoundError, 
+  InvalidKeyError 
+} from '~/lib/hive-utils';
+import { AuthError } from '~/lib/auth-provider';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android') {
@@ -77,9 +83,18 @@ export function AuthScreen() {
       setTimeout(() => {
         router.push('/(tabs)/feed');
       }, 500);
-    } catch (error) {
-      console.error('Error logging in:', error);
-      setMessage('Invalid credentials');
+    } catch (error: any) {
+      // Handle specific error types
+      if (error instanceof InvalidKeyFormatError ||
+          error instanceof AccountNotFoundError ||
+          error instanceof InvalidKeyError ||
+          error instanceof AuthError ||
+          error instanceof HiveError) {
+        setMessage(error.message);
+      } else {
+        setMessage('An unexpected error occurred');
+      }
+      
       setMessageType('error');
     }
   };
@@ -87,10 +102,31 @@ export function AuthScreen() {
   const handleQuickLogin = async (selectedUsername: string) => {
     try {
       await loginStoredUser(selectedUsername);
-      router.push('/(tabs)/feed');
+      
+      LayoutAnimation.configureNext(
+        LayoutAnimation.create(
+          500,
+          LayoutAnimation.Types.easeInEaseOut,
+          LayoutAnimation.Properties.opacity
+        )
+      );
+      setIsVisible(false);
+      
+      setTimeout(() => {
+        router.push('/(tabs)/feed');
+      }, 500);
     } catch (error) {
-      console.error('Error with quick login:', error);
-      setMessage('Error logging in');
+      // Handle specific error types
+      if (error instanceof InvalidKeyFormatError ||
+          error instanceof AccountNotFoundError ||
+          error instanceof InvalidKeyError ||
+          error instanceof AuthError ||
+          error instanceof HiveError) {
+        setMessage(error.message);
+      } else {
+        setMessage('Error with quick login');
+      }
+      
       setMessageType('error');
     }
   };
@@ -101,7 +137,6 @@ export function AuthScreen() {
       setMessage('All users deleted successfully');
       setMessageType('success');
     } catch (error) {
-      console.error('Error deleting users:', error);
       setMessage('Error deleting users');
       setMessageType('error');
     }
@@ -115,13 +150,6 @@ export function AuthScreen() {
         transform: [{ translateY: isVisible ? 0 : height }]
       }}
     >
-      {message && (
-        <Toast 
-          message={message} 
-          type={messageType}
-          onHide={() => setMessage('')}
-        />
-      )}
       <MatrixRain />
       <View className="flex-1 items-center justify-center p-8">
         {!showLogin ? (

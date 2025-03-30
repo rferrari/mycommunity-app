@@ -1,14 +1,28 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { STORED_USERS_KEY } from './constants';
-import { hive_keys_from_login } from './hive-utils';
+import { 
+  validate_posting_key, 
+  HiveError, 
+  InvalidKeyFormatError, 
+  AccountNotFoundError, 
+  InvalidKeyError 
+} from './hive-utils';
+
+// Custom error types for authentication
+export class AuthError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'AuthError';
+  }
+}
 
 interface AuthContextType {
   isAuthenticated: boolean;
   username: string | null;
   isLoading: boolean;
   storedUsers: string[];
-  login: (username: string, password: string) => Promise<void>;
+  login: (username: string, postingKey: string) => Promise<void>;
   loginStoredUser: (username: string) => Promise<void>;
   logout: () => Promise<void>;
   enterSpectatorMode: () => Promise<void>;
@@ -73,38 +87,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const login = async (username: string, password: string) => {
+  const login = async (username: string, postingKey: string) => {
     try {
       const normalizedUsername = username.toLowerCase().trim();
       
-      // Validate credentials with Hive
-      hive_keys_from_login(normalizedUsername, password);
+      if (!normalizedUsername || !postingKey) {
+        throw new AuthError('Username and posting key are required');
+      }
       
-      // Store credentials
-      await SecureStore.setItemAsync(normalizedUsername, password);
+      // Validate the posting key with the Hive blockchain
+      await validate_posting_key(normalizedUsername, postingKey);
+      
+      // Store the posting key
+      await SecureStore.setItemAsync(normalizedUsername, postingKey);
       await updateStoredUsers(normalizedUsername);
       
       setUsername(normalizedUsername);
       setIsAuthenticated(true);
     } catch (error) {
-      console.error('Error during login:', error);
-      throw new Error('Invalid credentials');
+      // Handle specific error types with meaningful messages
+      if (error instanceof InvalidKeyFormatError ||
+          error instanceof AccountNotFoundError ||
+          error instanceof InvalidKeyError ||
+          error instanceof AuthError) {
+        throw error; // Pass the error with its meaningful message
+      } else {
+        console.error('Error during login:', error);
+        throw new AuthError('Failed to authenticate with Hive blockchain');
+      }
     }
   };
 
   const loginStoredUser = async (selectedUsername: string) => {
     try {
-      const storedPassword = await SecureStore.getItemAsync(selectedUsername);
-      if (storedPassword) {
-        await updateStoredUsers(selectedUsername);
-        setUsername(selectedUsername);
-        setIsAuthenticated(true);
-      } else {
-        throw new Error('No stored credentials found');
+      const storedPostingKey = await SecureStore.getItemAsync(selectedUsername);
+      if (!storedPostingKey) {
+        throw new AuthError('No stored credentials found');
       }
+      
+      // Validate that the stored posting key is still valid
+      await validate_posting_key(selectedUsername, storedPostingKey);
+      
+      await updateStoredUsers(selectedUsername);
+      setUsername(selectedUsername);
+      setIsAuthenticated(true);
     } catch (error) {
-      console.error('Error with stored user login:', error);
-      throw error;
+      // Handle specific error types
+      if (error instanceof InvalidKeyFormatError ||
+          error instanceof AccountNotFoundError ||
+          error instanceof InvalidKeyError ||
+          error instanceof AuthError) {
+        throw error; // Pass the error with its meaningful message
+      } else {
+        console.error('Error with stored user login:', error);
+        throw new AuthError('Failed to authenticate with stored credentials');
+      }
     }
   };
 
