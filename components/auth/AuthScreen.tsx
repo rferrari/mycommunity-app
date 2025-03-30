@@ -1,18 +1,17 @@
-import React from 'react';
-import { View, Animated, Dimensions, LayoutAnimation, Platform, UIManager } from 'react-native';
 import { router } from 'expo-router';
+import React from 'react';
+import { Dimensions, LayoutAnimation, Platform, UIManager, View } from 'react-native';
+import { AuthError, useAuth } from '~/lib/auth-provider';
+import {
+  AccountNotFoundError,
+  HiveError,
+  InvalidKeyError,
+  InvalidKeyFormatError
+} from '~/lib/hive-utils';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { MatrixRain } from '../ui/loading-effects/MatrixRain';
 import { LoginForm } from './LoginForm';
 import { PathSelection } from './PathSelection';
-import { useAuth } from '~/lib/auth-provider';
-import { 
-  HiveError, 
-  InvalidKeyFormatError, 
-  AccountNotFoundError, 
-  InvalidKeyError 
-} from '~/lib/hive-utils';
-import { AuthError } from '~/lib/auth-provider';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android') {

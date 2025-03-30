@@ -1,12 +1,11 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { STORED_USERS_KEY } from './constants';
-import { 
-  validate_posting_key, 
-  HiveError, 
-  InvalidKeyFormatError, 
-  AccountNotFoundError, 
-  InvalidKeyError 
+import {
+  AccountNotFoundError,
+  InvalidKeyError,
+  InvalidKeyFormatError,
+  validate_posting_key
 } from './hive-utils';
 
 // Custom error types for authentication
