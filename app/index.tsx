@@ -9,10 +9,11 @@ import { useAuth } from "~/lib/auth-provider";
 
 const BackgroundVideo = () => {
   const player = useVideoPlayer(
-    require("../assets/videos/background.mov"),
+    require("../assets/videos/background.mp4"),
     (player) => {
       player.loop = true;
       player.play();
+      
     }
   );
 
@@ -73,12 +74,12 @@ export default function Index() {
 
       <View className="flex-1 items-center justify-end pb-8 px-4">
         <Button
-          className="font-bold w-full border border-muted-foreground transition-all duration-[20ms] active:scale-[0.975]"
+          className="font-bold w-full border border-lime-400 transition-all duration-[20ms] active:scale-[0.975]"
           size="xl"
           onPress={handlePress}
           haptic="success"
         >
-          <Text>Login in / Sign up</Text>
+          <Text className="text-lime-400">Let's go!</Text>
         </Button>
         <Text className="text-sm text-foreground/50 mt-2">Alpha</Text>
       </View>
