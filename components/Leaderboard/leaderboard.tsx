@@ -101,7 +101,7 @@ export function Leaderboard(
 
             <View>
                 {/* Heading */}
-                <View key={'skater'} className='' style={{
+                {/* <View key={'skater'} className='' style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     padding: 10,
@@ -110,11 +110,12 @@ export function Leaderboard(
                 }}>
                     <Text style={{ fontWeight: 'bold' }}>Skater</Text>
                     <Text style={{ fontWeight: 'bold' }}>Score</Text>
-                </View>
+                </View> */}
 
                 {/* Content */}
                 {skaters.map((skater, index) => {
                     const isTopThree = index < 3;
+                    const isTopOne = index < 1;
                     return (
                         <View
                             key={skater.id}
@@ -122,14 +123,16 @@ export function Leaderboard(
                                 flexDirection: 'row',
                                 alignItems: 'center',
                                 justifyContent: 'space-between',
-                                padding: isTopThree ? 15 : 10,
-                                marginVertical: isTopThree ? 8 : 4,
+                                padding: isTopThree ? 10 : 10,
+                                marginVertical: isTopThree ? 4 : 4,
                                 borderBottomWidth: 1,
                                 borderBottomColor: '#ccc',
                                 borderRadius: isTopThree ? 10 : 0,
                             }}>
+
+
                             <Text style={{
-                                fontSize: isTopThree ? 18 : 16,
+                                fontSize: isTopThree ? 16 : 16,
                                 fontWeight: 'bold',
                                 color: isTopThree ? '#d4af37' : '#eee',
                                 width: 50,
@@ -137,21 +140,25 @@ export function Leaderboard(
                             }}>
                                 #{index + 1}
                             </Text>
+
                             <Image
                                 source={{ uri: `https://images.hive.blog/u/${skater.hive_author}/avatar/small` }}
                                 style={{
-                                    width: isTopThree ? 60 : 40,
-                                    height: isTopThree ? 60 : 40,
+                                    width: isTopThree ? 40 : 40,
+                                    height: isTopThree ? 40 : 40,
                                     borderRadius: 50,
                                     borderWidth: 3,
-                                    borderColor: isTopThree ? '#ff9800' : '#ccc',
+                                    borderColor: isTopOne ? '#ff9800' : '#ccc',
                                 }}
                             />
+
+
                             <Text style={{
                                 fontSize: isTopThree ? 18 : 16,
+                                paddingLeft: 10,
                                 fontWeight: 'bold',
                                 flex: 1,
-                                textAlign: 'center',
+                                textAlign: 'left',
                                 color: isTopThree ? '#fff' : '#eee',
                             }}>
                                 {skater.hive_author}
@@ -159,7 +166,7 @@ export function Leaderboard(
                             <Text style={{
                                 fontSize: isTopThree ? 18 : 16,
                                 fontWeight: 'bold',
-                                color: isTopThree ? '#4caf50' : '#777',
+                                color: isTopThree ? '#4caf50' : '#fff',
                             }}>
                                 {skater.points.toFixed(0)}
                             </Text>
