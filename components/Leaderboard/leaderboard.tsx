@@ -5,6 +5,7 @@ import { Text } from '~/components/ui/text';
 import { API_BASE_URL, API_BASE____ } from '~/lib/constants';
 import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
+import { LoadingScreen } from '../ui/LoadingScreen';
 
 interface LeaderboardProps {
     currentUsername: string | null;
@@ -81,8 +82,7 @@ export function Leaderboard(
     if (isLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#0000ff" />
-                <Text>Loading...</Text>
+                <LoadingScreen/>
             </View>
         );
     }
