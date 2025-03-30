@@ -123,8 +123,9 @@ export default function WalletScreen() {
                     <Ionicons
                       name="trophy-outline"
                       size={48}
-                      color={isDarkColorScheme ? "#FFD700" : "#DAA520"}
+                      color={isDarkColorScheme ? "#34C759" : "#34C759"}
                     />
+
                   </View>
                   <Text className="text-xl font-bold mt-2">Incoming Rewards</Text>
                 </View>
