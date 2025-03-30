@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, ActivityIndicator, Pressable } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Image, ActivityIndicator } from 'react-native';
 import { Text } from '~/components/ui/text';
 import { API_BASE_URL } from '~/lib/constants';
-import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from "~/lib/useColorScheme";
 
@@ -103,7 +101,7 @@ export function Leaderboard(
 
             <View>
                 {/* Heading */}
-                <View key={'skater'} style={{
+                <View key={'skater'} className='' style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     padding: 10,
@@ -115,24 +113,59 @@ export function Leaderboard(
                 </View>
 
                 {/* Content */}
-                {skaters.map((skater, index) => (
-                    <View key={skater.id} style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        padding: 10,
-                        borderBottomWidth: 1,
-                        borderBottomColor: '#ccc',
-                    }}>
-                        <Text style={{ 
-                            // fontFamily: 'Consolas', 
-                            fontWeight: 'bold' }}>{index + 1}. {skater.hive_author}</Text>
-                        <Text style={{ 
-                            // fontFamily: 'Consolas', 
-                            // letterSpacing: 1.5,
-                            fontWeight: 'bold',
-                             }}>{skater.points.toFixed(0)}</Text>
-                    </View>
-                ))}
+                {skaters.map((skater, index) => {
+                    const isTopThree = index < 3;
+                    return (
+                        <View
+                            key={skater.id}
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                padding: isTopThree ? 15 : 10,
+                                marginVertical: isTopThree ? 8 : 4,
+                                borderBottomWidth: 1,
+                                borderBottomColor: '#ccc',
+                                borderRadius: isTopThree ? 10 : 0,
+                            }}>
+                            <Text style={{
+                                fontSize: isTopThree ? 18 : 16,
+                                fontWeight: 'bold',
+                                color: isTopThree ? '#d4af37' : '#eee',
+                                width: 50,
+                                textAlign: 'center',
+                            }}>
+                                #{index + 1}
+                            </Text>
+                            <Image
+                                source={{ uri: `https://images.hive.blog/u/${skater.hive_author}/avatar/small` }}
+                                style={{
+                                    width: isTopThree ? 60 : 40,
+                                    height: isTopThree ? 60 : 40,
+                                    borderRadius: 50,
+                                    borderWidth: 3,
+                                    borderColor: isTopThree ? '#ff9800' : '#ccc',
+                                }}
+                            />
+                            <Text style={{
+                                fontSize: isTopThree ? 18 : 16,
+                                fontWeight: 'bold',
+                                flex: 1,
+                                textAlign: 'center',
+                                color: isTopThree ? '#fff' : '#eee',
+                            }}>
+                                {skater.hive_author}
+                            </Text>
+                            <Text style={{
+                                fontSize: isTopThree ? 18 : 16,
+                                fontWeight: 'bold',
+                                color: isTopThree ? '#4caf50' : '#777',
+                            }}>
+                                {skater.points.toFixed(0)}
+                            </Text>
+                        </View>
+                    );
+                })}
             </View>
 
         </View >
