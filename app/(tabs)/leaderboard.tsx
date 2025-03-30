@@ -192,7 +192,7 @@ export default function LeaderboardScreen() {
     <SafeAreaView edges={["bottom"]} className="flex-1 bg-background">
       <ScrollView className="flex-1">
         <View className="p-2 space-y-4">
-          {/* Profile Info Section */}
+          {/* Leaderboard Info Section */}
           <View className="w-full">
 
             {/* Display Learderboard */}
