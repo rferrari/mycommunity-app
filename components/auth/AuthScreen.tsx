@@ -70,18 +70,18 @@ export function AuthScreen() {
     try {
       await SecureStore.setItemAsync('lastLoggedInUser', 'SPECTATOR');
       
-      LayoutAnimation.configureNext(
-        LayoutAnimation.create(
-          500,
-          LayoutAnimation.Types.easeInEaseOut,
-          LayoutAnimation.Properties.opacity
-        )
-      );
+      // LayoutAnimation.configureNext(
+      //   LayoutAnimation.create(
+      //     500,
+      //     LayoutAnimation.Types.easeInEaseOut,
+      //     LayoutAnimation.Properties.opacity
+      //   )
+      // );
       setIsVisible(false);
       
-      setTimeout(() => {
+      // setTimeout(() => {
         router.push('/(tabs)/feed');
-      }, 500);
+      // }, 500);
     } catch (error) {
       console.error('Error setting spectator mode:', error);
     }

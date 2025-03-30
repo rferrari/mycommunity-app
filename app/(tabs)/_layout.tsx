@@ -16,8 +16,8 @@ const TAB_ITEMS = [
     icon: 'flame-outline'
   },
   {
-    name: 'New',
-    title: '+',
+    name: 'new',
+    title: 'Create',
     icon: 'add-outline'
   },
   {

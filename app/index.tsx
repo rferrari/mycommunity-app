@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import { useVideoPlayer, VideoView } from 'expo-video';
 import React from 'react';
 import { Animated, Pressable, useColorScheme, View } from 'react-native';
 import { AuthScreen } from '~/components/auth/AuthScreen';
@@ -9,6 +8,8 @@ import { Post } from '~/lib/types';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { API_BASE_URL } from '~/lib/constants';
+// import { LoadingScreen } from '~/components/ui/LoadingScreen';
+import { getLoadingEffect } from '~/components/ui/loading-effects';
 
 // Create a global cache for preloaded data with proper typing
 export const preloadedData = {
@@ -19,23 +20,6 @@ export const preloadedData = {
   // to do: others
 };
 
-const BackgroundVideo = () => {
-  const player = useVideoPlayer(require('../assets/videos/background.mov'), player => {
-    player.loop = true;
-    player.play();
-  });
-
-  return (
-    <View className="absolute inset-0">
-      <VideoView
-        style={{ width: '100%', height: '100%' }}
-        contentFit='cover'
-        player={player}
-      />
-      <View className="absolute inset-0 bg-black/20" />
-    </View>
-  );
-};
 
 export default function Index() {
   const pulseAnim = React.useRef(new Animated.Value(1)).current;
@@ -43,6 +27,8 @@ export default function Index() {
 
   const colorScheme = useColorScheme();
   const isDarkColorScheme = colorScheme === 'dark';
+
+  const BackgroundEffect = getLoadingEffect("video").component;
 
   React.useEffect(() => {
     const preloadData = async () => {
@@ -208,7 +194,9 @@ export default function Index() {
 
   return (
     <View className="flex-1 bg-background">
-      <BackgroundVideo />
+      {/* <BackgroundVideo /> */}
+      {/* <LoadingScreen /> */}
+      <BackgroundEffect />
       <Pressable
         onPress={handleInfoPress}
         className="absolute top-12 right-6 z-10"

@@ -1,12 +1,12 @@
 import { LoadingEffect } from './types';
 import { matrixEffect } from './MatrixRain';
 import { skateEffect } from './SkateEffect';
-import { videobgEffect } from './VideobgEffect';
+import { videoEffect } from './VideoEffect';
 
 const effects: Record<string, LoadingEffect> = {
   matrix: matrixEffect,
   skate: skateEffect,
-  videobg: videobgEffect,
+  video: videoEffect,
   // Add more effects here
 };
 
