@@ -12,7 +12,8 @@ interface MediaPreviewProps {
 }
 
 // For calculating image dimensions
-const { width: screenWidth } = Dimensions.get('window');
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const MAX_IMAGE_HEIGHT = screenHeight * 0.75;
 
 export function MediaPreview({
   media,
@@ -41,18 +42,22 @@ export function MediaPreview({
     return containerWidth;
   };
 
-  // Calculate height based on image's aspect ratio
+  // Calculate height based on image's aspect ratio with a maximum constraint
   const getImageHeight = (index: number) => {
     const dimensions = imageDimensions[index];
     if (!dimensions) return 200; // Default height until image loads
     
     const containerWidth = getContainerWidth(index);
     const aspectRatio = dimensions.width / dimensions.height;
-    return containerWidth / aspectRatio;
+    const calculatedHeight = containerWidth / aspectRatio;
+    
+    // Apply maximum height constraint (3/4 of screen height)
+    return Math.min(calculatedHeight, MAX_IMAGE_HEIGHT);
   };
 
   return (
     <>
+      {/* Preview */}
       <View className="flex-row flex-wrap gap-1 mb-3">
         {media.map((item, index) => (
           <View
@@ -83,6 +88,8 @@ export function MediaPreview({
           </View>
         ))}
       </View>
+
+      {/* Modal */}
       <Modal
         visible={isModalVisible}
         transparent={true}
