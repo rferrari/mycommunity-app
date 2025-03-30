@@ -7,29 +7,29 @@ import { useColorScheme } from '~/lib/useColorScheme';
 const TAB_ITEMS = [
   {
     name: 'home',
-    title: 'What Is Skate Hive',
+    title: 'Wait List',
     icon: 'home-outline'
   },
-  {
-    name: 'about',
-    title: 'About',
-    icon: 'bicycle-outline'
-  },
-  {
-    name: 'style',
-    title: 'Style',
-    icon: 'image-outline' // Changed to differentiate from camera
-  },
-  {
-    name: 'experience',
-    title: 'Experience',
-    icon: 'image-outline' // Changed to differentiate from camera
-  },
-  {
-    name: 'welcome',
-    title: 'Welcome',
-    icon: 'person-outline'
-  }
+  // {
+  //   name: 'about',
+  //   title: 'About',
+  //   icon: 'bicycle-outline'
+  // },
+  // {
+  //   name: 'style',
+  //   title: 'Style',
+  //   icon: 'image-outline' // Changed to differentiate from camera
+  // },
+  // {
+  //   name: 'experience',
+  //   title: 'Experience',
+  //   icon: 'image-outline' // Changed to differentiate from camera
+  // },
+  // {
+  //   name: 'welcome',
+  //   title: 'Welcome',
+  //   icon: 'person-outline'
+  // }
 ] as const;
 
 export default function TabOnboardLayout() {
