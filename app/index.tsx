@@ -74,7 +74,7 @@ export default function Index() {
 
       <View className="flex-1 items-center justify-end pb-8 px-4">
         <Button
-          className="font-bold w-full border border-lime-400 transition-all duration-[20ms] active:scale-[0.975]"
+          className="font-bold w-full border bg-black/90 border-lime-400 transition-all duration-[20ms] active:scale-[0.975]"
           size="xl"
           onPress={handlePress}
           haptic="success"
