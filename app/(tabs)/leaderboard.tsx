@@ -67,94 +67,94 @@ export default function LeaderboardScreen() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-  //   if (username === "SPECTATOR") {
-  //     setBalancetData({
-  //       account_name: "SPECTATOR",
-  //       hive: "0.000",
-  //       hbd: "0.000",
-  //       vests: "0.000000",
-  //       hp_equivalent: "0.000",
-  //       hive_savings: "0.000",
-  //       hbd_savings: "0.000",
-  //     });
+    //   if (username === "SPECTATOR") {
+    //     setBalancetData({
+    //       account_name: "SPECTATOR",
+    //       hive: "0.000",
+    //       hbd: "0.000",
+    //       vests: "0.000000",
+    //       hp_equivalent: "0.000",
+    //       hive_savings: "0.000",
+    //       hbd_savings: "0.000",
+    //     });
 
-  // // Sample pending posts data
-  // const pendingPosts = [
-  //   {
-  //     title: "Cast",
-  //     permlink: "20250322t212846952z",
-  //     created: "2025-03-22T21:28:51.000Z",
-  //     cashout_time: "2025-03-29T21:28:51.000Z",
-  //     remaining_till_cashout: {
-  //       days: 2,
-  //       hours: 2,
-  //       minutes: 52,
-  //       seconds: 28,
-  //       milliseconds: 939.114,
-  //     },
-  //     last_payout: "1969-12-31T23:59:59.000Z",
-  //     pending_payout_value: "0.652",
-  //     author_rewards: "0.000",
-  //     author_rewards_in_hive: "0.000",
-  //     total_payout_value: "0.000",
-  //     curator_payout_value: "0.000",
-  //     beneficiary_payout_value: "0.000",
-  //     total_rshares: "1998435488436",
-  //     net_rshares: "1998435488436",
-  //     total_vote_weight: "1063097913587",
-  //     beneficiaries: "[]",
-  //     max_accepted_payout: "1000000.0",
-  //     percent_hbd: 10000,
-  //     allow_votes: true,
-  //     allow_curation_rewards: true,
-  //   },
-  //   {
-  //     title: "Cast",
-  //     permlink: "20250322t184101574z",
-  //     created: "2025-03-22T18:41:06.000Z",
-  //     cashout_time: "2025-03-29T18:41:06.000Z",
-  //     remaining_till_cashout: {
-  //       days: 2,
-  //       hours: 0,
-  //       minutes: 4,
-  //       seconds: 43,
-  //       milliseconds: 939.114,
-  //     },
-  //     last_payout: "1969-12-31T23:59:59.000Z",
-  //     pending_payout_value: "0.549",
-  //     author_rewards: "0.000",
-  //     author_rewards_in_hive: "0.000",
-  //     total_payout_value: "0.000",
-  //     curator_payout_value: "0.000",
-  //     beneficiary_payout_value: "0.000",
-  //     total_rshares: "1672473484204",
-  //     net_rshares: "1672473484204",
-  //     total_vote_weight: "840575235532",
-  //     beneficiaries: "[]",
-  //     max_accepted_payout: "1000000.0",
-  //     percent_hbd: 10000,
-  //     allow_votes: true,
-  //     allow_curation_rewards: true,
-  //   },
-  // ];
+    // // Sample pending posts data
+    // const pendingPosts = [
+    //   {
+    //     title: "Cast",
+    //     permlink: "20250322t212846952z",
+    //     created: "2025-03-22T21:28:51.000Z",
+    //     cashout_time: "2025-03-29T21:28:51.000Z",
+    //     remaining_till_cashout: {
+    //       days: 2,
+    //       hours: 2,
+    //       minutes: 52,
+    //       seconds: 28,
+    //       milliseconds: 939.114,
+    //     },
+    //     last_payout: "1969-12-31T23:59:59.000Z",
+    //     pending_payout_value: "0.652",
+    //     author_rewards: "0.000",
+    //     author_rewards_in_hive: "0.000",
+    //     total_payout_value: "0.000",
+    //     curator_payout_value: "0.000",
+    //     beneficiary_payout_value: "0.000",
+    //     total_rshares: "1998435488436",
+    //     net_rshares: "1998435488436",
+    //     total_vote_weight: "1063097913587",
+    //     beneficiaries: "[]",
+    //     max_accepted_payout: "1000000.0",
+    //     percent_hbd: 10000,
+    //     allow_votes: true,
+    //     allow_curation_rewards: true,
+    //   },
+    //   {
+    //     title: "Cast",
+    //     permlink: "20250322t184101574z",
+    //     created: "2025-03-22T18:41:06.000Z",
+    //     cashout_time: "2025-03-29T18:41:06.000Z",
+    //     remaining_till_cashout: {
+    //       days: 2,
+    //       hours: 0,
+    //       minutes: 4,
+    //       seconds: 43,
+    //       milliseconds: 939.114,
+    //     },
+    //     last_payout: "1969-12-31T23:59:59.000Z",
+    //     pending_payout_value: "0.549",
+    //     author_rewards: "0.000",
+    //     author_rewards_in_hive: "0.000",
+    //     total_payout_value: "0.000",
+    //     curator_payout_value: "0.000",
+    //     beneficiary_payout_value: "0.000",
+    //     total_rshares: "1672473484204",
+    //     net_rshares: "1672473484204",
+    //     total_vote_weight: "840575235532",
+    //     beneficiaries: "[]",
+    //     max_accepted_payout: "1000000.0",
+    //     percent_hbd: 10000,
+    //     allow_votes: true,
+    //     allow_curation_rewards: true,
+    //   },
+    // ];
 
-  // // Sample rewards data
-  // const rewardsData: RewardsData = {
-  //   summary: {
-  //     total_pending_payout: "0.000",
-  //     pending_hbd: "0.000",
-  //     pending_hp: "0.000",
-  //     pending_posts_count: `${pendingPosts.length}`,
-  //     total_author_rewards: "0.000",
-  //     total_curator_payouts: "0.000",
-  //   },
-  //   pending_posts: pendingPosts,
-  // };
+    // // Sample rewards data
+    // const rewardsData: RewardsData = {
+    //   summary: {
+    //     total_pending_payout: "0.000",
+    //     pending_hbd: "0.000",
+    //     pending_hp: "0.000",
+    //     pending_posts_count: `${pendingPosts.length}`,
+    //     total_author_rewards: "0.000",
+    //     total_curator_payouts: "0.000",
+    //   },
+    //   pending_posts: pendingPosts,
+    // };
 
-  //     setRewardsData(rewardsData);
-      setIsLoading(false);
-  //     return;
-  //   }
+    //     setRewardsData(rewardsData);
+    setIsLoading(false);
+    //     return;
+    //   }
   }, [username]);
 
   useEffect(() => {
@@ -194,12 +194,10 @@ export default function LeaderboardScreen() {
         <View className="p-2 space-y-4">
           {/* Profile Info Section */}
           <View className="w-full">
-            <View className="items-center py-4">
 
-              {/* Display Learderboard */}
-              <Leaderboard currentUsername={username} />
+            {/* Display Learderboard */}
+            <Leaderboard currentUsername={username} />
 
-            </View>
           </View>
         </View>
       </ScrollView>
