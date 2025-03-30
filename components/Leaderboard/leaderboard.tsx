@@ -38,9 +38,9 @@ export function Leaderboard(
     const [skaters, setSkaters] = useState<LeaderboardData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
-    const [currentUserPosition, setCurrentUserPosition] = useState<string>("1000");
-    const [currentUserName, setCurrentUserName] = useState<string | null>("");
-    const [currentUserScore, setCurrentUserScore] = useState<string | null>("");
+    const [currentUserPosition, setCurrentUserPosition] = useState<string>("0");
+    const [currentUserName, setCurrentUserName] = useState<string | null>(null);
+    const [currentUserScore, setCurrentUserScore] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchSkaters = async () => {
@@ -202,69 +202,68 @@ export function Leaderboard(
                 })}
 
                 {/* Current logged in user position */}
-                <View
-                    key={currentUserPosition}
-                    style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: 10,
-                        marginVertical: 4,
-                        borderBottomWidth: 1,
-                        borderBottomColor: '#ccc',
-                        borderRadius: 0,
-                    }}>
+                {currentUserName && (
+                    <View
+                        key={currentUserPosition}
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: 10,
+                            marginVertical: 4,
+                            borderBottomWidth: 1,
+                            borderBottomColor: '#ccc',
+                            borderRadius: 0,
+                        }}>
 
 
-                    <Text style={{
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        color: '#eee',
-                        width: 50,
-                        textAlign: 'center',
-                    }}>
-                        #{currentUserPosition}
-                    </Text>
+                        <Text style={{
+                            fontSize: 16,
+                            fontWeight: 'bold',
+                            color: '#eee',
+                            width: 50,
+                            textAlign: 'center',
+                        }}>
+                            #{currentUserPosition}
+                        </Text>
 
-                    <View className="h-12 w-12 mr-3 rounded-full relative">
-                        <Image
-                            source={{ uri: `https://images.hive.blog/u/${currentUserName}/avatar/small` }}
-                            // className="w-full h-full border-2 border-[#FFCC00] rounded-full"
-                            style={{
-                                width: 40,
-                                height: 40,
-                                borderRadius: 50,
-                                borderWidth: 3,
-                                // borderColor: isTopOne ? '#FFCC00' : '#ccc',
-                            }}
-                            alt={`${currentUserName}'s avatar`}
-                        />
+                        <View className="h-12 w-12 mr-3 rounded-full relative">
+                            <Image
+                                source={{ uri: `https://images.hive.blog/u/${currentUserName}/avatar/small` }}
+                                // className="w-full h-full border-2 border-[#FFCC00] rounded-full"
+                                style={{
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: 50,
+                                    borderWidth: 3,
+                                    // borderColor: isTopOne ? '#FFCC00' : '#ccc',
+                                }}
+                                alt={`${currentUserName}'s avatar`}
+                            />
+                        </View>
+
+
+                        <Text style={{
+                            fontSize: 16,
+                            paddingLeft: 10,
+                            fontWeight: 'bold',
+                            flex: 1,
+                            textAlign: 'left',
+                            color: '#eee',
+                        }}>
+                            {currentUserName}
+                        </Text>
+                        <Text style={{
+                            fontSize: 16,
+                            fontWeight: 'bold',
+                            color: '#fff',
+                        }}>
+                            {/* {currentUserScore?.toFixed(0)} */}
+                            {currentUserScore}
+                        </Text>
+
                     </View>
-
-
-                    <Text style={{
-                        fontSize: 16,
-                        paddingLeft: 10,
-                        fontWeight: 'bold',
-                        flex: 1,
-                        textAlign: 'left',
-                        color: '#eee',
-                    }}>
-                        {currentUserName}
-                    </Text>
-                    <Text style={{
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        color: '#fff',
-                    }}>
-                        {/* {currentUserScore?.toFixed(0)} */}
-                        {currentUserScore}
-                    </Text>
-
-                </View>
-
-                {/* <Text style={{ fontWeight: 'bold' }}>{currentUserPosition}.  {currentUsername}</Text> */}
-                {/* <Text>{currentUserScore}</Text> */}
+                )}
             </View>
 
         </View >

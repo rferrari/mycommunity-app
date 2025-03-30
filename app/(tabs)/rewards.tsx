@@ -66,96 +66,96 @@ export default function WalletScreen() {
   const [showWallet, setShowWallet] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (username === "SPECTATOR") {
-      setBalancetData({
-        account_name: "SPECTATOR",
-        hive: "0.000",
-        hbd: "0.000",
-        vests: "0.000000",
-        hp_equivalent: "0.000",
-        hive_savings: "0.000",
-        hbd_savings: "0.000",
-      });
+  // useEffect(() => {
+  //   if (username === "SPECTATOR") {
+  //     setBalancetData({
+  //       account_name: "SPECTATOR",
+  //       hive: "0.000",
+  //       hbd: "0.000",
+  //       vests: "0.000000",
+  //       hp_equivalent: "0.000",
+  //       hive_savings: "0.000",
+  //       hbd_savings: "0.000",
+  //     });
 
-      // Sample pending posts data
-      const pendingPosts = [
-        {
-          title: "Cast",
-          permlink: "20250322t212846952z",
-          created: "2025-03-22T21:28:51.000Z",
-          cashout_time: "2025-03-29T21:28:51.000Z",
-          remaining_till_cashout: {
-            days: 2,
-            hours: 2,
-            minutes: 52,
-            seconds: 28,
-            milliseconds: 939.114,
-          },
-          last_payout: "1969-12-31T23:59:59.000Z",
-          pending_payout_value: "0.652",
-          author_rewards: "0.000",
-          author_rewards_in_hive: "0.000",
-          total_payout_value: "0.000",
-          curator_payout_value: "0.000",
-          beneficiary_payout_value: "0.000",
-          total_rshares: "1998435488436",
-          net_rshares: "1998435488436",
-          total_vote_weight: "1063097913587",
-          beneficiaries: "[]",
-          max_accepted_payout: "1000000.0",
-          percent_hbd: 10000,
-          allow_votes: true,
-          allow_curation_rewards: true,
-        },
-        {
-          title: "Cast",
-          permlink: "20250322t184101574z",
-          created: "2025-03-22T18:41:06.000Z",
-          cashout_time: "2025-03-29T18:41:06.000Z",
-          remaining_till_cashout: {
-            days: 2,
-            hours: 0,
-            minutes: 4,
-            seconds: 43,
-            milliseconds: 939.114,
-          },
-          last_payout: "1969-12-31T23:59:59.000Z",
-          pending_payout_value: "0.549",
-          author_rewards: "0.000",
-          author_rewards_in_hive: "0.000",
-          total_payout_value: "0.000",
-          curator_payout_value: "0.000",
-          beneficiary_payout_value: "0.000",
-          total_rshares: "1672473484204",
-          net_rshares: "1672473484204",
-          total_vote_weight: "840575235532",
-          beneficiaries: "[]",
-          max_accepted_payout: "1000000.0",
-          percent_hbd: 10000,
-          allow_votes: true,
-          allow_curation_rewards: true,
-        },
-      ];
+  // // Sample pending posts data
+  // const pendingPosts = [
+  //   {
+  //     title: "Cast",
+  //     permlink: "20250322t212846952z",
+  //     created: "2025-03-22T21:28:51.000Z",
+  //     cashout_time: "2025-03-29T21:28:51.000Z",
+  //     remaining_till_cashout: {
+  //       days: 2,
+  //       hours: 2,
+  //       minutes: 52,
+  //       seconds: 28,
+  //       milliseconds: 939.114,
+  //     },
+  //     last_payout: "1969-12-31T23:59:59.000Z",
+  //     pending_payout_value: "0.652",
+  //     author_rewards: "0.000",
+  //     author_rewards_in_hive: "0.000",
+  //     total_payout_value: "0.000",
+  //     curator_payout_value: "0.000",
+  //     beneficiary_payout_value: "0.000",
+  //     total_rshares: "1998435488436",
+  //     net_rshares: "1998435488436",
+  //     total_vote_weight: "1063097913587",
+  //     beneficiaries: "[]",
+  //     max_accepted_payout: "1000000.0",
+  //     percent_hbd: 10000,
+  //     allow_votes: true,
+  //     allow_curation_rewards: true,
+  //   },
+  //   {
+  //     title: "Cast",
+  //     permlink: "20250322t184101574z",
+  //     created: "2025-03-22T18:41:06.000Z",
+  //     cashout_time: "2025-03-29T18:41:06.000Z",
+  //     remaining_till_cashout: {
+  //       days: 2,
+  //       hours: 0,
+  //       minutes: 4,
+  //       seconds: 43,
+  //       milliseconds: 939.114,
+  //     },
+  //     last_payout: "1969-12-31T23:59:59.000Z",
+  //     pending_payout_value: "0.549",
+  //     author_rewards: "0.000",
+  //     author_rewards_in_hive: "0.000",
+  //     total_payout_value: "0.000",
+  //     curator_payout_value: "0.000",
+  //     beneficiary_payout_value: "0.000",
+  //     total_rshares: "1672473484204",
+  //     net_rshares: "1672473484204",
+  //     total_vote_weight: "840575235532",
+  //     beneficiaries: "[]",
+  //     max_accepted_payout: "1000000.0",
+  //     percent_hbd: 10000,
+  //     allow_votes: true,
+  //     allow_curation_rewards: true,
+  //   },
+  // ];
 
-      // Sample rewards data
-      const rewardsData: RewardsData = {
-        summary: {
-          total_pending_payout: "0.000",
-          pending_hbd: "0.000",
-          pending_hp: "0.000",
-          pending_posts_count: `${pendingPosts.length}`,
-          total_author_rewards: "0.000",
-          total_curator_payouts: "0.000",
-        },
-        pending_posts: pendingPosts,
-      };
+  // // Sample rewards data
+  // const rewardsData: RewardsData = {
+  //   summary: {
+  //     total_pending_payout: "0.000",
+  //     pending_hbd: "0.000",
+  //     pending_hp: "0.000",
+  //     pending_posts_count: `${pendingPosts.length}`,
+  //     total_author_rewards: "0.000",
+  //     total_curator_payouts: "0.000",
+  //   },
+  //   pending_posts: pendingPosts,
+  // };
 
-      setRewardsData(rewardsData);
-      setIsLoading(false);
-      return;
-    }
-  }, [username]);
+  //     setRewardsData(rewardsData);
+  //     setIsLoading(false);
+  //     return;
+  //   }
+  // }, [username]);
 
   useEffect(() => {
     const fetchBalancetData = async () => {
@@ -195,8 +195,77 @@ export default function WalletScreen() {
           {/* Profile Info Section */}
           <View className="w-full">
             <View className="items-center py-4">
-              {/* Header */}
-              {/* <Text className="text-2xl font-bold">Rewards</Text> */}
+
+              {/* Wallet Section */}
+              <View className="w-full py-6 bg-foreground/5 rounded-xl">
+                <View className="flex-row items-center justify-between px-6">
+                  <View className="flex-row items-center">
+                    <Text className="text-xl font-bold">Balance</Text>
+                  </View>
+                  <Pressable onPress={() => setShowWallet(!showWallet)}>
+                    <Ionicons
+                      name={showWallet ? "eye-outline" : "eye-off-outline"}
+                      size={24}
+                      color={isDarkColorScheme ? "#ffffff" : "#000000"}
+                    />
+                  </Pressable>
+                </View>
+                {balanceData && (
+                  <View className="px-6 mt-4 space-y-3">
+                    <View className="flex-row justify-between">
+                      <Text className="text-lg opacity-70">Hive Power:</Text>
+                      <Text className="text-lg font-medium">
+                        {!showWallet ? (
+                          "$$.$$$"
+                        ) : (
+                          balanceData.hp_equivalent
+                        )}
+                      </Text>
+                    </View>
+
+                    <View className="flex-row justify-between">
+                      <Text className="text-lg opacity-70">HIVE:</Text>
+                      <Text className="text-lg font-medium">
+                        {!showWallet ? (
+                          "$$.$$$"
+                        ) : (
+                          balanceData.hive
+                        )}
+                      </Text>
+                    </View>
+
+                    <View className="flex-row justify-between">
+                      <Text className="text-lg opacity-70">HBD:</Text>
+                      <Text className="text-lg font-medium">
+                        {!showWallet ? (
+                          "$$.$$$"
+                        ) : (
+                          balanceData.hbd
+                        )}
+                      </Text>
+                    </View>
+                    <View className="flex-row justify-between">
+                      <Text className="text-lg opacity-70">Savings:</Text>
+                      <View className="items-end">
+                        <Text className="text-lg font-medium">
+                          {!showWallet ? (
+                            "$$.$$$"
+                          ) : (
+                            balanceData.hive_savings + " HIVE"
+                          )}
+                        </Text>
+                        <Text className="text-lg font-medium">
+                          {!showWallet ? (
+                            "$$.$$$"
+                          ) : (
+                            balanceData.hbd_savings + " HBD"
+                          )}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                )}
+              </View>
 
               {/* Rewards Section */}
               {rewardsData && (
@@ -217,14 +286,14 @@ export default function WalletScreen() {
                         color={isDarkColorScheme ? "#FFD700" : "#DAA520"}
                       />
                     </View>
-                    <Text className="text-xl font-bold mt-2">Rewards</Text>
+                    <Text className="text-xl font-bold mt-2">Incoming Rewards</Text>
                   </View>
 
                   <View className="px-6 mt-4">
                     <View className="space-y-3">
                       <View className="flex-row justify-between">
                         <Text className="text-lg opacity-70">
-                          Pending Payout:
+                          Payout:
                         </Text>
                         <Text className="text-lg font-medium">
                           {rewardsData.summary.total_pending_payout} HBD
@@ -232,7 +301,7 @@ export default function WalletScreen() {
                       </View>
                       <View className="flex-row justify-between">
                         <Text className="text-lg opacity-70">
-                          Pending Posts:
+                          Posts:
                         </Text>
                         <Text className="text-lg font-medium">
                           {rewardsData.summary.pending_posts_count}
@@ -248,7 +317,7 @@ export default function WalletScreen() {
                       </View>
                       <View className="flex-row justify-between">
                         <Text className="text-lg opacity-70">
-                          Curator Payouts:
+                          Curator Rewards:
                         </Text>
                         <Text className="text-lg font-medium">
                           {rewardsData.summary.total_curator_payouts}
@@ -261,17 +330,17 @@ export default function WalletScreen() {
                     <View className="space-y-3">
                       <View className="flex-row justify-between">
                         <Text className="text-lg opacity-70">
-                          Pending Posts:
+                          {/* Pending: */}
                         </Text>
                       </View>
                       {rewardsData.pending_posts.map((post, index) => (
                         <View key={index} className="flex-row justify-between">
                           <Text className="text-lg opacity-70">
-                            {post.title}
+                            {post.title || "Comment"}
                           </Text>
                           <View className="flex-row space-x-2">
                             <Text className="text-lg opacity-70">
-                              Pending Payout Value:
+                              {/* Payout: */}
                             </Text>
                             <Text className="text-lg font-medium">
                               {post.pending_payout_value}
@@ -279,73 +348,27 @@ export default function WalletScreen() {
                           </View>
                           <View className="flex-row space-x-2">
                             <Text className="text-lg opacity-70">
-                              Remaining Till Cashout:
+                              Payment in:&nbsp;
                             </Text>
                             <Text className="text-lg font-medium">
-                              {post.remaining_till_cashout.days} days,{" "}
-                              {post.remaining_till_cashout.hours} hours,{" "}
-                              {post.remaining_till_cashout.minutes} minutes,{" "}
-                              {post.remaining_till_cashout.seconds} seconds
+                              {post.remaining_till_cashout.days || "0"}D{" "}
+                              {post.remaining_till_cashout.hours || "0"}h{" "}
+                              {post.remaining_till_cashout.minutes || "0"}m{" "}
                             </Text>
                           </View>
                         </View>
                       ))}
                     </View>
                   </View>
+
+
                 </View>
               )}
 
-              {/* Wallet Section */}
-              <View className="w-full py-6 bg-foreground/5 rounded-xl">
-                <View className="flex-row items-center justify-between px-6">
-                  <View className="flex-row items-center">
-                    <Text className="text-xl font-bold">Balance</Text>
-                  </View>
-                  <Pressable onPress={() => setShowWallet(!showWallet)}>
-                    <Ionicons
-                      name={showWallet ? "eye-outline" : "eye-off-outline"}
-                      size={24}
-                      color={isDarkColorScheme ? "#ffffff" : "#000000"}
-                    />
-                  </Pressable>
-                </View>
-                {showWallet && balanceData && (
-                  <View className="px-6 mt-4 space-y-3">
-                    <View className="flex-row justify-between">
-                      <Text className="text-lg opacity-70">HIVE:</Text>
-                      <Text className="text-lg font-medium">
-                        {balanceData.hive}
-                      </Text>
-                    </View>
-                    <View className="flex-row justify-between">
-                      <Text className="text-lg opacity-70">HBD:</Text>
-                      <Text className="text-lg font-medium">
-                        {balanceData.hbd}
-                      </Text>
-                    </View>
-                    <View className="flex-row justify-between">
-                      <Text className="text-lg opacity-70">HP:</Text>
-                      <Text className="text-lg font-medium">
-                        {balanceData.hp_equivalent}
-                      </Text>
-                    </View>
-                    <View className="flex-row justify-between">
-                      <Text className="text-lg opacity-70">Savings:</Text>
-                      <View className="items-end">
-                        <Text className="text-lg font-medium">
-                          {balanceData.hive_savings} HIVE
-                        </Text>
-                        <Text className="text-lg font-medium">
-                          {balanceData.hbd_savings} HBD
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                )}
-              </View>
+
 
               {/* Display Learderboard */}
-              <Leaderboard currentUsername={username}/>
+              <Leaderboard currentUsername={username} />
 
             </View>
           </View>
