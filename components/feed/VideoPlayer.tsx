@@ -1,14 +1,23 @@
 import { useVideoPlayer, VideoView } from 'expo-video';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface VideoPlayerProps {
   url: string;
+  playing?: boolean;
 }
 
-export const VideoPlayer = React.memo(({ url }: VideoPlayerProps) => {
+export const VideoPlayer = React.memo(({ url, playing = true }: VideoPlayerProps) => {
   const player = useVideoPlayer(url, player => {
     player.loop = true;
   });
+  
+  useEffect(() => {
+    if (playing) {
+      player.play();
+    } else {
+      player.pause();
+    }
+  }, [playing, player]);
   
   return (
     <VideoView
