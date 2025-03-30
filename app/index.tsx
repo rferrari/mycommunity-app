@@ -13,7 +13,6 @@ const BackgroundVideo = () => {
     (player) => {
       player.loop = true;
       player.play();
-      
     }
   );
 

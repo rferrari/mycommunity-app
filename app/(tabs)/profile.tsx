@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, Image, ActivityIndicator } from 'react-native';
+import { View, ScrollView, Image, ActivityIndicator, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -138,6 +138,21 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
+
+      {/* Top Exit Button */}
+      <Pressable
+        onPress={handleLogout}
+        className="absolute top-12 right-6 z-10"
+      >
+        <View className="bg-foreground/20 rounded-full p-2">
+          <Ionicons
+            name="exit-outline"
+            size={24}
+            color={isDarkColorScheme ? "#ffffff" : "#000000"}
+          /><Text>Exit</Text>
+        </View>
+      </Pressable>
+
       <ScrollView className="flex-1">
         <View className="p-2 space-y-4">
 
@@ -156,6 +171,11 @@ export default function ProfileScreen() {
                   {profileData?.posting_metadata.profile.about}
                 </Text>
               </View>
+
+              {/* Show Create Account CTA only for SPECTATOR */}
+              {username === 'SPECTATOR' && (
+                <ProfileSpectatorInfo />
+              )}
 
               {username !== 'SPECTATOR' && (
                 <View className="flex-row justify-around w-full mt-4">
@@ -176,27 +196,14 @@ export default function ProfileScreen() {
             </View>
           </View>
 
-
-          {/* Show Create Account CTA only for SPECTATOR */}
-          {username === 'SPECTATOR' && (
-            <ProfileSpectatorInfo />
-          )}
-
           {/* Actions */}
           <View className="px-2 flex flex-col gap-1">
             <View className="h-px bg-foreground/10" />
-            <Button
-              variant="destructive"
-              onPress={handleLogout}
-              className="bg-red-500/80"
-            >
-              <Text className="text-white text-lg">Exit {username === 'SPECTATOR' ? 'Spectator Mode' : 'Account'}</Text>
-            </Button>
-
             {message && (
               <Text className="text-sm text-center opacity-70 mt-2">{message}</Text>
             )}
           </View>
+
         </View>
       </ScrollView>
     </SafeAreaView>
