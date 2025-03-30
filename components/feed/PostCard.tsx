@@ -2,6 +2,7 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { formatDistanceToNow } from 'date-fns';
 import * as SecureStore from 'expo-secure-store';
+import * as Haptics from 'expo-haptics';
 import { Image, Pressable, View, Linking } from 'react-native';
 import { API_BASE_URL } from '~/lib/constants';
 import { Text } from '../ui/text';
@@ -56,6 +57,9 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
         setVoteError('Invalid credentials');
         return;
       }
+
+      // Trigger haptic feedback before the vote
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
       // Optimistically update the UI
       const previousLikedState = isLiked;
