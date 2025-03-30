@@ -8,6 +8,7 @@ import { Button } from '~/components/ui/button';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { useAuth } from '~/lib/auth-provider';
 import { API_BASE_URL } from '~/lib/constants';
+import { ProfileSpectatorInfo } from '~/components/SpectatorMode/ProfileSpectatorInfo';
 
 interface ProfileData {
   name: string;
@@ -32,7 +33,7 @@ export default function ProfileScreen() {
   const [message, setMessage] = useState('');
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   useEffect(() => {
     const fetchProfileData = async () => {
       if (!username) return;
@@ -85,29 +86,29 @@ export default function ProfileScreen() {
     }
   };
 
-  const handleQuit = async () => {
-    try {
-      await router.push('/');
-    } catch (error) {
-      console.error('Error quitting:', error);
-    }
-  };
+  // const handleQuit = async () => {
+  //   try {
+  //     await router.push('/');
+  //   } catch (error) {
+  //     console.error('Error quitting:', error);
+  //   }
+  // };
 
-  const handleWaitingList = () => {
-    router.push('/(onboarding)/home');
-  };
+  // const handleWaitingList = () => {
+  //   router.push('/(onboarding)/home');
+  // };
 
   const renderProfileImage = () => {
     if (username === 'SPECTATOR') {
       return (
-        <View 
+        <View
           className="w-24 h-24 rounded-full bg-foreground/10 items-center justify-center"
           style={{ borderWidth: 3, borderColor: isDarkColorScheme ? '#ffffff20' : '#00000020' }}
         >
-          <Ionicons 
-            name="person-circle-outline" 
-            size={64} 
-            color={isDarkColorScheme ? '#ffffff' : '#000000'} 
+          <Ionicons
+            name="person-circle-outline"
+            size={64}
+            color={isDarkColorScheme ? '#ffffff' : '#000000'}
           />
         </View>
       );
@@ -126,9 +127,9 @@ export default function ProfileScreen() {
     return (
       <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator 
-            size="large" 
-            color={isDarkColorScheme ? '#ffffff' : '#000000'} 
+          <ActivityIndicator
+            size="large"
+            color={isDarkColorScheme ? '#ffffff' : '#000000'}
           />
         </View>
       </SafeAreaView>
@@ -139,78 +140,53 @@ export default function ProfileScreen() {
     <SafeAreaView edges={['bottom']} className="flex-1 bg-background">
       <ScrollView className="flex-1">
         <View className="p-2 space-y-4">
+
           {/* Profile Info Section */}
           <View className="w-full">
             <View className="items-center py-4">
               {renderProfileImage()}
               <View className="items-center mt-2">
                 <Text className="text-xl font-bold">
-                  {profileData?.posting_metadata.profile.name || 'Spectator Mode'}
+                  {profileData?.posting_metadata.profile.name}
                 </Text>
                 <Text className="text-sm opacity-70">
                   @{profileData?.name || 'SPECTATOR'}
                 </Text>
                 <Text className="mt-2 text-center px-4">
-                  {profileData?.posting_metadata.profile.about || 'Browse and explore content without logging in.'}
+                  {profileData?.posting_metadata.profile.about}
                 </Text>
               </View>
-              <View className="flex-row justify-around w-full mt-4">
-                <View className="items-center">
-                  <Text className="font-bold">{profileData?.followers || '0'}</Text>
-                  <Text>Followers</Text>
+
+              {username !== 'SPECTATOR' && (
+                <View className="flex-row justify-around w-full mt-4">
+                  <View className="items-center">
+                    <Text className="font-bold">{profileData?.followers || '0'}</Text>
+                    <Text>Followers</Text>
+                  </View>
+                  <View className="items-center">
+                    <Text className="font-bold">{profileData?.followings || '0'}</Text>
+                    <Text>Following</Text>
+                  </View>
+                  <View className="items-center">
+                    <Text className="font-bold">{profileData?.total_posts || '0'}</Text>
+                    <Text>Posts</Text>
+                  </View>
                 </View>
-                <View className="items-center">
-                  <Text className="font-bold">{profileData?.followings || '0'}</Text>
-                  <Text>Following</Text>
-                </View>
-                <View className="items-center">
-                  <Text className="font-bold">{profileData?.total_posts || '0'}</Text>
-                  <Text>Posts</Text>
-                </View>
-              </View>
+              )}
             </View>
           </View>
 
+
           {/* Show Create Account CTA only for SPECTATOR */}
           {username === 'SPECTATOR' && (
-            <View className="w-full py-6 bg-foreground/5 rounded-xl">
-              <View className="items-center space-y-4 px-4">
-                <Ionicons 
-                  name="rocket-outline" 
-                  size={48} 
-                  color={isDarkColorScheme ? '#ffffff' : '#000000'} 
-                />
-                <Text className="text-xl font-bold text-center">
-                  Ready to Start Your Journey?
-                </Text>
-                <Text className="text-center opacity-70">
-                  Join our community and start earning rewards for your content
-                </Text>
-                <Button
-                  onPress={handleWaitingList}
-                  className="bg-foreground w-full"
-                >
-                  <Text className="text-background text-lg font-bold">
-                    Create SkateHive Account
-                  </Text>
-                </Button>
-              </View>
-            </View>
+            <ProfileSpectatorInfo />
           )}
 
           {/* Actions */}
           <View className="px-2 flex flex-col gap-1">
-            <Button 
-              onPress={handleQuit}
-              className="bg-white"
-            >
-              <Text className="text-gray-900 text-lg">Back to Home</Text>
-            </Button>
-            
             <View className="h-px bg-foreground/10" />
-            
-            <Button 
-              variant="destructive" 
+            <Button
+              variant="destructive"
               onPress={handleLogout}
               className="bg-red-500/80"
             >
