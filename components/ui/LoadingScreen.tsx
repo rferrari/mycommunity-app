@@ -1,5 +1,5 @@
 import React from "react";
-import { View, ActivityIndicator, Dimensions } from "react-native";
+import { View, ActivityIndicator } from "react-native";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { getLoadingEffect } from "./loading-effects";
 
@@ -9,9 +9,9 @@ export function LoadingScreen() {
   const BackgroundEffect = getLoadingEffect("videobg").component;
 
   return (
-    <View className="bg-background">
+    <View className="absolute inset-0 w-full h-full bg-background">
       <BackgroundEffect />
-      <View className="w-full h-full items-center justify-center">
+      <View className="absolute inset-0 items-center justify-center">
         <ActivityIndicator size="large" color={foregroundColor} />
       </View>
     </View>
