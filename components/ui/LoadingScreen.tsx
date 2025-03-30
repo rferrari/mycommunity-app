@@ -26,7 +26,7 @@ export function LoadingScreen() {
   const pulseAnim = React.useRef(new Animated.Value(1)).current;
   const fadeAnim = React.useRef(new Animated.Value(1)).current;
 
-  const BackgroundEffect = getLoadingEffect("videobg").component;
+  const BackgroundEffect = getLoadingEffect("").component;
 
   React.useEffect(() => {
     // Pulse animation
@@ -74,12 +74,12 @@ export function LoadingScreen() {
       <BackgroundEffect />
       <View className="absolute inset-0 items-center justify-center">
         <View className="items-center space-y-6">
-          <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+          {/* <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
             <ActivityIndicator 
               size="large" 
               color={foregroundColor} 
             />
-          </Animated.View>
+          </Animated.View> */}
           <View className="items-center">
             <Animated.Text 
               className="text-6xl font-bold mb-4"
