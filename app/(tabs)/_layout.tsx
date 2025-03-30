@@ -21,6 +21,11 @@ const TAB_ITEMS = [
     icon: 'trophy-outline'
   },
   {
+    name: 'leaderboard',
+    title: 'Leaderboard',
+    icon: 'podium-outline'
+  },
+  {
     name: 'profile',
     title: 'Profile',
     icon: 'person-outline'

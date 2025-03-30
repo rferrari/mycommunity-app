@@ -5,6 +5,7 @@ import { API_BASE_URL } from '~/lib/constants';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from "~/lib/useColorScheme";
 import { Crown } from 'lucide-react-native';
+import { LoadingScreen } from '../ui/LoadingScreen';
 
 interface LeaderboardProps {
     currentUsername: string | null;
@@ -77,12 +78,7 @@ export function Leaderboard(
     }, []);
 
     if (isLoading) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#0000ff" />
-                <Text>Loading...</Text>
-            </View>
-        );
+        return <LoadingScreen />;
     }
 
     if (error) {
