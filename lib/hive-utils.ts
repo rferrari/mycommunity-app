@@ -1,4 +1,4 @@
-// var dhive = require("@hiveio/dhive");
+var dhive = require("@hiveio/dhive");
 
 export function hive_keys_from_login(
     username: string,
