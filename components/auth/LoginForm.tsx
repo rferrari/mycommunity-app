@@ -11,6 +11,9 @@ interface LoginFormProps {
   onUsernameChange: (text: string) => void;
   onPasswordChange: (text: string) => void;
   onSubmit: () => Promise<void>;
+  onSpectator: () => Promise<void>;
+  storedUsers?: string[];
+  onQuickLogin?: (username: string) => Promise<void>;
   isDarkColorScheme: boolean;
 }
 
@@ -21,6 +24,7 @@ export function LoginForm({
   onUsernameChange,
   onPasswordChange,
   onSubmit,
+  onSpectator,
   isDarkColorScheme,
 }: LoginFormProps) {
   return (
@@ -28,6 +32,7 @@ export function LoginForm({
       <Text className="text-4xl font-bold text-center text-foreground mb-8">
         Login
       </Text>
+
       <Input
         placeholder="Hive Username"
         value={username}
@@ -53,8 +58,18 @@ export function LoginForm({
         <Text className="text-background font-medium">Login</Text>
       </Button>
 
+      <Button
+        onPress={onSpectator}
+        variant="ghost"
+        className="mt-2"
+      >
+        <Text>Enter as Spectator</Text>
+      </Button>
+
       {message ? (
-        <Text className="text-red-500 text-center mx-10">{message}</Text>
+        <Text className={`text-center mx-10 ${message.includes('deleted') ? 'text-green-500' : 'text-red-500'}`}>
+          {message}
+        </Text>
       ) : null}
     </View>
   );
