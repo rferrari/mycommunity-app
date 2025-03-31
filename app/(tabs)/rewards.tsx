@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { View, ScrollView, Pressable } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "~/components/ui/text";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
@@ -9,12 +8,7 @@ import { getBalance, getRewards } from "~/lib/api";
 import { LoadingScreen } from "~/components/ui/LoadingScreen";
 import { RewardsSpectatorInfo } from "~/components/SpectatorMode/RewardsSpectatorInfo";
 import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
-import { Progress } from "~/components/ui/progress";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "~/components/ui/tooltip";
+import { useMarket } from "~/lib/hooks/useQueries";
 
 interface BalancetData {
   account_name: string;
@@ -72,6 +66,7 @@ export default function WalletScreen() {
   const [balanceData, setBalancetData] = useState<BalancetData | null>(null);
   const [showWallet, setShowWallet] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const { data: marketData } = useMarket();
 
   useEffect(() => {
     const fetchBalancetData = async () => {
@@ -108,13 +103,18 @@ export default function WalletScreen() {
   }
 
   const calculateTotalValue = () => {
-    if (!balanceData || !rewardsData) return "0.00";
+    if (!balanceData || !rewardsData || !marketData) return "0.00";
 
-    const hiveValue = parseFloat(balanceData.hive) || 0;
+    // HBD is 1:1 with USD
     const hbdValue = parseFloat(balanceData.hbd) || 0;
-    const hpValue = parseFloat(balanceData.hp_equivalent) || 0;
-    const pendingValue =
-      parseFloat(rewardsData.summary.total_pending_payout) || 0;
+    
+    // Convert HIVE to USD using market price
+    const hivePrice = parseFloat(marketData.close) || 0;
+    const hiveValue = (parseFloat(balanceData.hive) || 0) * hivePrice;
+    const hpValue = (parseFloat(balanceData.hp_equivalent) || 0) * hivePrice;
+    
+    // Pending rewards in HBD
+    const pendingValue = parseFloat(rewardsData.summary.total_pending_payout) || 0;
 
     return (hiveValue + hbdValue + hpValue + pendingValue).toFixed(2);
   };
@@ -149,6 +149,11 @@ export default function WalletScreen() {
     return parts.join(" ") || "0m";
   };
 
+  const calculateDollarValue = (amount: string | undefined, price: string | undefined) => {
+    if (!amount || !price) return "0.00";
+    return (parseFloat(amount) * parseFloat(price)).toFixed(2);
+  };
+
   return (
     <ScrollView className="flex-1 p-4 bg-background">
       {username === "SPECTATOR" ? (
@@ -177,25 +182,46 @@ export default function WalletScreen() {
                 </View>
 
                 <View className="flex flex-col gap-1 pt-2">
-                  <View className="flex-row justify-between items-center">
-                    <Text className="text-muted-foreground">HBD</Text>
-                    <Text className="font-medium">
-                      {hideValue(balanceData?.hbd)}
-                    </Text>
+                  <View className="flex flex-col gap-1">
+                    <View className="flex-row justify-between items-start">
+                      <Text className="text-muted-foreground">HBD</Text>
+                      <View className="items-end">
+                        <Text className="font-medium">
+                          {hideValue(balanceData?.hbd)}
+                        </Text>
+                        <Text className="text-sm text-muted-foreground">
+                          ${hideValue(balanceData?.hbd)}
+                        </Text>
+                      </View>
+                    </View>
                   </View>
 
-                  <View className="flex-row justify-between items-center">
-                    <Text className="text-muted-foreground">HIVE</Text>
-                    <Text className="font-medium">
-                      {hideValue(balanceData?.hive)}
-                    </Text>
+                  <View className="flex flex-col gap-1">
+                    <View className="flex-row justify-between items-start">
+                      <Text className="text-muted-foreground">HIVE</Text>
+                      <View className="items-end">
+                        <Text className="font-medium">
+                          {hideValue(balanceData?.hive)}
+                        </Text>
+                        <Text className="text-sm text-muted-foreground">
+                          ${hideValue(calculateDollarValue(balanceData?.hive, marketData?.close))}
+                        </Text>
+                      </View>
+                    </View>
                   </View>
 
-                  <View className="flex-row justify-between items-center">
-                    <Text className="text-muted-foreground">Hive Power</Text>
-                    <Text className="font-medium">
-                      {hideValue(balanceData?.hp_equivalent)}
-                    </Text>
+                  <View className="flex flex-col gap-1">
+                    <View className="flex-row justify-between items-start">
+                      <Text className="text-muted-foreground">Hive Power</Text>
+                      <View className="items-end">
+                        <Text className="font-medium">
+                          {hideValue(balanceData?.hp_equivalent)}
+                        </Text>
+                        <Text className="text-sm text-muted-foreground">
+                          ${hideValue(calculateDollarValue(balanceData?.hp_equivalent, marketData?.close))}
+                        </Text>
+                      </View>
+                    </View>
                   </View>
                 </View>
               </View>
