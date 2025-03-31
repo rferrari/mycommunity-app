@@ -95,7 +95,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       
       // Validate the posting key with the Hive blockchain
-      await validate_posting_key(normalizedUsername, postingKey);
+      // await validate_posting_key(normalizedUsername, postingKey);
       
       // Store the posting key
       await SecureStore.setItemAsync(normalizedUsername, postingKey);
@@ -125,7 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       
       // Validate that the stored posting key is still valid
-      await validate_posting_key(selectedUsername, storedPostingKey);
+      // await validate_posting_key(selectedUsername, storedPostingKey);
       
       await updateStoredUsers(selectedUsername);
       setUsername(selectedUsername);

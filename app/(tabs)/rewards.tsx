@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, ActivityIndicator, Pressable } from "react-native";
+import { View, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "~/components/ui/text";
-import { Leaderboard } from "~/components/Leaderboard/leaderboard";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "~/lib/auth-provider";
 import { getBalance, getRewards } from "~/lib/api";
 import { LoadingScreen } from "~/components/ui/LoadingScreen";
 import { RewardsSpectatorInfo } from "~/components/SpectatorMode/RewardsSpectatorInfo";
+import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
+import { Progress } from "~/components/ui/progress";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "~/components/ui/tooltip";
 
 interface BalancetData {
   account_name: string;
@@ -71,7 +77,7 @@ export default function WalletScreen() {
     const fetchBalancetData = async () => {
       if (!username || username === "SPECTATOR") {
         setIsLoading(false);
-        return
+        return;
       }
 
       try {
@@ -101,226 +107,195 @@ export default function WalletScreen() {
     return <LoadingScreen />;
   }
 
+  const calculateTotalValue = () => {
+    if (!balanceData || !rewardsData) return "0.00";
+
+    const hiveValue = parseFloat(balanceData.hive) || 0;
+    const hbdValue = parseFloat(balanceData.hbd) || 0;
+    const hpValue = parseFloat(balanceData.hp_equivalent) || 0;
+    const pendingValue =
+      parseFloat(rewardsData.summary.total_pending_payout) || 0;
+
+    return (hiveValue + hbdValue + hpValue + pendingValue).toFixed(2);
+  };
+
+  const hideValue = (value: string | number | undefined) => {
+    return !showWallet ? "••••••" : value?.toString() || "0";
+  };
+
+  const sortedPendingPosts = (posts: RewardsData["pending_posts"]) => {
+    return [...posts].sort((a, b) => {
+      const aTimeLeft =
+        a.remaining_till_cashout.days * 24 * 60 +
+        a.remaining_till_cashout.hours * 60 +
+        a.remaining_till_cashout.minutes;
+      const bTimeLeft =
+        b.remaining_till_cashout.days * 24 * 60 +
+        b.remaining_till_cashout.hours * 60 +
+        b.remaining_till_cashout.minutes;
+      return aTimeLeft - bTimeLeft;
+    });
+  };
+
+  const formatTimeLeft = (time: {
+    days: number;
+    hours: number;
+    minutes: number;
+  }) => {
+    const parts = [];
+    if (time.days || time.days === 0) parts.push(`${time.days}d`);
+    if (time.hours || time.hours === 0) parts.push(`${time.hours}h`);
+    if (time.minutes || time.minutes === 0) parts.push(`${time.minutes}m`);
+    return parts.join(" ") || "0m";
+  };
+
   return (
-    <SafeAreaView edges={["bottom"]} className="flex-1 bg-background">
-      <ScrollView className="flex-1">
-        <View className="p-2 space-y-4">
-
-          {/* Rewards Info Section */}
-          <View className="w-full">
-            {rewardsData && (
-              <View className="w-full py-4">
-                <View className="items-center">
-                  <View
-                    className="w-24 h-24 rounded-full bg-foreground/10 items-center justify-center"
-                    style={{
-                      borderWidth: 3,
-                      borderColor: isDarkColorScheme
-                        ? "#ffffff20"
-                        : "#00000020",
-                    }}
-                  >
-                    <Ionicons
-                      name="trophy-outline"
-                      size={48}
-                      color={isDarkColorScheme ? "#34C759" : "#34C759"}
-                    />
-
-                  </View>
-                  <Text className="text-xl font-bold mt-2">Incoming Rewards</Text>
+    <ScrollView className="flex-1 p-4 bg-background">
+      {username === "SPECTATOR" ? (
+        <RewardsSpectatorInfo />
+      ) : (
+        <View className="flex flex-col gap-4">
+          {/* Account Overview Card */}
+          <Card>
+            <CardHeader className="flex-row justify-between items-center">
+              <CardTitle>Account Overview</CardTitle>
+              <Pressable onPress={() => setShowWallet(!showWallet)}>
+                <Ionicons
+                  name={showWallet ? "eye-outline" : "eye-off-outline"}
+                  size={24}
+                  color={isDarkColorScheme ? "#ffffff" : "#000000"}
+                />
+              </Pressable>
+            </CardHeader>
+            <CardContent>
+              <View className="flex flex-col gap-4">
+                <View className="flex-row justify-between items-center">
+                  <Text className="text-muted-foreground">Total Value</Text>
+                  <Text className="text-xl font-bold">
+                    ${hideValue(calculateTotalValue())}
+                  </Text>
                 </View>
 
-                {/* SPECTATOR */}
-                {username === 'SPECTATOR' && (
-                  <RewardsSpectatorInfo />
-                )}
+                <View className="flex flex-col gap-1 pt-2">
+                  <View className="flex-row justify-between items-center">
+                    <Text className="text-muted-foreground">HBD</Text>
+                    <Text className="font-medium">
+                      {hideValue(balanceData?.hbd)}
+                    </Text>
+                  </View>
 
-                {/* Estimate Total Account Value */}
-                {username !== 'SPECTATOR' && (
-                  < View className="w-full py-6 bg-foreground/5 rounded-xl">
-                    <View className="flex-row items-center justify-between px-6">
-                      <View className="flex-row items-center">
-                        <Text className="text-xl font-bold">Estimated Account Value</Text>
-                      </View>
-                      <Pressable onPress={() => setShowWallet(!showWallet)}>
-                        <Ionicons
-                          name={showWallet ? "eye-outline" : "eye-off-outline"}
-                          size={24}
-                          color={isDarkColorScheme ? "#ffffff" : "#000000"}
-                        />
-                      </Pressable>
+                  <View className="flex-row justify-between items-center">
+                    <Text className="text-muted-foreground">HIVE</Text>
+                    <Text className="font-medium">
+                      {hideValue(balanceData?.hive)}
+                    </Text>
+                  </View>
+
+                  <View className="flex-row justify-between items-center">
+                    <Text className="text-muted-foreground">Hive Power</Text>
+                    <Text className="font-medium">
+                      {hideValue(balanceData?.hp_equivalent)}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </CardContent>
+          </Card>
+
+          {/* Pending Rewards Card */}
+          {rewardsData && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Pending Rewards</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <View className="flex flex-col gap-4">
+                  <View className="flex-row justify-between items-center">
+                    <Text className="text-muted-foreground">Total Pending</Text>
+                    <Text className="text-xl font-bold text-green-500">
+                      {hideValue(rewardsData.summary.total_pending_payout)} HBD
+                    </Text>
+                  </View>
+
+                  <View className="flex flex-col gap-1 border-t border-border pt-3">
+                    <View className="flex-row justify-between items-center">
+                      <Text className="text-muted-foreground">
+                        Active Posts
+                      </Text>
+                      <Text className="font-medium">
+                        {hideValue(rewardsData.summary.pending_posts_count)}
+                      </Text>
                     </View>
 
-                    <View className="px-6 mt-4 space-y-3">
-                      <View className="flex-row justify-between">
-                        <Text className="text-lg opacity-70">$</Text>
-                        <Text className="text-lg font-medium">
-                          "$$.$$$"
-                        </Text>
-                      </View>
+                    <View className="flex-row justify-between items-center">
+                      <Text className="text-muted-foreground">
+                        Author Rewards
+                      </Text>
+                      <Text className="font-medium">
+                        {hideValue(rewardsData.summary.total_author_rewards)}
+                      </Text>
+                    </View>
+
+                    <View className="flex-row justify-between items-center">
+                      <Text className="text-muted-foreground">
+                        Curator Rewards
+                      </Text>
+                      <Text className="font-medium">
+                        {hideValue(rewardsData.summary.total_curator_payouts)}
+                      </Text>
                     </View>
                   </View>
-                )}
+                </View>
+              </CardContent>
+            </Card>
+          )}
 
-
-
-                {/* Wallet Section */}
-                {username !== 'SPECTATOR' && (
-                  <View className="w-full py-6 bg-foreground/5 rounded-xl">
-                    <View className="flex-row items-center justify-between px-6">
-                      <View className="flex-row items-center">
-                        <Text className="text-xl font-bold">Balance</Text>
-                      </View>
-                      <Pressable onPress={() => setShowWallet(!showWallet)}>
-                        <Ionicons
-                          name={showWallet ? "eye-outline" : "eye-off-outline"}
-                          size={24}
-                          color={isDarkColorScheme ? "#ffffff" : "#000000"}
-                        />
-                      </Pressable>
-                    </View>
-                    {balanceData && (
-                      <View className="px-6 mt-4 space-y-3">
-                        <View className="flex-row justify-between">
-                          <Text className="text-lg opacity-70">Hive Power:</Text>
-                          <Text className="text-lg font-medium">
-                            {!showWallet ? (
-                              "$$.$$$"
-                            ) : (
-                              balanceData.hp_equivalent
-                            )}
-                          </Text>
-                        </View>
-
-                        <View className="flex-row justify-between">
-                          <Text className="text-lg opacity-70">HIVE:</Text>
-                          <Text className="text-lg font-medium">
-                            {!showWallet ? (
-                              "$$.$$$"
-                            ) : (
-                              balanceData.hive
-                            )}
-                          </Text>
-                        </View>
-
-                        <View className="flex-row justify-between">
-                          <Text className="text-lg opacity-70">HBD:</Text>
-                          <Text className="text-lg font-medium">
-                            {!showWallet ? (
-                              "$$.$$$"
-                            ) : (
-                              balanceData.hbd
-                            )}
-                          </Text>
-                        </View>
-                        <View className="flex-row justify-between">
-                          <Text className="text-lg opacity-70">Savings:</Text>
-                          <View className="items-end">
-                            <Text className="text-lg font-medium">
-                              {!showWallet ? (
-                                "$$.$$$"
-                              ) : (
-                                balanceData.hive_savings + " HIVE"
-                              )}
+          {/* Active Posts Card */}
+          {rewardsData &&
+            rewardsData.pending_posts &&
+            rewardsData.pending_posts.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Active Posts</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <View className="flex flex-col gap-4">
+                    {sortedPendingPosts(rewardsData.pending_posts).map(
+                      (post, index) => (
+                        <View
+                          key={index}
+                          className="pb-3 border-b border-border last:border-0"
+                        >
+                          <View className="flex flex-col gap-1">
+                            <Text className="font-medium">
+                              {post.title || "Comment"}
                             </Text>
-                            <Text className="text-lg font-medium">
-                              {!showWallet ? (
-                                "$$.$$$"
-                              ) : (
-                                balanceData.hbd_savings + " HBD"
-                              )}
-                            </Text>
+                            <View className="flex-row justify-between items-center">
+                              <Text className="text-muted-foreground">
+                                Potential
+                              </Text>
+                              <Text className="font-medium text-green-500">
+                                ${hideValue(post.pending_payout_value)}
+                              </Text>
+                            </View>
+                            <View className="flex-row justify-between items-center">
+                              <Text className="text-muted-foreground">
+                                Time Left
+                              </Text>
+                              <Text className="text-sm">
+                                {formatTimeLeft(post.remaining_till_cashout)}
+                              </Text>
+                            </View>
                           </View>
                         </View>
-                      </View>
+                      )
                     )}
                   </View>
-                )}
-
-                {/* Pending Rewards */}
-                {username !== 'SPECTATOR' && (
-                  <View className="px-6 mt-4">
-                    <View className="space-y-3">
-                      <View className="flex-row justify-between">
-                        <Text className="text-lg opacity-70">
-                          Payout:
-                        </Text>
-                        <Text className="text-lg font-medium">
-                          {rewardsData.summary.total_pending_payout} HBD
-                        </Text>
-                      </View>
-                      <View className="flex-row justify-between">
-                        <Text className="text-lg opacity-70">
-                          Posts:
-                        </Text>
-                        <Text className="text-lg font-medium">
-                          {rewardsData.summary.pending_posts_count}
-                        </Text>
-                      </View>
-                      <View className="flex-row justify-between">
-                        <Text className="text-lg opacity-70">
-                          Author Rewards:
-                        </Text>
-                        <Text className="text-lg font-medium">
-                          {rewardsData.summary.total_author_rewards}
-                        </Text>
-                      </View>
-                      <View className="flex-row justify-between">
-                        <Text className="text-lg opacity-70">
-                          Curator Rewards:
-                        </Text>
-                        <Text className="text-lg font-medium">
-                          {rewardsData.summary.total_curator_payouts}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                )}
-
-                {username !== 'SPECTATOR' && (
-                  <View className="px-6 mt-4">
-                    <View className="space-y-3">
-                      <View className="flex-row justify-between">
-                        <Text className="text-lg opacity-70">
-                          Pending Rewards: 
-                        </Text>
-                      </View>
-                      {rewardsData.pending_posts.map((post, index) => (
-                        <View key={index} className="flex-row justify-between">
-                          <Text className="text-lg opacity-70">
-                            {post.title || "Comment"}
-                          </Text>
-                          <View className="flex-row space-x-2">
-                            <Text className="text-lg opacity-70">
-                              {/* Payout: */}
-                            </Text>
-                            <Text className="text-lg font-medium">
-                              {post.pending_payout_value}
-                            </Text>
-                          </View>
-                          <View className="flex-row space-x-2">
-                            <Text className="text-lg opacity-70">
-                              Payment in:&nbsp;
-                            </Text>
-                            <Text className="text-lg font-medium">
-                              {post.remaining_till_cashout.days || "0"}D{" "}
-                              {post.remaining_till_cashout.hours || "0"}h{" "}
-                              {post.remaining_till_cashout.minutes || "0"}m{" "}
-                            </Text>
-                          </View>
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-                )}
-
-              </View>
+                </CardContent>
+              </Card>
             )}
-
-
-          </View>
         </View>
-      </ScrollView >
-    </SafeAreaView >
+      )}
+    </ScrollView>
   );
 }
