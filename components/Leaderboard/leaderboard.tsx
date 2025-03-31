@@ -90,7 +90,6 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
   }
 
   return (
-    // <View className="flex-1 bg-background">
       <View className="w-full py-4">
         <View className="items-center">
           <View
@@ -122,6 +121,34 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
                       <Text style={{ fontWeight: 'bold' }}>Score</Text>
                   </View> */}
 
+                {/* Content */}
+                {skaters.map((skater, index) => {
+                    const isTopThree = index < 3;
+                    const isTopOne = index < 1;
+                    return (
+                        <View
+                            key={skater.id}
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                padding: isTopThree ? 10 : 10,
+                                marginVertical: isTopThree ? 4 : 4,
+                                borderBottomWidth: 1,
+                                borderBottomColor: '#ccc',
+                                borderRadius: isTopThree ? 10 : 0,
+                            }}>
+
+
+                            <Text style={{
+                                fontSize: isTopThree ? 16 : 16,
+                                fontWeight: 'bold',
+                                color: isTopThree ? '#34C759' : '#eee',
+                                width: 50,
+                                textAlign: 'center',
+                            }}>
+                                #{index + 1}
+                            </Text>
           {/* Content */}
           {skaters.map((skater, index) => {
             const isTopThree = index < 3;
@@ -152,6 +179,24 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
                   #{index + 1}
                 </Text>
 
+                            <View className="h-12 w-12 mr-3 rounded-full relative">
+                                <Image
+                                    source={{ uri: `https://images.hive.blog/u/${skater.hive_author}/avatar/small` }}
+                                    style={{
+                                        width: isTopThree ? 40 : 40,
+                                        height: isTopThree ? 40 : 40,
+                                        borderRadius: 50,
+                                        borderWidth: 3,
+                                    }}
+                                    alt={`${skater.hive_author}'s avatar`}
+                                />
+                                {/* Crown positioned absolutely on top of the avatar */}
+                                {isTopOne && (
+                                    <View className="absolute -top-4 left-1/2 -translate-x-1/2">
+                                        <Crown size={18} color="#34C759" strokeWidth={2} />
+                                    </View>
+                                )}
+                            </View>
                 <View className="h-12 w-12 mr-3 rounded-full relative">
                   <Image
                     source={{
@@ -269,7 +314,6 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
             </View>
           )}
         </View>
-      </View>
-    // </View>
+    </View>
   );
 }

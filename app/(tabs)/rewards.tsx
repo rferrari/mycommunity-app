@@ -130,10 +130,114 @@ export default function WalletScreen() {
                   <Text className="text-xl font-bold mt-2">Incoming Rewards</Text>
                 </View>
 
+                {/* SPECTATOR */}
                 {username === 'SPECTATOR' && (
                   <RewardsSpectatorInfo />
                 )}
 
+                {/* Estimate Total Account Value */}
+                {username !== 'SPECTATOR' && (
+                  < View className="w-full py-6 bg-foreground/5 rounded-xl">
+                    <View className="flex-row items-center justify-between px-6">
+                      <View className="flex-row items-center">
+                        <Text className="text-xl font-bold">Estimated Account Value</Text>
+                      </View>
+                      <Pressable onPress={() => setShowWallet(!showWallet)}>
+                        <Ionicons
+                          name={showWallet ? "eye-outline" : "eye-off-outline"}
+                          size={24}
+                          color={isDarkColorScheme ? "#ffffff" : "#000000"}
+                        />
+                      </Pressable>
+                    </View>
+
+                    <View className="px-6 mt-4 space-y-3">
+                      <View className="flex-row justify-between">
+                        <Text className="text-lg opacity-70">$</Text>
+                        <Text className="text-lg font-medium">
+                          "$$.$$$"
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                )}
+
+
+
+                {/* Wallet Section */}
+                {username !== 'SPECTATOR' && (
+                  <View className="w-full py-6 bg-foreground/5 rounded-xl">
+                    <View className="flex-row items-center justify-between px-6">
+                      <View className="flex-row items-center">
+                        <Text className="text-xl font-bold">Balance</Text>
+                      </View>
+                      <Pressable onPress={() => setShowWallet(!showWallet)}>
+                        <Ionicons
+                          name={showWallet ? "eye-outline" : "eye-off-outline"}
+                          size={24}
+                          color={isDarkColorScheme ? "#ffffff" : "#000000"}
+                        />
+                      </Pressable>
+                    </View>
+                    {balanceData && (
+                      <View className="px-6 mt-4 space-y-3">
+                        <View className="flex-row justify-between">
+                          <Text className="text-lg opacity-70">Hive Power:</Text>
+                          <Text className="text-lg font-medium">
+                            {!showWallet ? (
+                              "$$.$$$"
+                            ) : (
+                              balanceData.hp_equivalent
+                            )}
+                          </Text>
+                        </View>
+
+                        <View className="flex-row justify-between">
+                          <Text className="text-lg opacity-70">HIVE:</Text>
+                          <Text className="text-lg font-medium">
+                            {!showWallet ? (
+                              "$$.$$$"
+                            ) : (
+                              balanceData.hive
+                            )}
+                          </Text>
+                        </View>
+
+                        <View className="flex-row justify-between">
+                          <Text className="text-lg opacity-70">HBD:</Text>
+                          <Text className="text-lg font-medium">
+                            {!showWallet ? (
+                              "$$.$$$"
+                            ) : (
+                              balanceData.hbd
+                            )}
+                          </Text>
+                        </View>
+                        <View className="flex-row justify-between">
+                          <Text className="text-lg opacity-70">Savings:</Text>
+                          <View className="items-end">
+                            <Text className="text-lg font-medium">
+                              {!showWallet ? (
+                                "$$.$$$"
+                              ) : (
+                                balanceData.hive_savings + " HIVE"
+                              )}
+                            </Text>
+                            <Text className="text-lg font-medium">
+                              {!showWallet ? (
+                                "$$.$$$"
+                              ) : (
+                                balanceData.hbd_savings + " HBD"
+                              )}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                    )}
+                  </View>
+                )}
+
+                {/* Pending Rewards */}
                 {username !== 'SPECTATOR' && (
                   <View className="px-6 mt-4">
                     <View className="space-y-3">
@@ -178,7 +282,7 @@ export default function WalletScreen() {
                     <View className="space-y-3">
                       <View className="flex-row justify-between">
                         <Text className="text-lg opacity-70">
-                          {/* Pending: */}
+                          Pending Rewards: 
                         </Text>
                       </View>
                       {rewardsData.pending_posts.map((post, index) => (
@@ -213,78 +317,6 @@ export default function WalletScreen() {
               </View>
             )}
 
-            {/* Wallet Section */}
-            {username !== 'SPECTATOR' && (
-              <View className="w-full py-6 bg-foreground/5 rounded-xl">
-                <View className="flex-row items-center justify-between px-6">
-                  <View className="flex-row items-center">
-                    <Text className="text-xl font-bold">Balance</Text>
-                  </View>
-                  <Pressable onPress={() => setShowWallet(!showWallet)}>
-                    <Ionicons
-                      name={showWallet ? "eye-outline" : "eye-off-outline"}
-                      size={24}
-                      color={isDarkColorScheme ? "#ffffff" : "#000000"}
-                    />
-                  </Pressable>
-                </View>
-                {balanceData && (
-                  <View className="px-6 mt-4 space-y-3">
-                    <View className="flex-row justify-between">
-                      <Text className="text-lg opacity-70">Hive Power:</Text>
-                      <Text className="text-lg font-medium">
-                        {!showWallet ? (
-                          "$$.$$$"
-                        ) : (
-                          balanceData.hp_equivalent
-                        )}
-                      </Text>
-                    </View>
-
-                    <View className="flex-row justify-between">
-                      <Text className="text-lg opacity-70">HIVE:</Text>
-                      <Text className="text-lg font-medium">
-                        {!showWallet ? (
-                          "$$.$$$"
-                        ) : (
-                          balanceData.hive
-                        )}
-                      </Text>
-                    </View>
-
-                    <View className="flex-row justify-between">
-                      <Text className="text-lg opacity-70">HBD:</Text>
-                      <Text className="text-lg font-medium">
-                        {!showWallet ? (
-                          "$$.$$$"
-                        ) : (
-                          balanceData.hbd
-                        )}
-                      </Text>
-                    </View>
-                    <View className="flex-row justify-between">
-                      <Text className="text-lg opacity-70">Savings:</Text>
-                      <View className="items-end">
-                        <Text className="text-lg font-medium">
-                          {!showWallet ? (
-                            "$$.$$$"
-                          ) : (
-                            balanceData.hive_savings + " HIVE"
-                          )}
-                        </Text>
-                        <Text className="text-lg font-medium">
-                          {!showWallet ? (
-                            "$$.$$$"
-                          ) : (
-                            balanceData.hbd_savings + " HBD"
-                          )}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                )}
-              </View>
-            )}
 
           </View>
         </View>
