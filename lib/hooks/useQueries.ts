@@ -8,6 +8,8 @@ interface ProfileData {
   reputation: string;
   followers: string;
   followings: string;
+  community_followers: string;
+  community_followings: string;
   total_posts: string;
   posting_metadata?: {
     profile: {
@@ -25,6 +27,8 @@ const SPECTATOR_PROFILE: ProfileData = {
   reputation: '0',
   followers: '0',
   followings: '0',
+  community_followers: '0',
+  community_followings: '0',
   total_posts: '0',
   posting_metadata: {
     profile: {

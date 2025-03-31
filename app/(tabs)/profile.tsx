@@ -156,11 +156,11 @@ export default function ProfileScreen() {
       {/* Stats Section */}
       <View className="flex-row justify-around bg-card p-4 rounded-lg">
         <View className="items-center">
-          <Text className="font-bold">{profileData?.followers || "0"}</Text>
+          <Text className="font-bold">{profileData?.community_followers || "0"}</Text>
           <Text className="text-muted-foreground">Followers</Text>
         </View>
         <View className="items-center">
-          <Text className="font-bold">{profileData?.followings || "0"}</Text>
+          <Text className="font-bold">{profileData?.community_followings || "0"}</Text>
           <Text className="text-muted-foreground">Following</Text>
         </View>
         <View className="items-center">
