@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, Image } from "react-native";
+import { View, Image, ScrollView } from "react-native";
 import { Text } from "~/components/ui/text";
 import { Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "~/lib/useColorScheme";
@@ -69,7 +69,7 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
   }
 
   return (
-    <View className="w-full py-4">
+    <ScrollView className="w-full py-4" showsVerticalScrollIndicator={false}>
       <View className="items-center">
         <View
           className="w-24 h-24 rounded-full bg-foreground/10 items-center justify-center"
@@ -227,6 +227,6 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
           </View>
         )}
       </View>
-    </View>
+    </ScrollView>
   );
 }
