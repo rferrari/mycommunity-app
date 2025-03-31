@@ -1,6 +1,6 @@
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import {
   Image,
   Keyboard,
@@ -8,7 +8,6 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   View,
-  LayoutChangeEvent,
   ScrollView,
 } from "react-native";
 import { VideoPlayer } from "~/components/feed/VideoPlayer";
@@ -20,11 +19,6 @@ export default function CreatePost() {
   const [content, setContent] = useState("");
   const [media, setMedia] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
-  const [mediaDimensions, setMediaDimensions] = useState<{
-    width: number;
-    height: number;
-  } | null>(null);
-  const [containerWidth, setContainerWidth] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [hasVideoInteraction, setHasVideoInteraction] = useState(false);
@@ -40,11 +34,6 @@ export default function CreatePost() {
       const asset = result.assets[0];
       setMedia(asset.uri);
       setMediaType(asset.type === "video" ? "video" : "image");
-      // Set dimensions directly from the picker result
-      setMediaDimensions({
-        width: asset.width,
-        height: asset.height,
-      });
       setIsVideoPlaying(false);
       setHasVideoInteraction(false);
     }
