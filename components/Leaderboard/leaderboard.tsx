@@ -1,81 +1,60 @@
-import React, { useState, useEffect } from "react";
-import { View, Image, ActivityIndicator } from "react-native";
+import React, { useMemo } from "react";
+import { View, Image } from "react-native";
 import { Text } from "~/components/ui/text";
-import { API_BASE_URL } from "~/lib/constants";
 import { Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { Crown } from "lucide-react-native";
 import { LoadingScreen } from "../ui/LoadingScreen";
+import { useLeaderboard } from "~/lib/hooks/useQueries";
 
 interface LeaderboardProps {
   currentUsername: string | null;
 }
 
-interface LeaderboardData {
+interface LeaderboardUserInfo {
+  position: number;
   id: number;
   hive_author: string;
-  hive_balance: number;
-  hp_balance: number;
-  hbd_balance: number;
-  hbd_savings_balance: number;
-  has_voted_in_witness: boolean;
-  eth_address: string;
-  gnars_balance: number;
-  gnars_votes: number;
-  skatehive_nft_balance: number;
-  max_voting_power_usd: number;
-  last_updated: string;
-  last_post: string;
-  post_count: number;
   points: number;
-  giveth_donations_usd: number;
-  giveth_donations_amount: number;
 }
 
 export function Leaderboard({ currentUsername }: LeaderboardProps) {
   const { isDarkColorScheme } = useColorScheme();
-  const [skaters, setSkaters] = useState<LeaderboardData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [currentUserPosition, setCurrentUserPosition] = useState<string>("0");
-  const [currentUserName, setCurrentUserName] = useState<string | null>(null);
-  const [currentUserScore, setCurrentUserScore] = useState<string | null>(null);
+  const { data: leaderboardData, isLoading, error } = useLeaderboard();
 
-  useEffect(() => {
-    const fetchSkaters = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/leaderboard`);
-        const data = await response.json();
-        const sortedData = data.sort(
-          (a: LeaderboardData, b: LeaderboardData) => b.points - a.points
-        );
+  const { topSkaters, currentUserInfo } = useMemo((): {
+    topSkaters: LeaderboardUserInfo[];
+    currentUserInfo: LeaderboardUserInfo | null;
+  } => {
+    if (!leaderboardData) return { topSkaters: [], currentUserInfo: null };
 
-        // Show top 10 results
-        const top10Results = sortedData.slice(0, 10);
-
-        // Find the current user's position in the leaderboard
-        const currentUserIndex = sortedData.findIndex(
-          (user: LeaderboardData) => user.hive_author === currentUsername
-        );
-
-        // Add the current user's position to the top 10 results at the 11th position
-        if (currentUserIndex > 10) {
-          // top10Results.push(sortedData[currentUserIndex]);
-          setCurrentUserPosition(currentUserIndex + 1); // Add 1 because indices are 0-based
-          setCurrentUserName(currentUsername);
-          setCurrentUserScore(sortedData[currentUserIndex + 1].points);
-        }
-
-        setSkaters(top10Results);
-        setIsLoading(false);
-      } catch (error) {
-        setError("Error fetching skatehive api data");
-        console.log(error);
-        setIsLoading(false);
+    const top10 = leaderboardData.slice(0, 10).map((user, index) => ({
+      position: index + 1,
+      id: user.id,
+      hive_author: user.hive_author,
+      points: user.points
+    }));
+    
+    let userInfo: LeaderboardUserInfo | null = null;
+    if (currentUsername) {
+      const userIndex = leaderboardData.findIndex(
+        user => user.hive_author === currentUsername
+      );
+      if (userIndex > 10) {
+        userInfo = {
+          position: userIndex + 1,
+          id: leaderboardData[userIndex].id,
+          hive_author: leaderboardData[userIndex].hive_author,
+          points: leaderboardData[userIndex].points
+        };
       }
+    }
+
+    return { 
+      topSkaters: top10,
+      currentUserInfo: userInfo 
     };
-    fetchSkaters();
-  }, []);
+  }, [leaderboardData, currentUsername]);
 
   if (isLoading) {
     return <LoadingScreen />;
@@ -84,7 +63,7 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
   if (error) {
     return (
       <View className="flex-1 justify-center items-center">
-        <Text>Error: {error}</Text>
+        <Text>An error occurred while loading the leaderboard</Text>
       </View>
     );
   }
@@ -109,7 +88,7 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
       </View>
 
       <View>
-        {skaters.map((skater, index) => {
+        {topSkaters.map((skater, index) => {
           const isTopThree = index < 3;
           const isTopOne = index < 1;
           return (
@@ -183,10 +162,9 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
           );
         })}
 
-        {/* Current logged in user position */}
-        {currentUserName && (
+        {currentUserInfo && (
           <View
-            key={currentUserPosition}
+            key={currentUserInfo.position}
             style={{
               flexDirection: "row",
               alignItems: "center",
@@ -207,13 +185,13 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
                 textAlign: "center",
               }}
             >
-              #{currentUserPosition}
+              #{currentUserInfo.position}
             </Text>
 
             <View className="h-12 w-12 mr-3 rounded-full relative">
               <Image
                 source={{
-                  uri: `https://images.hive.blog/u/${currentUserName}/avatar/small`,
+                  uri: `https://images.hive.blog/u/${currentUserInfo.hive_author}/avatar/small`,
                 }}
                 style={{
                   width: 40,
@@ -221,7 +199,7 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
                   borderRadius: 50,
                   borderWidth: 3,
                 }}
-                alt={`${currentUserName}'s avatar`}
+                alt={`${currentUserInfo.hive_author}'s avatar`}
               />
             </View>
 
@@ -235,7 +213,7 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
                 color: "#eee",
               }}
             >
-              {currentUserName}
+              {currentUserInfo.hive_author}
             </Text>
             <Text
               style={{
@@ -244,7 +222,7 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
                 color: "#fff",
               }}
             >
-              {currentUserScore}
+              {currentUserInfo.points.toFixed(0)}
             </Text>
           </View>
         )}
