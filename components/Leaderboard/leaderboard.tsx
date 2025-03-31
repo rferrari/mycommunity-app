@@ -90,230 +90,165 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
   }
 
   return (
-      <View className="w-full py-4">
-        <View className="items-center">
-          <View
-            className="w-24 h-24 rounded-full bg-foreground/10 items-center justify-center"
-            style={{
-              borderWidth: 3,
-              borderColor: isDarkColorScheme ? "#ffffff20" : "#00000020",
-            }}
-          >
-            <Ionicons
-              name="podium-outline"
-              size={48}
-              color={isDarkColorScheme ? "#FFD700" : "#DAA520"}
-            />
-          </View>
-          <Text className="text-xl font-bold mt-2">Leaderboard</Text>
+    <View className="w-full py-4">
+      <View className="items-center">
+        <View
+          className="w-24 h-24 rounded-full bg-foreground/10 items-center justify-center"
+          style={{
+            borderWidth: 3,
+            borderColor: isDarkColorScheme ? "#ffffff20" : "#00000020",
+          }}
+        >
+          <Ionicons
+            name="podium-outline"
+            size={48}
+            color={isDarkColorScheme ? "#FFD700" : "#DAA520"}
+          />
         </View>
+        <Text className="text-xl font-bold mt-2">Leaderboard</Text>
+      </View>
 
-        <View>
-          {/* Heading */}
-          {/* <View key={'skater'} className='' style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      padding: 10,
-                      borderBottomWidth: 1,
-                      borderBottomColor: '#ccc',
-                  }}>
-                      <Text style={{ fontWeight: 'bold' }}>Skater</Text>
-                      <Text style={{ fontWeight: 'bold' }}>Score</Text>
-                  </View> */}
-
-                {/* Content */}
-                {skaters.map((skater, index) => {
-                    const isTopThree = index < 3;
-                    const isTopOne = index < 1;
-                    return (
-                        <View
-                            key={skater.id}
-                            style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                padding: isTopThree ? 10 : 10,
-                                marginVertical: isTopThree ? 4 : 4,
-                                borderBottomWidth: 1,
-                                borderBottomColor: '#ccc',
-                                borderRadius: isTopThree ? 10 : 0,
-                            }}>
-
-
-                            <Text style={{
-                                fontSize: isTopThree ? 16 : 16,
-                                fontWeight: 'bold',
-                                color: isTopThree ? '#34C759' : '#eee',
-                                width: 50,
-                                textAlign: 'center',
-                            }}>
-                                #{index + 1}
-                            </Text>
-          {/* Content */}
-          {skaters.map((skater, index) => {
-            const isTopThree = index < 3;
-            const isTopOne = index < 1;
-            return (
-              <View
-                key={skater.id}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: isTopThree ? 10 : 10,
-                  marginVertical: isTopThree ? 4 : 4,
-                  borderBottomWidth: 1,
-                  borderBottomColor: "#ccc",
-                  borderRadius: isTopThree ? 10 : 0,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: isTopThree ? 16 : 16,
-                    fontWeight: "bold",
-                    color: isTopThree ? "#d4af37" : "#eee",
-                    width: 50,
-                    textAlign: "center",
-                  }}
-                >
-                  #{index + 1}
-                </Text>
-
-                            <View className="h-12 w-12 mr-3 rounded-full relative">
-                                <Image
-                                    source={{ uri: `https://images.hive.blog/u/${skater.hive_author}/avatar/small` }}
-                                    style={{
-                                        width: isTopThree ? 40 : 40,
-                                        height: isTopThree ? 40 : 40,
-                                        borderRadius: 50,
-                                        borderWidth: 3,
-                                    }}
-                                    alt={`${skater.hive_author}'s avatar`}
-                                />
-                                {/* Crown positioned absolutely on top of the avatar */}
-                                {isTopOne && (
-                                    <View className="absolute -top-4 left-1/2 -translate-x-1/2">
-                                        <Crown size={18} color="#34C759" strokeWidth={2} />
-                                    </View>
-                                )}
-                            </View>
-                <View className="h-12 w-12 mr-3 rounded-full relative">
-                  <Image
-                    source={{
-                      uri: `https://images.hive.blog/u/${skater.hive_author}/avatar/small`,
-                    }}
-                    // className="w-full h-full border-2 border-[#FFCC00] rounded-full"
-                    style={{
-                      width: isTopThree ? 40 : 40,
-                      height: isTopThree ? 40 : 40,
-                      borderRadius: 50,
-                      borderWidth: 3,
-                      // borderColor: isTopOne ? '#FFCC00' : '#ccc',
-                    }}
-                    alt={`${skater.hive_author}'s avatar`}
-                  />
-                  {/* Crown positioned absolutely on top of the avatar */}
-                  {isTopOne && (
-                    <View className="absolute -top-4 left-1/2 -translate-x-1/2">
-                      <Crown size={18} color="#FFCC00" strokeWidth={2} />
-                    </View>
-                  )}
-                </View>
-
-                <Text
-                  style={{
-                    fontSize: isTopThree ? 18 : 16,
-                    paddingLeft: 10,
-                    fontWeight: "bold",
-                    flex: 1,
-                    textAlign: "left",
-                    color: isTopThree ? "#fff" : "#eee",
-                  }}
-                >
-                  {skater.hive_author}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: isTopThree ? 18 : 16,
-                    fontWeight: "bold",
-                    color: isTopThree ? "#4caf50" : "#fff",
-                  }}
-                >
-                  {skater.points.toFixed(0)}
-                </Text>
-              </View>
-            );
-          })}
-
-          {/* Current logged in user position */}
-          {currentUserName && (
+      <View>
+        {skaters.map((skater, index) => {
+          const isTopThree = index < 3;
+          const isTopOne = index < 1;
+          return (
             <View
-              key={currentUserPosition}
+              key={skater.id}
               style={{
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                padding: 10,
-                marginVertical: 4,
+                padding: isTopThree ? 10 : 10,
+                marginVertical: isTopThree ? 4 : 4,
                 borderBottomWidth: 1,
                 borderBottomColor: "#ccc",
-                borderRadius: 0,
+                borderRadius: isTopThree ? 10 : 0,
               }}
             >
               <Text
                 style={{
-                  fontSize: 16,
+                  fontSize: isTopThree ? 16 : 16,
                   fontWeight: "bold",
-                  color: "#eee",
+                  color: isTopThree ? "#d4af37" : "#eee",
                   width: 50,
                   textAlign: "center",
                 }}
               >
-                #{currentUserPosition}
+                #{index + 1}
               </Text>
 
               <View className="h-12 w-12 mr-3 rounded-full relative">
                 <Image
                   source={{
-                    uri: `https://images.hive.blog/u/${currentUserName}/avatar/small`,
+                    uri: `https://images.hive.blog/u/${skater.hive_author}/avatar/small`,
                   }}
-                  // className="w-full h-full border-2 border-[#FFCC00] rounded-full"
                   style={{
-                    width: 40,
-                    height: 40,
+                    width: isTopThree ? 40 : 40,
+                    height: isTopThree ? 40 : 40,
                     borderRadius: 50,
                     borderWidth: 3,
-                    // borderColor: isTopOne ? '#FFCC00' : '#ccc',
                   }}
-                  alt={`${currentUserName}'s avatar`}
+                  alt={`${skater.hive_author}'s avatar`}
                 />
+                {isTopOne && (
+                  <View className="absolute -top-4 left-1/2 -translate-x-1/2">
+                    <Crown size={18} color="#FFCC00" strokeWidth={2} />
+                  </View>
+                )}
               </View>
 
               <Text
                 style={{
-                  fontSize: 16,
+                  fontSize: isTopThree ? 18 : 16,
                   paddingLeft: 10,
                   fontWeight: "bold",
                   flex: 1,
                   textAlign: "left",
-                  color: "#eee",
+                  color: isTopThree ? "#fff" : "#eee",
                 }}
               >
-                {currentUserName}
+                {skater.hive_author}
               </Text>
               <Text
                 style={{
-                  fontSize: 16,
+                  fontSize: isTopThree ? 18 : 16,
                   fontWeight: "bold",
-                  color: "#fff",
+                  color: isTopThree ? "#4caf50" : "#fff",
                 }}
               >
-                {/* {currentUserScore?.toFixed(0)} */}
-                {currentUserScore}
+                {skater.points.toFixed(0)}
               </Text>
             </View>
-          )}
-        </View>
+          );
+        })}
+
+        {/* Current logged in user position */}
+        {currentUserName && (
+          <View
+            key={currentUserPosition}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: 10,
+              marginVertical: 4,
+              borderBottomWidth: 1,
+              borderBottomColor: "#ccc",
+              borderRadius: 0,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "bold",
+                color: "#eee",
+                width: 50,
+                textAlign: "center",
+              }}
+            >
+              #{currentUserPosition}
+            </Text>
+
+            <View className="h-12 w-12 mr-3 rounded-full relative">
+              <Image
+                source={{
+                  uri: `https://images.hive.blog/u/${currentUserName}/avatar/small`,
+                }}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 50,
+                  borderWidth: 3,
+                }}
+                alt={`${currentUserName}'s avatar`}
+              />
+            </View>
+
+            <Text
+              style={{
+                fontSize: 16,
+                paddingLeft: 10,
+                fontWeight: "bold",
+                flex: 1,
+                textAlign: "left",
+                color: "#eee",
+              }}
+            >
+              {currentUserName}
+            </Text>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "bold",
+                color: "#fff",
+              }}
+            >
+              {currentUserScore}
+            </Text>
+          </View>
+        )}
+      </View>
     </View>
   );
 }
