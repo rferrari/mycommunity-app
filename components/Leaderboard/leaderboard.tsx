@@ -90,7 +90,7 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
   }
 
   return (
-    <View className="flex-1 bg-background">
+    // <View className="flex-1 bg-background">
       <View className="w-full py-4">
         <View className="items-center">
           <View
@@ -270,6 +270,6 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
           )}
         </View>
       </View>
-    </View>
+    // </View>
   );
 }
