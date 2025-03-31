@@ -16,6 +16,11 @@ const TAB_ITEMS = [
     icon: 'flame-outline'
   },
   {
+    name: 'create',
+    title: 'Create',
+    icon: 'add-circle-outline'
+  },
+  {
     name: 'rewards',
     title: 'Rewards',
     icon: 'trophy-outline'
