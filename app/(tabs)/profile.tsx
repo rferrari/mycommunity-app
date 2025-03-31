@@ -119,7 +119,7 @@ export default function ProfileScreen() {
       {!params.username && (
         <Pressable
           onPress={handleLogout}
-          className="absolute top-2 right-6 z-10"
+          className="absolute top-6 right-6 z-10"
         >
           <View className="bg-foreground/20 rounded-full py-2 px-4 flex flex-row items-center gap-2">
             <Text>Exit</Text>
@@ -133,7 +133,7 @@ export default function ProfileScreen() {
       )}
 
       {/* Profile Info Section */}
-      <View className="items-center space-y-4">
+      <View className="items-center gap-2 pt-6">
         {renderProfileImage()}
         <View className="items-center">
           <Text className="text-2xl font-bold">
