@@ -17,6 +17,7 @@ import { ProfileSpectatorInfo } from "~/components/SpectatorMode/ProfileSpectato
 import { useProfile, useUserFeed } from "~/lib/hooks/useQueries";
 import { PostCard } from "~/components/feed/PostCard";
 import type { Post } from "~/lib/types";
+import { LoadingScreen } from "~/components/ui/LoadingScreen";
 
 export default function ProfileScreen() {
   const { isDarkColorScheme } = useColorScheme();
@@ -94,9 +95,7 @@ export default function ProfileScreen() {
 
   if (isLoadingProfile) {
     return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" />
-      </View>
+      <LoadingScreen />
     );
   }
 
