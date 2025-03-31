@@ -13,7 +13,7 @@ export default function FeedPage() {
   );
 
   return (
-    <View className="flex-1 bg-background">
+    <View className="flex-1 bg-background" style={{ overflow: 'visible' }}>
       <Feed refreshTrigger={refreshKey} />
     </View>
   );
