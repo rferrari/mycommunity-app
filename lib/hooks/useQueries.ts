@@ -9,7 +9,7 @@ interface ProfileData {
   followers: string;
   followings: string;
   total_posts: string;
-  posting_metadata: {
+  posting_metadata?: {
     profile: {
       name: string;
       about: string;
@@ -70,16 +70,16 @@ export function useRewards(username: string | null) {
 }
 
 export function useProfile(username: string | null) {
-  return useQuery({
+  return useQuery<ProfileData, Error>({
     queryKey: ['profile', username],
-    queryFn: async () => {
+    queryFn: async (): Promise<ProfileData> => {
       if (!username || username === 'SPECTATOR') {
         return SPECTATOR_PROFILE;
       }
       const profileResponse = await fetch(`${API_BASE_URL}/profile/${username}`);
       const profileJson = await profileResponse.json();
       if (profileJson.success) {
-        return profileJson.data;
+        return profileJson.data as ProfileData;
       }
       throw new Error('Failed to fetch profile data');
     },
