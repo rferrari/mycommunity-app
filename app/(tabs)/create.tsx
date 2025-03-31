@@ -31,7 +31,7 @@ export default function CreatePost() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images", "videos"],
         allowsEditing: false,
-        quality: 1,
+        quality: 0.75,
       });
 
       if (!result.canceled && result.assets?.[0]) {
