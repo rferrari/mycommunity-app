@@ -5,6 +5,7 @@ import {
   Image,
   ActivityIndicator,
   Pressable,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -14,13 +15,21 @@ import { Button } from "~/components/ui/button";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { useAuth } from "~/lib/auth-provider";
 import { ProfileSpectatorInfo } from "~/components/SpectatorMode/ProfileSpectatorInfo";
-import { useProfile } from "~/lib/hooks/useQueries";
+import { useProfile, useUserFeed } from "~/lib/hooks/useQueries";
+import { PostCard } from "~/components/feed/PostCard";
+import type { Post } from "~/lib/types";
 
 export default function ProfileScreen() {
   const { isDarkColorScheme } = useColorScheme();
   const { username, logout } = useAuth();
   const [message, setMessage] = useState("");
-  const { data: profileData, isLoading } = useProfile(username);
+  const { data: profileData, isLoading: isLoadingProfile } =
+    useProfile(username);
+  const {
+    data: userFeed,
+    isLoading: isLoadingFeed,
+    refetch: refetchFeed,
+  } = useUserFeed(username);
 
   const handleLogout = async () => {
     try {
@@ -61,7 +70,7 @@ export default function ProfileScreen() {
     );
   };
 
-  if (isLoading) {
+  if (isLoadingProfile) {
     return (
       <View className="flex-1 items-center justify-center">
         <ActivityIndicator size="large" />
@@ -79,63 +88,94 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView edges={["bottom"]} className="flex-1 bg-background">
-      {/* Top Exit Button */}
-      <Pressable
-        onPress={handleLogout}
-        className="absolute top-2 right-6 z-10"
-      >
-        <View className="bg-foreground/20 rounded-full py-2 px-4 flex flex-row items-center gap-2">
-          <Text>Exit</Text>
-          <Ionicons
-            name="exit-outline"
-            size={16}
-            color={isDarkColorScheme ? "#ffffff" : "#000000"}
+      <ScrollView
+        className="flex-1"
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoadingFeed}
+            onRefresh={refetchFeed}
+            tintColor={isDarkColorScheme ? "#ffffff" : "#000000"}
           />
+        }
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Top Exit Button */}
+        <Pressable
+          onPress={handleLogout}
+          className="absolute top-2 right-6 z-10"
+        >
+          <View className="bg-foreground/20 rounded-full py-2 px-4 flex flex-row items-center gap-2">
+            <Text>Exit</Text>
+            <Ionicons
+              name="exit-outline"
+              size={16}
+              color={isDarkColorScheme ? "#ffffff" : "#000000"}
+            />
+          </View>
+        </Pressable>
+        {/* Profile Info Section */}
+        <View className="items-center space-y-4">
+          {renderProfileImage()}
+          <View className="items-center">
+            <Text className="text-2xl font-bold">
+              {profileData.posting_metadata.profile.name || profileData.name}
+            </Text>
+            <Text className="text-muted-foreground">@{username}</Text>
+          </View>
+          {profileData.posting_metadata.profile.about && (
+            <Text className="text-center">
+              {profileData.posting_metadata.profile.about}
+            </Text>
+          )}
+          {profileData.posting_metadata.profile.location && (
+            <Text className="text-muted-foreground">
+              📍 {profileData.posting_metadata.profile.location}
+            </Text>
+          )}
         </View>
-      </Pressable>
 
-      <ScrollView className="flex-1">
-        <View className="p-2 space-y-4">
-          {/* Profile Info Section */}
-          <View className="items-center space-y-4">
-            {renderProfileImage()}
-            <View className="items-center">
-              <Text className="text-2xl font-bold">
-                {profileData.posting_metadata.profile.name || profileData.name}
-              </Text>
-              <Text className="text-muted-foreground">@{username}</Text>
-            </View>
-            {profileData.posting_metadata.profile.about && (
-              <Text className="text-center">
-                {profileData.posting_metadata.profile.about}
-              </Text>
-            )}
-            {profileData.posting_metadata.profile.location && (
-              <Text className="text-muted-foreground">
-                📍 {profileData.posting_metadata.profile.location}
+        {/* Show Create Account CTA only for SPECTATOR */}
+        {username === "SPECTATOR" && <ProfileSpectatorInfo />}
+
+        {/* Stats Section */}
+        <View className="flex-row justify-around bg-card p-4 rounded-lg">
+          <View className="items-center">
+            <Text className="font-bold">{profileData.followers}</Text>
+            <Text className="text-muted-foreground">Followers</Text>
+          </View>
+          <View className="items-center">
+            <Text className="font-bold">{profileData.followings}</Text>
+            <Text className="text-muted-foreground">Following</Text>
+          </View>
+          <View className="items-center">
+            <Text className="font-bold">{profileData.total_posts}</Text>
+            <Text className="text-muted-foreground">Posts</Text>
+          </View>
+        </View>
+
+        {/* User Feed Section */}
+        {username !== "SPECTATOR" && (
+          <View className="flex flex-col gap-4">
+            {isLoadingFeed ? (
+              <ActivityIndicator size="large" />
+            ) : userFeed && userFeed.length > 0 ? (
+              userFeed.map((post: Post) => (
+                <React.Fragment key={post.permlink}>
+                  <View className="h-0 my-4 border border-muted" />
+                  <PostCard
+                    key={post.permlink}
+                    post={post}
+                    currentUsername={username}
+                  />
+                </React.Fragment>
+              ))
+            ) : (
+              <Text className="text-center text-muted-foreground">
+                No posts yet
               </Text>
             )}
           </View>
-
-          {/* Show Create Account CTA only for SPECTATOR */}
-          {username === "SPECTATOR" && <ProfileSpectatorInfo />}
-
-          {/* Stats Section */}
-          <View className="flex-row justify-around bg-card p-4 rounded-lg">
-            <View className="items-center">
-              <Text className="font-bold">{profileData.followers}</Text>
-              <Text className="text-muted-foreground">Followers</Text>
-            </View>
-            <View className="items-center">
-              <Text className="font-bold">{profileData.followings}</Text>
-              <Text className="text-muted-foreground">Following</Text>
-            </View>
-            <View className="items-center">
-              <Text className="font-bold">{profileData.total_posts}</Text>
-              <Text className="text-muted-foreground">Posts</Text>
-            </View>
-          </View>
-        </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

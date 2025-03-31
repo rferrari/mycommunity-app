@@ -123,3 +123,22 @@ export function useLeaderboard() {
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 }
+
+export function useUserFeed(username: string | null) {
+  return useQuery({
+    queryKey: ['userFeed', username],
+    queryFn: async () => {
+      if (!username || username === 'SPECTATOR') {
+        return [];
+      }
+      const response = await fetch(`${API_BASE_URL}/feed/${username}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch user feed');
+      }
+      const data = await response.json();
+      return data.success ? data.data : [];
+    },
+    enabled: !!username && username !== 'SPECTATOR',
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+  });
+}
