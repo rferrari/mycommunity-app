@@ -82,15 +82,15 @@ export default function ProfileScreen() {
       {/* Top Exit Button */}
       <Pressable
         onPress={handleLogout}
-        className="absolute top-12 right-6 z-10"
+        className="absolute top-2 right-6 z-10"
       >
-        <View className="bg-foreground/20 rounded-full p-2">
+        <View className="bg-foreground/20 rounded-full py-2 px-4 flex flex-row items-center gap-2">
+          <Text>Exit</Text>
           <Ionicons
             name="exit-outline"
-            size={24}
+            size={16}
             color={isDarkColorScheme ? "#ffffff" : "#000000"}
           />
-          <Text>Exit</Text>
         </View>
       </Pressable>
 
