@@ -81,7 +81,7 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
           <Ionicons
             name="podium-outline"
             size={48}
-            color={isDarkColorScheme ? "#FFD700" : "#DAA520"}
+            color={isDarkColorScheme ? "#34C759" : "#34C759"}
           />
         </View>
         <Text className="text-xl font-bold mt-2">Leaderboard</Text>
