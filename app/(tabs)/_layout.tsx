@@ -11,9 +11,9 @@ const TAB_ITEMS = [
     icon: 'home-outline'
   },
   {
-    name: 'trending',
-    title: 'Trending',
-    icon: 'flame-outline'
+    name: 'leaderboard',
+    title: 'Leaderboard',
+    icon: 'podium-outline'
   },
   {
     name: 'create',
@@ -24,11 +24,6 @@ const TAB_ITEMS = [
     name: 'rewards',
     title: 'Rewards',
     icon: 'trophy-outline'
-  },
-  {
-    name: 'leaderboard',
-    title: 'Leaderboard',
-    icon: 'podium-outline'
   },
   {
     name: 'profile',
