@@ -1,14 +1,11 @@
-import React, { useState } from "react";
-import { View, TextInput, Image, Pressable, TouchableWithoutFeedback, Keyboard, Dimensions } from "react-native";
-import { Text } from "~/components/ui/text";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { Card } from "~/components/ui/card";
+import React, { useState } from "react";
+import { Image, Keyboard, Pressable, TextInput, TouchableWithoutFeedback, View } from "react-native";
 import { VideoPlayer } from "~/components/feed/VideoPlayer";
-
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+import { Button } from "~/components/ui/button";
+import { Card } from "~/components/ui/card";
+import { Text } from "~/components/ui/text";
 
 export default function CreatePost() {
   const [content, setContent] = useState("");
