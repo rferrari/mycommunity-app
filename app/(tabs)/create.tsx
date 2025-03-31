@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   View,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { VideoPlayer } from "~/components/feed/VideoPlayer";
 import { Button } from "~/components/ui/button";
@@ -20,22 +21,30 @@ export default function CreatePost() {
   const [media, setMedia] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSelectingMedia, setIsSelectingMedia] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [hasVideoInteraction, setHasVideoInteraction] = useState(false);
 
   const pickMedia = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images", "videos"],
-      allowsEditing: false,
-      quality: 1,
-    });
+    try {
+      setIsSelectingMedia(true);
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images", "videos"],
+        allowsEditing: false,
+        quality: 1,
+      });
 
-    if (!result.canceled && result.assets?.[0]) {
-      const asset = result.assets[0];
-      setMedia(asset.uri);
-      setMediaType(asset.type === "video" ? "video" : "image");
-      setIsVideoPlaying(false);
-      setHasVideoInteraction(false);
+      if (!result.canceled && result.assets?.[0]) {
+        const asset = result.assets[0];
+        setMedia(asset.uri);
+        setMediaType(asset.type === "video" ? "video" : "image");
+        setIsVideoPlaying(false);
+        setHasVideoInteraction(false);
+      }
+    } catch (error) {
+      console.error("Error selecting media:", error);
+    } finally {
+      setIsSelectingMedia(false);
     }
   };
 
@@ -93,10 +102,23 @@ export default function CreatePost() {
           <Pressable
             onPress={pickMedia}
             className="flex-row items-center"
-            disabled={isUploading}
+            disabled={isUploading || isSelectingMedia}
           >
-            <Ionicons name="image-outline" size={24} color="#666" />
-            <Text className="ml-2 text-foreground/60">Add media</Text>
+            {isSelectingMedia ? (
+              <>
+                <View className="w-6 h-6 items-center justify-center">
+                  <ActivityIndicator size="small" />
+                </View>
+                <Text className="ml-2 text-foreground/60">Selecting...</Text>
+              </>
+            ) : (
+              <>
+                <Ionicons name="image-outline" size={24} color="#666" />
+                <Text className="ml-2 text-foreground/60">
+                  {media ? "Replace media" : "Add media"}
+                </Text>
+              </>
+            )}
           </Pressable>
 
           <Button
