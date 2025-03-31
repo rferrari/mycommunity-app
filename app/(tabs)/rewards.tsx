@@ -107,14 +107,15 @@ export default function WalletScreen() {
 
     // HBD is 1:1 with USD
     const hbdValue = parseFloat(balanceData.hbd) || 0;
-    
+
     // Convert HIVE to USD using market price
     const hivePrice = parseFloat(marketData.close) || 0;
     const hiveValue = (parseFloat(balanceData.hive) || 0) * hivePrice;
     const hpValue = (parseFloat(balanceData.hp_equivalent) || 0) * hivePrice;
-    
+
     // Pending rewards in HBD
-    const pendingValue = parseFloat(rewardsData.summary.total_pending_payout) || 0;
+    const pendingValue =
+      parseFloat(rewardsData.summary.total_pending_payout) || 0;
 
     return (hiveValue + hbdValue + hpValue + pendingValue).toFixed(2);
   };
@@ -149,7 +150,10 @@ export default function WalletScreen() {
     return parts.join(" ") || "0m";
   };
 
-  const calculateDollarValue = (amount: string | undefined, price: string | undefined) => {
+  const calculateDollarValue = (
+    amount: string | undefined,
+    price: string | undefined
+  ) => {
     if (!amount || !price) return "0.00";
     return (parseFloat(amount) * parseFloat(price)).toFixed(2);
   };
@@ -160,6 +164,23 @@ export default function WalletScreen() {
         <RewardsSpectatorInfo />
       ) : (
         <View className="flex flex-col gap-4">
+          <View className="items-center mt-2">
+            <View
+              className="w-24 h-24 rounded-full bg-foreground/10 items-center justify-center"
+              style={{
+                borderWidth: 3,
+                borderColor: isDarkColorScheme ? "#ffffff20" : "#00000020",
+              }}
+            >
+              <Ionicons
+                name="trophy-outline"
+                size={48}
+                color={isDarkColorScheme ? "#34C759" : "#34C759"}
+              />
+            </View>
+            <Text className="text-xl font-bold mt-2">Incoming Rewards</Text>
+          </View>
+
           {/* Account Overview Card */}
           <Card>
             <CardHeader className="flex-row justify-between items-center">
@@ -204,7 +225,13 @@ export default function WalletScreen() {
                           {hideValue(balanceData?.hive)}
                         </Text>
                         <Text className="text-sm text-muted-foreground">
-                          ${hideValue(calculateDollarValue(balanceData?.hive, marketData?.close))}
+                          $
+                          {hideValue(
+                            calculateDollarValue(
+                              balanceData?.hive,
+                              marketData?.close
+                            )
+                          )}
                         </Text>
                       </View>
                     </View>
@@ -218,7 +245,13 @@ export default function WalletScreen() {
                           {hideValue(balanceData?.hp_equivalent)}
                         </Text>
                         <Text className="text-sm text-muted-foreground">
-                          ${hideValue(calculateDollarValue(balanceData?.hp_equivalent, marketData?.close))}
+                          $
+                          {hideValue(
+                            calculateDollarValue(
+                              balanceData?.hp_equivalent,
+                              marketData?.close
+                            )
+                          )}
                         </Text>
                       </View>
                     </View>
