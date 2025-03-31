@@ -4,6 +4,7 @@ import { formatDistanceToNow } from 'date-fns';
 import * as SecureStore from 'expo-secure-store';
 import * as Haptics from 'expo-haptics';
 import { Image, Pressable, View, Linking } from 'react-native';
+import { router } from 'expo-router';
 import { API_BASE_URL } from '~/lib/constants';
 import { Text } from '../ui/text';
 import { MediaPreview } from './MediaPreview';
@@ -120,10 +121,17 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
     return <Text key={index}>{part}</Text>;
   });
 
+  const handleProfilePress = () => {
+    router.push({
+      pathname: "/(tabs)/profile",
+      params: { username: post.author }
+    });
+  };
+
   return (
     <>
       <View className="w-full mb-4">
-        <View className="flex-row items-center justify-between mb-3 px-2">
+        <Pressable onPress={handleProfilePress} className="flex-row items-center justify-between mb-3 px-2">
           <View className="flex-row items-center">
             <View className="h-12 w-12 mr-3 rounded-full overflow-hidden">
               <Image
@@ -139,7 +147,7 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
           <Text className="text-gray-500">
             {formatDistanceToNow(new Date(post.created), { addSuffix: true })}
           </Text>
-        </View>
+        </Pressable>
 
         {postContent !== '' && (
           <Text className="px-2 mb-2">{postContentWithLinks}</Text>

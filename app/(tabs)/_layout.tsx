@@ -57,6 +57,13 @@ export default function TabLayout() {
                   tabBarIcon: ({ color }) => (
                     <TabBarIcon name={tab.icon} color={color} />
                   ),
+                  // Reset params to show current user's profile when clicking the Profile tab
+                  ...(tab.name === 'profile' && {
+                    href: {
+                      pathname: "/(tabs)/profile",
+                      params: {}
+                    }
+                  })
                 }}
               />
             ))}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   ScrollView,
@@ -7,8 +7,7 @@ import {
   Pressable,
   RefreshControl,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Text } from "~/components/ui/text";
 import { Button } from "~/components/ui/button";
@@ -21,15 +20,19 @@ import type { Post } from "~/lib/types";
 
 export default function ProfileScreen() {
   const { isDarkColorScheme } = useColorScheme();
-  const { username, logout } = useAuth();
+  const { username: currentUsername, logout } = useAuth();
+  const params = useLocalSearchParams();
   const [message, setMessage] = useState("");
-  const { data: profileData, isLoading: isLoadingProfile } =
-    useProfile(username);
+  
+  // Use the URL param username if available, otherwise use current user's username
+  const profileUsername = (params.username as string) || currentUsername;
+  
+  const { data: profileData, isLoading: isLoadingProfile } = useProfile(profileUsername);
   const {
     data: userFeed,
     isLoading: isLoadingFeed,
     refetch: refetchFeed,
-  } = useUserFeed(username);
+  } = useUserFeed(profileUsername);
 
   const handleLogout = async () => {
     try {
@@ -42,7 +45,7 @@ export default function ProfileScreen() {
   };
 
   const renderProfileImage = () => {
-    if (username === "SPECTATOR") {
+    if (profileUsername === "SPECTATOR") {
       return (
         <View className="w-24 h-24 rounded-full bg-muted flex items-center justify-center">
           <Ionicons
@@ -93,22 +96,27 @@ export default function ProfileScreen() {
         <RefreshControl
           refreshing={isLoadingFeed}
           onRefresh={refetchFeed}
-          tintColor={isDarkColorScheme ? "#ffffff" : "#000000"}
         />
       }
       showsVerticalScrollIndicator={false}
     >
-      {/* Top Exit Button */}
-      <Pressable onPress={handleLogout} className="absolute top-2 right-6 z-10">
-        <View className="bg-foreground/20 rounded-full py-2 px-4 flex flex-row items-center gap-2">
-          <Text>Exit</Text>
-          <Ionicons
-            name="exit-outline"
-            size={16}
-            color={isDarkColorScheme ? "#ffffff" : "#000000"}
-          />
-        </View>
-      </Pressable>
+      {/* Top Exit/Back Button */}
+      {!params.username && (
+        <Pressable 
+          onPress={handleLogout} 
+          className="absolute top-2 right-6 z-10"
+        >
+          <View className="bg-foreground/20 rounded-full py-2 px-4 flex flex-row items-center gap-2">
+        <Text>Exit</Text>
+        <Ionicons
+          name="exit-outline"
+          size={16}
+          color={isDarkColorScheme ? "#ffffff" : "#000000"}
+        />
+          </View>
+        </Pressable>
+      )}
+
       {/* Profile Info Section */}
       <View className="items-center space-y-4">
         {renderProfileImage()}
@@ -116,7 +124,7 @@ export default function ProfileScreen() {
           <Text className="text-2xl font-bold">
             {profileData.posting_metadata.profile.name || profileData.name}
           </Text>
-          <Text className="text-muted-foreground">@{username}</Text>
+          <Text className="text-muted-foreground">@{profileUsername}</Text>
         </View>
         {profileData.posting_metadata.profile.about && (
           <Text className="text-center">
@@ -131,7 +139,7 @@ export default function ProfileScreen() {
       </View>
 
       {/* Show Create Account CTA only for SPECTATOR */}
-      {username === "SPECTATOR" && <ProfileSpectatorInfo />}
+      {profileUsername === "SPECTATOR" && <ProfileSpectatorInfo />}
 
       {/* Stats Section */}
       <View className="flex-row justify-around bg-card p-4 rounded-lg">
@@ -150,7 +158,7 @@ export default function ProfileScreen() {
       </View>
 
       {/* User Feed Section */}
-      {username !== "SPECTATOR" && (
+      {profileUsername !== "SPECTATOR" && (
         <View className="flex flex-col gap-4">
           {isLoadingFeed ? (
             <ActivityIndicator size="large" />
@@ -161,7 +169,7 @@ export default function ProfileScreen() {
                 <PostCard
                   key={post.permlink}
                   post={post}
-                  currentUsername={username}
+                  currentUsername={currentUsername}
                 />
               </React.Fragment>
             ))
