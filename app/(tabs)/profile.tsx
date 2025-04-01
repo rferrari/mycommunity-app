@@ -15,7 +15,7 @@ import { useColorScheme } from "~/lib/useColorScheme";
 import { useAuth } from "~/lib/auth-provider";
 import { ProfileSpectatorInfo } from "~/components/SpectatorMode/ProfileSpectatorInfo";
 import { useProfile, useUserFeed } from "~/lib/hooks/useQueries";
-import { PostCard } from "~/components/feed/PostCard";
+import { PostCard } from "~/components/Feed/PostCard";
 import type { Post } from "~/lib/types";
 import { LoadingScreen } from "~/components/ui/LoadingScreen";
 
