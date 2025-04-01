@@ -1,5 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { getFeed, getTrending, getBalance, getRewards } from '../api';
+import { 
+  getFeed, 
+  getTrending, 
+  getFollowing, 
+  getBalance, getRewards } from '../api';
 import { API_BASE_URL } from '../constants';
 import type { Post } from '../types';
 
@@ -53,6 +57,14 @@ export function useTrending() {
   return useQuery({
     queryKey: ['trending'],
     queryFn: getTrending,
+    refetchInterval: 30000,
+  });
+}
+
+export function useFollowing(username: string) {
+  return useQuery({
+    queryKey: ['following'],
+    queryFn: () => getFollowing(username),
     refetchInterval: 30000,
   });
 }

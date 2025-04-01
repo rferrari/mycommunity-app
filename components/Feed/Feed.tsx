@@ -1,16 +1,17 @@
 import React from 'react';
 import { View, RefreshControl, FlatList, TouchableOpacity } from 'react-native';
-import { Text } from './ui/text';
-import { PostCard } from './feed/PostCard';
-import type { Post } from '../lib/types';
-import { LoadingScreen } from './ui/LoadingScreen';
+import { Text } from '../ui/text';
+import { PostCard } from './PostCard';
+import type { Post } from '~/lib/types';
+import { LoadingScreen } from '../ui/LoadingScreen';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { useAuth } from '~/lib/auth-provider';
-import { useFeed, useTrending } from '~/lib/hooks/useQueries';
+import { useFeed, useTrending, useFollowing } from '~/lib/hooks/useQueries';
 import { Clock } from '~/lib/icons/Clock';
 import { TrendingUp } from '~/lib/icons/TrendingUp';
-import Animated, { 
-  useAnimatedStyle, 
+import { Sun } from '~/lib/icons/Sun';
+import Animated, {
+  useAnimatedStyle,
   withSpring,
   withTiming,
   withSequence,
@@ -19,7 +20,7 @@ import Animated, {
   Easing
 } from 'react-native-reanimated';
 
-type FeedMode = 'latest' | 'trending';
+type FeedMode = 'latest' | 'trending' | 'following';
 
 interface FeedProps {
   refreshTrigger?: number;
@@ -29,30 +30,53 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
   const [feedMode, setFeedMode] = React.useState<FeedMode>('latest');
   const { isDarkColorScheme } = useColorScheme();
   const { username } = useAuth();
-  
+
   // Animation progress value
   const scale = useSharedValue(1);
-  
-  // Fetch both data sources
-  const { 
-    data: latestData, 
-    isLoading: isLatestLoading, 
-    refetch: refetchLatest, 
-    isRefetching: isLatestRefetching 
+
+  // Fetch all feed data sources
+  const {
+    data: latestData,
+    isLoading: isLatestLoading,
+    refetch: refetchLatest,
+    isRefetching: isLatestRefetching
   } = useFeed();
-  
-  const { 
-    data: trendingData, 
-    isLoading: isTrendingLoading, 
-    refetch: refetchTrending, 
-    isRefetching: isTrendingRefetching 
+
+  const {
+    data: trendingData,
+    isLoading: isTrendingLoading,
+    refetch: refetchTrending,
+    isRefetching: isTrendingRefetching
   } = useTrending();
 
+  const {
+    data: followingData,
+    isLoading: isFollowingLoading,
+    refetch: refetchFollowing,
+    isRefetching: isFollowingRefetching
+  } = useFollowing(username || "SPECTATOR");
+
   // Determine which data to show based on the current mode
-  const feedData = feedMode === 'latest' ? latestData : trendingData;
-  const isLoading = feedMode === 'latest' ? isLatestLoading : isTrendingLoading;
-  const refetch = feedMode === 'latest' ? refetchLatest : refetchTrending;
-  const isRefetching = feedMode === 'latest' ? isLatestRefetching : isTrendingRefetching;
+  const feedData =
+    feedMode === 'latest' ? latestData :
+      feedMode === 'trending' ? trendingData :
+        followingData;
+
+  const isLoading =
+    feedMode === 'latest' ? isLatestLoading :
+      feedMode === 'trending' ? isTrendingLoading :
+        isFollowingLoading;
+
+  const refetch =
+    feedMode === 'latest' ? refetchLatest :
+      feedMode === 'trending' ? refetchTrending :
+        refetchFollowing;
+
+  const isRefetching =
+    feedMode === 'latest' ? isLatestRefetching :
+      feedMode === 'trending' ? isTrendingRefetching :
+        isFollowingRefetching;
+
 
   const handleToggle = React.useCallback(() => {
     // Subtle scale animation
@@ -60,10 +84,15 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
       withTiming(0.9, { duration: 100 }),
       withTiming(1, { duration: 100 })
     );
-    
-    // Toggle feed mode
-    setFeedMode(current => current === 'latest' ? 'trending' : 'latest');
+
+    // Cycle through feed modes
+    setFeedMode(current =>
+      current === 'latest' ? 'trending' :
+        current === 'trending' ? 'following' :
+          'latest'
+    );
   }, []);
+
 
   const renderItem = React.useCallback(({ item }: { item: Post }) => (
     <PostCard key={item.permlink} post={item} currentUsername={username} />
@@ -71,7 +100,11 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
 
   const keyExtractor = React.useCallback((item: Post) => item.permlink, []);
 
-  const title = feedMode === 'latest' ? 'Latest Posts' : 'Trending Posts';
+  const title =
+    feedMode === 'latest' ? 'Latest Posts' :
+      feedMode === 'trending' ? 'Trending Posts' :
+        'Following Posts';
+
 
   const ListHeaderComponent = React.useCallback(() => (
     <View className="flex-row items-center justify-between mb-4 px-3">
@@ -89,25 +122,30 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
 
   const ToggleButton = React.useMemo(() => (
     <View className="absolute right-2 top-4 z-10" style={{ overflow: 'visible' }}>
-      <Animated.View 
-        className={`rounded-full bg-card shadow-md ${
-          isDarkColorScheme ? 'shadow-black/40' : 'shadow-black/20'
-        } border border-muted/20`}
+      <Animated.View
+        className={`rounded-full bg-card shadow-md ${isDarkColorScheme ? 'shadow-black/40' : 'shadow-black/20'
+          } border border-muted/20`}
         style={buttonAnimatedStyle}
       >
-        <TouchableOpacity 
+        <TouchableOpacity
           activeOpacity={0.8}
           onPress={handleToggle}
           className="h-10 w-10 items-center justify-center"
           accessibilityRole="button"
-          accessibilityLabel={`Switch to ${feedMode === 'latest' ? 'trending' : 'latest'} posts`}
+          accessibilityLabel={`Switch to ${feedMode === 'latest' ? 'trending' :
+              feedMode === 'trending' ? 'following' :
+                'latest'
+            } posts`}
         >
           {feedMode === 'latest' ? (
             <Clock size={24} className="text-primary" />
-          ) : (
+          ) : feedMode === 'trending' ? (
             <TrendingUp size={24} className="text-primary" />
+          ) : (
+            <Sun size={24} className="text-primary" />
           )}
         </TouchableOpacity>
+
       </Animated.View>
     </View>
   ), [feedMode, isDarkColorScheme, handleToggle, buttonAnimatedStyle]);

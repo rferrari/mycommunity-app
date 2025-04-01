@@ -1,7 +1,7 @@
 import { useFocusEffect } from "@react-navigation/native";
 import React from "react";
 import { View } from "react-native";
-import { Feed } from "~/components/Feed";
+import { Feed } from "~/components/Feed/Feed";
 
 export default function FeedPage() {
   const [refreshKey, setRefreshKey] = React.useState(0);
