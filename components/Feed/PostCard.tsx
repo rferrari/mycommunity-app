@@ -28,7 +28,6 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
   // Check if user has already voted on this post
   useEffect(() => {
     if (currentUsername && post.votes) {
-      console.log(post.votes);
       const hasVoted = post.votes.some(vote => vote.voter === currentUsername && vote.weight > 0);
       setIsLiked(hasVoted);
     }
