@@ -46,6 +46,7 @@ export default function TabLayout() {
                 backgroundColor: isDarkColorScheme ? '#1a1a1a' : '#ffffff',
               },
               tabBarActiveTintColor: isDarkColorScheme ? '#ffffff' : '#000000',
+              tabBarShowLabel: false,
             }}
           >
             {TAB_ITEMS.map((tab) => (
@@ -57,7 +58,6 @@ export default function TabLayout() {
                   tabBarIcon: ({ color }) => (
                     <TabBarIcon name={tab.icon} color={color} />
                   ),
-                  // Reset params to show current user's profile when clicking the Profile tab
                   ...(tab.name === 'profile' && {
                     href: {
                       pathname: "/(tabs)/profile",
@@ -78,5 +78,5 @@ function TabBarIcon(props: {
   name: React.ComponentProps<typeof Ionicons>['name'];
   color: string;
 }) {
-  return <Ionicons size={24} style={{ marginBottom: -3 }} {...props} />;
+  return <Ionicons size={24} style={{ marginBottom: -10 }} {...props} />;
 }
