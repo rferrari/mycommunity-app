@@ -22,10 +22,12 @@ import { Text } from "~/components/ui/text";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { useAuth } from "~/lib/auth-provider";
 import { API_BASE_URL } from "~/lib/constants";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function CreatePost() {
   const { isDarkColorScheme } = useColorScheme();
   const { username } = useAuth();
+  const queryClient = useQueryClient();
   const [content, setContent] = useState("");
   const [media, setMedia] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
@@ -167,6 +169,12 @@ export default function CreatePost() {
       setMedia(null);
       setMediaType(null);
       setMediaMimeType(null);
+      
+      // Invalidate queries to refresh feed data when navigating back to feed
+      queryClient.invalidateQueries({ queryKey: ["feed"] });
+      queryClient.invalidateQueries({ queryKey: ["trending"] });
+      queryClient.invalidateQueries({ queryKey: ["following"] });
+      queryClient.invalidateQueries({ queryKey: ["userFeed", username] });
       
       // Navigate to feed to see the new post
       router.push("/(tabs)/feed");
