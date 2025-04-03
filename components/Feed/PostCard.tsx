@@ -132,7 +132,7 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
         </Text>
       );
     }
-    return <Text key={index}>{part}</Text>;
+    return <Text key={index} className='text-lg'>{part}</Text>;
   });
 
   const handleProfilePress = () => {
@@ -163,7 +163,7 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
       </Pressable>
 
       {postContent !== '' && (
-        <Text className="px-2 mb-2">{postContentWithLinks}</Text>
+        <Text className="px-2 mb-2 text-2xl">{postContentWithLinks}</Text>
       )}
 
       {media.length > 0 && (
