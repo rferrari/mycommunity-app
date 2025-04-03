@@ -90,7 +90,21 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
     } catch (error) {
       console.error('Vote error:', error);
       
-      showToast(error instanceof Error ? error.message : 'Failed to vote', 'error');
+      let errorMessage = 'Failed to vote';
+      if (error instanceof Error) {
+        try {
+          // Parse the JSON string from error.message
+          const errorData = JSON.parse(error.message);
+          if (errorData && errorData.error) {
+            errorMessage = errorData.error;
+          }
+        } catch (parseError) {
+          // If parsing fails, use the original error message
+          errorMessage = error.message;
+        }
+      }
+      
+      showToast(errorMessage, 'error');
     } finally {
       setIsVoting(false);
     }
