@@ -10,22 +10,31 @@ import {
   View,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from "react-native";
+import { router } from "expo-router";
+import * as FileSystem from "expo-file-system";
+import * as SecureStore from "expo-secure-store";
 import { VideoPlayer } from "~/components/Feed/VideoPlayer";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
 import { useColorScheme } from "~/lib/useColorScheme";
+import { useAuth } from "~/lib/auth-provider";
+import { API_BASE_URL } from "~/lib/constants";
 
 export default function CreatePost() {
   const { isDarkColorScheme } = useColorScheme();
+  const { username } = useAuth();
   const [content, setContent] = useState("");
   const [media, setMedia] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
+  const [mediaMimeType, setMediaMimeType] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSelectingMedia, setIsSelectingMedia] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [hasVideoInteraction, setHasVideoInteraction] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const pickMedia = async () => {
     try {
@@ -34,12 +43,45 @@ export default function CreatePost() {
         mediaTypes: ["images", "videos"],
         allowsEditing: false,
         quality: 0.75,
+        exif: false,
       });
 
       if (!result.canceled && result.assets?.[0]) {
         const asset = result.assets[0];
         setMedia(asset.uri);
         setMediaType(asset.type === "video" ? "video" : "image");
+        
+        // Get the actual MIME type from the asset
+        if (asset.mimeType) {
+          // Use the MIME type directly from the asset if available
+          setMediaMimeType(asset.mimeType);
+        } else {
+          // Fallback to detection based on file extension
+          const fileExtension = asset.uri.split('.').pop()?.toLowerCase();
+          if (asset.type === "image") {
+            // Map common image extensions to MIME types
+            const imageMimeTypes: Record<string, string> = {
+              'jpg': 'image/jpeg',
+              'jpeg': 'image/jpeg',
+              'png': 'image/png',
+              'gif': 'image/gif',
+              'webp': 'image/webp',
+              'heic': 'image/heic',
+            };
+            setMediaMimeType(imageMimeTypes[fileExtension || ''] || 'image/jpeg');
+          } else {
+            // Map common video extensions to MIME types
+            const videoMimeTypes: Record<string, string> = {
+              'mp4': 'video/mp4',
+              'mov': 'video/quicktime',
+              'avi': 'video/x-msvideo',
+              'wmv': 'video/x-ms-wmv',
+              'webm': 'video/webm',
+            };
+            setMediaMimeType(videoMimeTypes[fileExtension || ''] || 'video/mp4');
+          }
+        }
+        
         setIsVideoPlaying(false);
         setHasVideoInteraction(false);
       }
@@ -53,6 +95,7 @@ export default function CreatePost() {
   const removeMedia = () => {
     setMedia(null);
     setMediaType(null);
+    setMediaMimeType(null);
     setIsVideoPlaying(false);
     setHasVideoInteraction(false);
   };
@@ -67,18 +110,72 @@ export default function CreatePost() {
   const handlePost = async () => {
     if (!content.trim() && !media) return;
 
-    setIsUploading(true);
-    try {
-      // TODO: Implement post creation logic here
-      // If there's media, upload it first
-      // Then create the post with the media URL
+    // Check if user is authenticated
+    if (!username || username === "SPECTATOR") {
+      Alert.alert("Authentication Required", "Please log in to create a post");
+      return;
+    }
 
+    setIsUploading(true);
+    setErrorMessage(null);
+    
+    try {
+      // Get user's posting key from secure storage
+      const postingKey = await SecureStore.getItemAsync(username);
+      if (!postingKey) {
+        throw new Error("Authentication error: Posting key not found");
+      }
+      
+      // Create FormData to send both text content and media in one request
+      const formData = new FormData();
+      formData.append("author", username);
+      formData.append("body", content);
+      formData.append("posting_key", postingKey);
+      
+      // Add the media file if it exists
+      if (media) {
+        const fileName = media.split("/").pop() || `${Date.now()}.${mediaType === "image" ? "jpg" : "mp4"}`;
+        const fileType = mediaMimeType || (mediaType === "image" ? "image/jpeg" : "video/mp4");
+        
+        formData.append("file", {
+          uri: media,
+          name: fileName,
+          type: fileType,
+        } as any); // Type assertion needed for React Native FormData
+      }
+
+      // Send the post data with the media in a single request
+      const response = await fetch(`${API_BASE_URL}/createpost`, {
+        method: "POST",
+        // headers: {
+          // "Authorization": `Bearer ${postingKey}`,
+          // Don't set Content-Type header here; it will be automatically set with the correct boundary
+        // },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create post");
+      }
+
+      // Success - show confirmation and navigate to feed
+      Alert.alert("Success", "Your post has been published!");
+      
       // Clear form after successful post
       setContent("");
       setMedia(null);
+      setMediaType(null);
+      setMediaMimeType(null);
+      
+      // Navigate to feed to see the new post
+      router.push("/(tabs)/feed");
+      
     } catch (error) {
-      // TODO: Handle error
-      console.error(error);
+      const errorMsg = error instanceof Error ? error.message : "An unknown error occurred";
+      setErrorMessage(errorMsg);
+      Alert.alert("Error", errorMsg);
+      console.error("Post error:", error);
     } finally {
       setIsUploading(false);
     }
