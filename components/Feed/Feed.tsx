@@ -12,12 +12,9 @@ import { TrendingUp } from '~/lib/icons/TrendingUp';
 import { Sun } from '~/lib/icons/Sun';
 import Animated, {
   useAnimatedStyle,
-  withSpring,
   withTiming,
   withSequence,
-  runOnJS,
-  useSharedValue,
-  Easing
+  useSharedValue
 } from 'react-native-reanimated';
 
 type FeedMode = 'latest' | 'trending' | 'following';
@@ -31,8 +28,10 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
   const { isDarkColorScheme } = useColorScheme();
   const { username } = useAuth();
 
-  // Animation progress value
+  // Animation progress values
   const scale = useSharedValue(1);
+  const textOpacity = useSharedValue(1);
+  const textTranslateY = useSharedValue(0);
 
   // Fetch all feed data sources
   const {
@@ -77,22 +76,35 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
       feedMode === 'trending' ? isTrendingRefetching :
         isFollowingRefetching;
 
-
+  // Handle text animation and feed mode switching
   const handleToggle = React.useCallback(() => {
-    // Subtle scale animation
+    // Animate button scale
     scale.value = withSequence(
       withTiming(0.9, { duration: 100 }),
       withTiming(1, { duration: 100 })
     );
 
-    // Cycle through feed modes
-    setFeedMode(current =>
-      current === 'latest' ? 'trending' :
-        current === 'trending' ? 'following' :
-          'latest'
-    );
-  }, []);
+    // Animate text fade out
+    textOpacity.value = withTiming(0, { duration: 150 });
+    textTranslateY.value = withTiming(-10, { duration: 150 });
 
+    // Update feed mode after a short delay to allow animation to complete
+    setTimeout(() => {
+      // Update feed mode state
+      setFeedMode(current => {
+        if (current === 'latest') return 'trending';
+        if (current === 'trending') return 'following';
+        return 'latest';
+      });
+
+      // Animate text coming back
+      textTranslateY.value = 10;
+      setTimeout(() => {
+        textOpacity.value = withTiming(1, { duration: 250 });
+        textTranslateY.value = withTiming(0, { duration: 250 });
+      }, 50);
+    }, 160);
+  }, []);
 
   const renderItem = React.useCallback(({ item }: { item: Post }) => (
     <PostCard key={item.permlink} post={item} currentUsername={username} />
@@ -109,9 +121,16 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
     transform: [{ scale: scale.value }]
   }));
 
+  const textAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: textOpacity.value,
+    transform: [{ translateY: textTranslateY.value }]
+  }));
+
   const ListHeaderComponent = React.useCallback(() => (
     <View className="flex-row items-center justify-between mb-4 px-3">
-      <Text className="text-3xl font-bold">{title}</Text>
+      <Animated.View style={textAnimatedStyle}>
+        <Text className="text-3xl font-bold">{title}</Text>
+      </Animated.View>
       <Animated.View
         className={`rounded-full bg-card shadow-md ${isDarkColorScheme ? 'shadow-black/40' : 'shadow-black/20'
           } border border-muted/20`}
@@ -137,7 +156,7 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
         </TouchableOpacity>
       </Animated.View>
     </View>
-  ), [title, feedMode, isDarkColorScheme, handleToggle, buttonAnimatedStyle]);
+  ), [title, feedMode, isDarkColorScheme, handleToggle, buttonAnimatedStyle, textAnimatedStyle]);
 
   const ItemSeparatorComponent = React.useCallback(() => (
     <View className="h-0 my-4 border border-muted" />
