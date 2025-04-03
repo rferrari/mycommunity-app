@@ -132,8 +132,7 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
         <Text className="text-3xl font-bold">{title}</Text>
       </Animated.View>
       <Animated.View
-        className={`rounded-full bg-card shadow-md ${isDarkColorScheme ? 'shadow-black/40' : 'shadow-black/20'
-          } border border-muted/20`}
+        className={`rounded-full bg-card border border-muted/70`}
         style={buttonAnimatedStyle}
       >
         <TouchableOpacity
