@@ -15,8 +15,10 @@ import { VideoPlayer } from "~/components/Feed/VideoPlayer";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
+import { useColorScheme } from "~/lib/useColorScheme";
 
 export default function CreatePost() {
+  const { isDarkColorScheme } = useColorScheme();
   const [content, setContent] = useState("");
   const [media, setMedia] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
@@ -84,7 +86,10 @@ export default function CreatePost() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ScrollView className="flex-1 bg-background p-4">
+      <ScrollView className="flex-1 bg-background p-2">
+        {/* Header */}
+        <Text className="text-3xl font-bold mt-3 mb-2">Create Post</Text>
+
         <Card>
           <TextInput
             multiline
@@ -134,7 +139,10 @@ export default function CreatePost() {
         {media && (
           <View className="relative border border-muted rounded-lg overflow-hidden w-full aspect-square mt-4">
             {mediaType === "image" ? (
-              <Image source={{ uri: media }} style={{ resizeMode: "cover", width: "100%", height: "100%" }} />
+              <Image
+                source={{ uri: media }}
+                style={{ resizeMode: "cover", width: "100%", height: "100%" }}
+              />
             ) : mediaType === "video" ? (
               hasVideoInteraction ? (
                 <VideoPlayer url={media} playing={isVideoPlaying} />
