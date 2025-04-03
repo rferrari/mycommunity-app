@@ -164,7 +164,7 @@ export default function ProfileScreen() {
           <Text className="text-muted-foreground">Following</Text>
         </View>
         <View className="items-center">
-          <Text className="font-bold">{profileData?.total_posts || "0"}</Text>
+          <Text className="font-bold">{profileData?.community_totalposts || "0"}</Text>
           <Text className="text-muted-foreground">Posts</Text>
         </View>
       </View>
