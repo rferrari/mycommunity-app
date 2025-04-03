@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 import { API_BASE_URL } from '~/lib/constants';
 import { Text } from '../ui/text';
 import { MediaPreview } from './MediaPreview';
-import { Toast } from '../ui/toast';
+import { useToast } from '~/lib/toast-provider';
 import type { Media, Post } from '../../lib/types';
 import { extractMediaFromBody } from '~/lib/utils';
 
@@ -21,9 +21,9 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
   const [isVoting, setIsVoting] = useState(false);
-  const [voteError, setVoteError] = useState<string | null>(null);
   const [isLiked, setIsLiked] = useState(false);
   const [voteCount, setVoteCount] = useState(post.votes.filter(vote => vote.weight > 0).length);
+  const { showToast } = useToast();
 
   // Check if user has already voted on this post
   useEffect(() => {
@@ -41,21 +41,20 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
   const handleVote = async () => {
     try {
       setIsVoting(true);
-      setVoteError(null);
 
       if (!currentUsername) {
-        setVoteError('Please login first');
+        showToast('Please login first', 'error');
         return;
       }
 
       if (currentUsername === "SPECTATOR") {
-        setVoteError('Please login first');
+        showToast('Please login first', 'error');
         return;
       }
 
       const password = await SecureStore.getItemAsync(currentUsername);
       if (!password) {
-        setVoteError('Invalid credentials');
+        showToast('Invalid credentials', 'error');
         return;
       }
 
@@ -90,7 +89,8 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
       }
     } catch (error) {
       console.error('Vote error:', error);
-      setVoteError(error instanceof Error ? error.message : 'Failed to vote');
+      
+      showToast(error instanceof Error ? error.message : 'Failed to vote', 'error');
     } finally {
       setIsVoting(false);
     }
@@ -129,70 +129,61 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
   };
 
   return (
-    <>
-      <View className="w-full mb-4">
-        <Pressable onPress={handleProfilePress} className="flex-row items-center justify-between mb-3 px-2">
-          <View className="flex-row items-center">
-            <View className="h-12 w-12 mr-3 rounded-full overflow-hidden">
-              <Image
-                source={{ uri: `https://images.ecency.com/webp/u/${post.author}/avatar/small` }}
-                className="w-full h-full border border-muted rounded-full"
-                alt={`${post.author}'s avatar`}
-              />
-            </View>
-            <View>
-              <Text className="font-bold text-lg">@{post.author}</Text>
-            </View>
+    <View className="w-full mb-4">
+      <Pressable onPress={handleProfilePress} className="flex-row items-center justify-between mb-3 px-2">
+        <View className="flex-row items-center">
+          <View className="h-12 w-12 mr-3 rounded-full overflow-hidden">
+            <Image
+              source={{ uri: `https://images.ecency.com/webp/u/${post.author}/avatar/small` }}
+              className="w-full h-full border border-muted rounded-full"
+              alt={`${post.author}'s avatar`}
+            />
           </View>
-          <Text className="text-gray-500">
-            {formatDistanceToNow(new Date(post.created), { addSuffix: true })}
-          </Text>
-        </Pressable>
-
-        {postContent !== '' && (
-          <Text className="px-2 mb-2">{postContentWithLinks}</Text>
-        )}
-
-        {media.length > 0 && (
-          <MediaPreview
-            media={media}
-            onMediaPress={handleMediaPress}
-            selectedMedia={selectedMedia}
-            isModalVisible={isModalVisible}
-            onCloseModal={() => setIsModalVisible(false)}
-          />
-        )}
-
-        <View className="flex-row justify-between items-center mx-2">
-          <Text className={`font-bold text-xl ${parseFloat(calculateTotalValue(post)) > 0 ? 'text-green-500' : 'text-gray-500'}`}>
-            ${calculateTotalValue(post)}
-          </Text>
           <View>
-            <Pressable
-              onPress={handleVote}
-              className="flex-row items-center gap-1"
-              disabled={isVoting}
-            >
-              <Text className={`text-xl font-bold ${isLiked ? 'text-green-500' : 'text-gray-600'}`}>
-                {voteCount}
-              </Text>
-              <FontAwesome
-                name={"arrow-up"}
-                size={20}
-                color={isLiked ? "#32CD32" : "#666666"}
-                style={{ marginRight: 4 }}
-              />
-            </Pressable>
+            <Text className="font-bold text-lg">@{post.author}</Text>
           </View>
         </View>
-      </View>
-      {voteError && (
-        <Toast
-          message={voteError}
-          type={'error'}
-          onHide={() => setVoteError(null)}
+        <Text className="text-gray-500">
+          {formatDistanceToNow(new Date(post.created), { addSuffix: true })}
+        </Text>
+      </Pressable>
+
+      {postContent !== '' && (
+        <Text className="px-2 mb-2">{postContentWithLinks}</Text>
+      )}
+
+      {media.length > 0 && (
+        <MediaPreview
+          media={media}
+          onMediaPress={handleMediaPress}
+          selectedMedia={selectedMedia}
+          isModalVisible={isModalVisible}
+          onCloseModal={() => setIsModalVisible(false)}
         />
       )}
-    </>
+
+      <View className="flex-row justify-between items-center mx-2">
+        <Text className={`font-bold text-xl ${parseFloat(calculateTotalValue(post)) > 0 ? 'text-green-500' : 'text-gray-500'}`}>
+          ${calculateTotalValue(post)}
+        </Text>
+        <View>
+          <Pressable
+            onPress={handleVote}
+            className="flex-row items-center gap-1"
+            disabled={isVoting}
+          >
+            <Text className={`text-xl font-bold ${isLiked ? 'text-green-500' : 'text-gray-600'}`}>
+              {voteCount}
+            </Text>
+            <FontAwesome
+              name={"arrow-up"}
+              size={20}
+              color={isLiked ? "#32CD32" : "#666666"}
+              style={{ marginRight: 4 }}
+            />
+          </Pressable>
+        </View>
+      </View>
+    </View>
   );
 }

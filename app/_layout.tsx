@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '~/global.css';
 import { AuthProvider } from '~/lib/auth-provider';
+import { ToastProvider } from '~/lib/toast-provider';
 
 // Initialize the query client
 const queryClient = new QueryClient({
@@ -26,25 +27,27 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <SafeAreaProvider>
-          <View className="flex-1 bg-background">
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                animation: 'fade',
-              }}
-              initialRouteName="index"
-            >
-              <Stack.Screen name="index" />
-              <Stack.Screen 
-                name="(tabs)"
-                options={{
+        <ToastProvider>
+          <SafeAreaProvider>
+            <View className="flex-1 bg-background">
+              <Stack
+                screenOptions={{
+                  headerShown: false,
                   animation: 'fade',
                 }}
-              />
-            </Stack>
-          </View>
-        </SafeAreaProvider>
+                initialRouteName="index"
+              >
+                <Stack.Screen name="index" />
+                <Stack.Screen 
+                  name="(tabs)"
+                  options={{
+                    animation: 'fade',
+                  }}
+                />
+              </Stack>
+            </View>
+          </SafeAreaProvider>
+        </ToastProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
