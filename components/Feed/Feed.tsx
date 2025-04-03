@@ -105,23 +105,13 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
       feedMode === 'trending' ? 'Trending Posts' :
         'Following Posts';
 
-
-  const ListHeaderComponent = React.useCallback(() => (
-    <View className="flex-row items-center justify-between mb-4 px-3">
-      <Text className="text-3xl font-bold">{title}</Text>
-    </View>
-  ), [title]);
-
-  const ItemSeparatorComponent = React.useCallback(() => (
-    <View className="h-0 my-4 border border-muted" />
-  ), []);
-
   const buttonAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }]
   }));
 
-  const ToggleButton = React.useMemo(() => (
-    <View className="absolute right-2 top-4 z-10" style={{ overflow: 'visible' }}>
+  const ListHeaderComponent = React.useCallback(() => (
+    <View className="flex-row items-center justify-between mb-4 px-3">
+      <Text className="text-3xl font-bold">{title}</Text>
       <Animated.View
         className={`rounded-full bg-card shadow-md ${isDarkColorScheme ? 'shadow-black/40' : 'shadow-black/20'
           } border border-muted/20`}
@@ -145,10 +135,13 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
             <Sun size={24} className="text-primary" />
           )}
         </TouchableOpacity>
-
       </Animated.View>
     </View>
-  ), [feedMode, isDarkColorScheme, handleToggle, buttonAnimatedStyle]);
+  ), [title, feedMode, isDarkColorScheme, handleToggle, buttonAnimatedStyle]);
+
+  const ItemSeparatorComponent = React.useCallback(() => (
+    <View className="h-0 my-4 border border-muted" />
+  ), []);
 
   // Get theme colors
   const foregroundColor = isDarkColorScheme ? '#ffffff' : '#000000';
@@ -156,7 +149,6 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
 
   const contentView = (
     <View className="flex-1">
-      {ToggleButton}
       <FlatList
         data={feedData}
         showsVerticalScrollIndicator={false}
