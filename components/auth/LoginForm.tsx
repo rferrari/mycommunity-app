@@ -40,6 +40,8 @@ export function LoginForm({
         className="bg-foreground/10 px-4 py-3 rounded-lg text-foreground"
         placeholderTextColor={isDarkColorScheme ? "#ffffff80" : "#00000080"}
         autoCapitalize="none"
+        autoComplete="username"
+        textContentType="username"
       />
       <Input
         placeholder="Posting Key"
@@ -48,6 +50,8 @@ export function LoginForm({
         secureTextEntry
         className="bg-foreground/10 px-4 py-3 rounded-lg text-foreground"
         placeholderTextColor={isDarkColorScheme ? "#ffffff80" : "#00000080"}
+        autoComplete="password"
+        textContentType="password"
       />
 
       <Button
