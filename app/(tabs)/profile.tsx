@@ -169,6 +169,17 @@ export default function ProfileScreen() {
         </View>
       </View>
 
+      <View className="flex-row justify-around bg-card p-4 rounded-lg">
+        <View className="items-center">
+          <Text className="font-bold">{profileData?.vp_percent || "0"}</Text>
+          <Text className="text-muted-foreground">Voting Power</Text>
+        </View>
+        <View className="items-center">
+          <Text className="font-bold">{profileData?.rc_percent || "0"}</Text>
+          <Text className="text-muted-foreground">Resource Credits</Text>
+        </View>
+      </View>
+
       {/* Show Create Account CTA only for SPECTATOR */}
       {profileUsername === "SPECTATOR" ? (
         <ProfileSpectatorInfo />
