@@ -132,36 +132,55 @@ export default function CreatePost() {
         throw new Error("Authentication error: Posting key not found");
       }
 
-      // Create FormData to send both text content and media in one request
-      const formData = new FormData();
-      formData.append("author", username);
-      formData.append("body", content);
-      // formData.append("posting_key", postingKey);
+      // Prepare post data as JSON
+      const postData: {
+        author: string;
+        body: string;
+        media?: {
+          data: string;
+          type: string;
+          name: string;
+        };
+      } = {
+        author: username,
+        body: content,
+      };
 
-      // Add the media file if it exists
+      // Handle media if it exists
       if (media) {
-        const fileName =
-          media.split("/").pop() ||
-          `${Date.now()}.${mediaType === "image" ? "jpg" : "mp4"}`;
-        const fileType =
-          mediaMimeType || (mediaType === "image" ? "image/jpeg" : "video/mp4");
+        try {
+          // Convert media file to base64
+          const base64Data = await FileSystem.readAsStringAsync(media, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
 
-        // Properly format the file object for React Native FormData
-        formData.append("file", {
-          uri: media,
-          name: fileName,
-          type: fileType,
-        } as any);
+          const fileName =
+            media.split("/").pop() ||
+            `${Date.now()}.${mediaType === "image" ? "jpg" : "mp4"}`;
+          const fileType =
+            mediaMimeType || (mediaType === "image" ? "image/jpeg" : "video/mp4");
+
+          // Add media to post data
+          postData.media = {
+            data: base64Data,
+            type: fileType,
+            name: fileName,
+          };
+        } catch (fileError) {
+          console.error("Error encoding media:", fileError);
+          throw new Error("Failed to process media file");
+        }
       }
 
-      // Send the post data with the media in a single request
+      // Send the post data as JSON
       const response = await fetch(`${API_BASE_URL}/createpost`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${postingKey}`,
-          // Don't set Content-Type header - React Native will set it automatically with the boundary
+          Authorization: `Bearer ${postingKey}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
         },
-        body: formData,
+        body: JSON.stringify(postData),
       });
 
       if (!response.ok) {

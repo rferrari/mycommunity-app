@@ -10,6 +10,8 @@ export const VideoPlayer = React.memo(({ url, playing = true }: VideoPlayerProps
   const player = useVideoPlayer(url, player => {
     player.loop = true;
   });
+
+  console.log("Playing video:", url);
   
   useEffect(() => {
     if (playing) {

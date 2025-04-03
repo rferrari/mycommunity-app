@@ -23,7 +23,7 @@ export function extractMediaFromBody(body: string): Media[] {
   if (iframeMatches) {
     iframeMatches.forEach(match => {
       const url = match.match(/src="(.*?)"/)?.[1];
-      if (url && url.includes('ipfs.skatehive.app')) {
+      if (url) {
         media.push({ type: 'video', url });
       }
     });
