@@ -52,38 +52,42 @@ export default function CreatePost() {
         const asset = result.assets[0];
         setMedia(asset.uri);
         setMediaType(asset.type === "video" ? "video" : "image");
-        
+
         // Get the actual MIME type from the asset
         if (asset.mimeType) {
           // Use the MIME type directly from the asset if available
           setMediaMimeType(asset.mimeType);
         } else {
           // Fallback to detection based on file extension
-          const fileExtension = asset.uri.split('.').pop()?.toLowerCase();
+          const fileExtension = asset.uri.split(".").pop()?.toLowerCase();
           if (asset.type === "image") {
             // Map common image extensions to MIME types
             const imageMimeTypes: Record<string, string> = {
-              'jpg': 'image/jpeg',
-              'jpeg': 'image/jpeg',
-              'png': 'image/png',
-              'gif': 'image/gif',
-              'webp': 'image/webp',
-              'heic': 'image/heic',
+              jpg: "image/jpeg",
+              jpeg: "image/jpeg",
+              png: "image/png",
+              gif: "image/gif",
+              webp: "image/webp",
+              heic: "image/heic",
             };
-            setMediaMimeType(imageMimeTypes[fileExtension || ''] || 'image/jpeg');
+            setMediaMimeType(
+              imageMimeTypes[fileExtension || ""] || "image/jpeg"
+            );
           } else {
             // Map common video extensions to MIME types
             const videoMimeTypes: Record<string, string> = {
-              'mp4': 'video/mp4',
-              'mov': 'video/quicktime',
-              'avi': 'video/x-msvideo',
-              'wmv': 'video/x-ms-wmv',
-              'webm': 'video/webm',
+              mp4: "video/mp4",
+              mov: "video/quicktime",
+              avi: "video/x-msvideo",
+              wmv: "video/x-ms-wmv",
+              webm: "video/webm",
             };
-            setMediaMimeType(videoMimeTypes[fileExtension || ''] || 'video/mp4');
+            setMediaMimeType(
+              videoMimeTypes[fileExtension || ""] || "video/mp4"
+            );
           }
         }
-        
+
         setIsVideoPlaying(false);
         setHasVideoInteraction(false);
       }
@@ -120,39 +124,43 @@ export default function CreatePost() {
 
     setIsUploading(true);
     setErrorMessage(null);
-    
+
     try {
       // Get user's posting key from secure storage
       const postingKey = await SecureStore.getItemAsync(username);
       if (!postingKey) {
         throw new Error("Authentication error: Posting key not found");
       }
-      
+
       // Create FormData to send both text content and media in one request
       const formData = new FormData();
       formData.append("author", username);
       formData.append("body", content);
-      formData.append("posting_key", postingKey);
-      
+      // formData.append("posting_key", postingKey);
+
       // Add the media file if it exists
       if (media) {
-        const fileName = media.split("/").pop() || `${Date.now()}.${mediaType === "image" ? "jpg" : "mp4"}`;
-        const fileType = mediaMimeType || (mediaType === "image" ? "image/jpeg" : "video/mp4");
-        
+        const fileName =
+          media.split("/").pop() ||
+          `${Date.now()}.${mediaType === "image" ? "jpg" : "mp4"}`;
+        const fileType =
+          mediaMimeType || (mediaType === "image" ? "image/jpeg" : "video/mp4");
+
+        // Properly format the file object for React Native FormData
         formData.append("file", {
           uri: media,
           name: fileName,
           type: fileType,
-        } as any); // Type assertion needed for React Native FormData
+        } as any);
       }
 
       // Send the post data with the media in a single request
       const response = await fetch(`${API_BASE_URL}/createpost`, {
         method: "POST",
-        // headers: {
-          // "Authorization": `Bearer ${postingKey}`,
-          // Don't set Content-Type header here; it will be automatically set with the correct boundary
-        // },
+        headers: {
+          "Authorization": `Bearer ${postingKey}`,
+          // Don't set Content-Type header - React Native will set it automatically with the boundary
+        },
         body: formData,
       });
 
@@ -163,24 +171,24 @@ export default function CreatePost() {
 
       // Success - show confirmation and navigate to feed
       Alert.alert("Success", "Your post has been published!");
-      
+
       // Clear form after successful post
       setContent("");
       setMedia(null);
       setMediaType(null);
       setMediaMimeType(null);
-      
+
       // Invalidate queries to refresh feed data when navigating back to feed
       queryClient.invalidateQueries({ queryKey: ["feed"] });
       queryClient.invalidateQueries({ queryKey: ["trending"] });
       queryClient.invalidateQueries({ queryKey: ["following"] });
       queryClient.invalidateQueries({ queryKey: ["userFeed", username] });
-      
+
       // Navigate to feed to see the new post
       router.push("/(tabs)/feed");
-      
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : "An unknown error occurred";
+      const errorMsg =
+        error instanceof Error ? error.message : "An unknown error occurred";
       setErrorMessage(errorMsg);
       Alert.alert("Error", errorMsg);
       console.error("Post error:", error);
