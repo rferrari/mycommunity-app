@@ -3,7 +3,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { formatDistanceToNow } from 'date-fns';
 import * as SecureStore from 'expo-secure-store';
 import * as Haptics from 'expo-haptics';
-import { Image, Pressable, View, Linking } from 'react-native';
+import { Image, Pressable, View, Linking, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { API_BASE_URL } from '~/lib/constants';
 import { Text } from '../ui/text';
@@ -88,7 +88,7 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
         throw new Error(error);
       }
     } catch (error) {
-      console.error('Vote error:', error);
+      // console.error('Vote error:', error);
       
       let errorMessage = 'Failed to vote';
       if (error instanceof Error) {
@@ -183,18 +183,28 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
         <View>
           <Pressable
             onPress={handleVote}
-            className="flex-row items-center gap-1"
+            className={`flex-row items-center gap-1 ${isVoting ? 'opacity-70' : ''}`}
             disabled={isVoting}
           >
-            <Text className={`text-xl font-bold ${isLiked ? 'text-green-500' : 'text-gray-600'}`}>
-              {voteCount}
-            </Text>
-            <FontAwesome
-              name={"arrow-up"}
-              size={20}
-              color={isLiked ? "#32CD32" : "#666666"}
-              style={{ marginRight: 4 }}
-            />
+            {isVoting ? (
+              <ActivityIndicator 
+                size="small" 
+                color={isLiked ? "#32CD32" : "#666666"}
+                style={{ marginRight: 4, marginLeft: 4 }}
+              />
+            ) : (
+              <>
+                <Text className={`text-xl font-bold ${isLiked ? 'text-green-500' : 'text-gray-600'}`}>
+                  {voteCount}
+                </Text>
+                <FontAwesome
+                  name={"arrow-up"}
+                  size={20}
+                  color={isLiked ? "#32CD32" : "#666666"}
+                  style={{ marginRight: 4 }}
+                />
+              </>
+            )}
           </Pressable>
         </View>
       </View>
