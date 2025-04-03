@@ -14,6 +14,7 @@ interface ProfileData {
   followings: string;
   community_followers: string;
   community_followings: string;
+  community_totalposts: string;
   total_posts: string;
   posting_metadata?: {
     profile: {
@@ -34,6 +35,7 @@ const SPECTATOR_PROFILE: ProfileData = {
   community_followers: '0',
   community_followings: '0',
   total_posts: '0',
+  community_totalposts: '0',
   posting_metadata: {
     profile: {
       name: 'Spectator Mode',
