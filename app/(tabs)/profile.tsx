@@ -136,7 +136,7 @@ export default function ProfileScreen() {
       <View className="items-center gap-2 pt-6">
         {renderProfileImage()}
         <View className="items-center">
-          <Text className="text-2xl font-bold">
+          <Text className="text-3xl font-bold">
             {profileData?.posting_metadata?.profile?.name || profileData.name}
           </Text>
           <Text className="text-muted-foreground">@{profileUsername}</Text>

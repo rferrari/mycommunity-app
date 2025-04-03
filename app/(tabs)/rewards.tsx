@@ -164,7 +164,7 @@ export default function WalletScreen() {
         <RewardsSpectatorInfo />
       ) : (
         <View className="flex flex-col gap-4">
-          <View className="items-center mt-2">
+          <View className="items-center mt-2 mb-4">
             <View
               className="w-24 h-24 rounded-full bg-foreground/10 items-center justify-center"
               style={{
@@ -178,7 +178,7 @@ export default function WalletScreen() {
                 color={isDarkColorScheme ? "#34C759" : "#34C759"}
               />
             </View>
-            <Text className="text-xl font-bold mt-2">Incoming Rewards</Text>
+            <Text className="text-3xl font-bold mt-2">Rewards</Text>
           </View>
 
           {/* Account Overview Card */}

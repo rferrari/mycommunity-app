@@ -70,7 +70,7 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
 
   return (
     <ScrollView className="w-full py-4" showsVerticalScrollIndicator={false}>
-      <View className="items-center">
+      <View className="items-center mb-4">
         <View
           className="w-24 h-24 rounded-full bg-foreground/10 items-center justify-center"
           style={{
@@ -84,7 +84,7 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
             color={isDarkColorScheme ? "#34C759" : "#34C759"}
           />
         </View>
-        <Text className="text-xl font-bold mt-2">Leaderboard</Text>
+        <Text className="text-3xl font-bold mt-2">Leaderboard</Text>
       </View>
 
       <View>
