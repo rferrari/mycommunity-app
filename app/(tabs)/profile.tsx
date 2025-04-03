@@ -146,11 +146,11 @@ export default function ProfileScreen() {
             {profileData.posting_metadata.profile.about}
           </Text>
         )}
-        {profileData?.posting_metadata?.profile?.location && (
+        {/* {profileData?.posting_metadata?.profile?.location && (
           <Text className="text-muted-foreground">
             📍 {profileData.posting_metadata.profile.location}
           </Text>
-        )}
+        )} */}
       </View>
 
       {/* Stats Section */}
