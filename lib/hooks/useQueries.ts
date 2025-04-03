@@ -49,7 +49,7 @@ export function useFeed() {
   return useQuery({
     queryKey: ['feed'],
     queryFn: getFeed,
-    refetchInterval: 30000, // 30 seconds
+    refetchInterval: 60000,
   });
 }
 
@@ -57,7 +57,7 @@ export function useTrending() {
   return useQuery({
     queryKey: ['trending'],
     queryFn: getTrending,
-    refetchInterval: 30000,
+    refetchInterval: 60000,
   });
 }
 
@@ -65,7 +65,7 @@ export function useFollowing(username: string) {
   return useQuery({
     queryKey: ['following'],
     queryFn: () => getFollowing(username),
-    refetchInterval: 30000,
+    refetchInterval: 60000,
   });
 }
 
