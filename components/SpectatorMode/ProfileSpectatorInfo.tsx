@@ -52,17 +52,21 @@ export function ProfileSpectatorInfo() {
   return (
     <View className="items-center p-4">
       <Card className="w-full">
-        <CardHeader>
+        <CardHeader className="items-center">
           <Text className="text-3xl mb-1 font-bold text-center text-foreground">
-            Join SkateHive
+            No Pass? No Session.
           </Text>
           
           <Text className="text-base text-center text-muted-foreground">
-            Skatehive is a global community that unites skaters, content creators, and enthusiasts to share, learn, and collaborate.
+            You gotta earn your way in. No brands, no corporations, just raw skate energy. Ready?
           </Text>
         </CardHeader>
         
-        <CardContent className="space-y-6">
+        <CardContent className="flex flex-col gap-6 items-center">
+          <Text className="text-lg font-semibold text-center text-foreground">
+            Follow the Steps or Bail Out
+          </Text>
+          
           <View className="w-full aspect-video rounded-xl border border-muted/50 overflow-hidden" 
             accessibilityLabel="SkateHive community video">
             <VideoPlayer
@@ -70,29 +74,47 @@ export function ProfileSpectatorInfo() {
               playing={false}
             />
           </View>
-        
-          <View className="w-full space-y-4">
-            <Text className="text-xl font-semibold text-center text-foreground">
-              Take the next step in your skating journey
-            </Text>
+          
+          <View className="flex flex-col flex-wrap justify-center gap-4 w-full">
+            <View className="flex flex-col items-center gap-1">
+              <Text className="font-bold text-foreground text-center">Step 1</Text>
+              <Text className="text-foreground text-center">Watch this. Get hyped. Understand.</Text>
+            </View>
             
+            <View className="flex flex-col items-center gap-1">
+              <Text className="font-bold text-foreground text-center">Step 2</Text>
+              <Text className="text-foreground text-center">You need an invite. No invite? No ride.</Text>
+            </View>
+            
+            <View className="flex flex-col items-center gap-1">
+              <Text className="font-bold text-foreground text-center">Step 3</Text>
+              <Text className="text-foreground text-center">Find us. We lurk where skaters roll.</Text>
+            </View>
+            
+            <View className="flex flex-col items-center gap-1">
+              <Text className="font-bold text-foreground text-center">Step 4</Text>
+              <Text className="text-foreground text-center">Instagram or Discord? If you know, you know.</Text>
+            </View>
+          </View>
+        
+          <View className="w-full flex items-center gap-4 pt-2">
             <Button 
               variant="secondary" 
               className="w-full" 
               onPress={handleJoinCommunity}
               accessibilityLabel="Join SkateHive community button"
             >
-              <Text>Join Our Community</Text>
+              <Text className="text-center">Prove You Belong</Text>
             </Button>
           </View>
         </CardContent>
         
-        <CardFooter className="flex-col space-y-4">
+        <CardFooter className="flex flex-col items-center gap-4">
           <Text className="text-xl font-semibold text-center text-foreground">
-            Connect with us
+            Find Us (If You Can)
           </Text>
           
-          <View className="flex-row justify-center space-x-8">
+          <View className="flex flex-row justify-center gap-8">
             {socialLinks.map((link) => (
               <TouchableOpacity 
                 key={link.name} 
@@ -100,9 +122,9 @@ export function ProfileSpectatorInfo() {
                 accessibilityLabel={`${link.name} social media link`}
                 accessibilityRole="link"
               >
-                <View className="items-center space-y-2">
+                <View className="flex flex-col items-center gap-2">
                   <Icon name={link.icon} size={32} color={link.color} />
-                  <Text className="text-sm text-muted-foreground">{link.name}</Text>
+                  <Text className="text-sm text-center text-muted-foreground">{link.name}</Text>
                 </View>
               </TouchableOpacity>
             ))}
