@@ -109,11 +109,13 @@ export default function ProfileScreen() {
 
   const vp = Number(profileData?.vp_percent || 0);
   const rc = Number(profileData?.rc_percent || 0);
+  const hp = Number(profileData?.hp_equivalent || 0);
 
   // Get dynamic color based on percentage value
   const getDynamicColor = (percentage: number): string => {
-    if (percentage > 50) return "#4CAF50"; // Green
-    if (percentage >= 15) return "#FFD600"; // Yellow
+    if (percentage > 90) return "#4CAF50"; // Green
+    if (percentage >= 70) return "#FFD600"; // Yellow
+    if (percentage >= 60) return "#FF9800"; // Orange
     return "#FF6B6B"; // Red
   };
 
@@ -167,6 +169,10 @@ export default function ProfileScreen() {
       {profileUsername !== "SPECTATOR" && (
         <View className="flex-row justify-around bg-card p-4 rounded-lg">
           <View className="items-center">
+            <Text className="font-bold text-xl">{(parseFloat(profileData?.reputation).toFixed(0)) || "25"}</Text>
+            <Text className="text-muted-foreground">Reputation</Text>
+          </View>
+          <View className="items-center">
             <Text className="font-bold text-xl">{profileData?.community_followers || "0"}</Text>
             <Text className="text-muted-foreground">Followers</Text>
           </View>
@@ -180,10 +186,10 @@ export default function ProfileScreen() {
           </View>
         </View>
       )}
- 
+
       {(profileUsername !== "SPECTATOR" && profileUsername !== currentUsername) && (
         <>
-        {/* 
+          {/* 
         currentUsername follow profileUsername
         <Button><Text>Follow</Text></Button>
         :
@@ -192,15 +198,26 @@ export default function ProfileScreen() {
         </>
       )}
 
-      {(profileUsername !== "SPECTATOR" && profileUsername === currentUsername) && (
+      {(profileUsername !== "SPECTATOR") && (
+
         <View className="flex-row justify-around bg-card p-4 rounded-lg">
+          <View key={'hp'} className="items-center">
+            <Text
+              className="font-bold text-2xl"
+            // style={{ color: getDynamicColor(item.value) }}
+            >
+              {hp.toFixed(0)}
+            </Text>
+            <Text className="text-muted-foreground">{'Hive Power'}</Text>
+          </View>
+
           {[
             { label: "Voting Power", value: vp },
-            { label: "Resource Credits", value: rc }
+            { label: "Resource Credits", value: rc },
           ].map((item, idx) => (
             <View key={idx} className="items-center">
-              <Text 
-                className="font-bold text-2xl" 
+              <Text
+                className="font-bold text-2xl"
                 style={{ color: getDynamicColor(item.value) }}
               >
                 {item.value.toFixed(0)}%
@@ -208,6 +225,7 @@ export default function ProfileScreen() {
               <Text className="text-muted-foreground">{item.label}</Text>
             </View>
           ))}
+
         </View>
       )}
 

@@ -17,6 +17,7 @@ interface ProfileData {
   community_totalposts: string;
   vp_percent: string;
   rc_percent: string;
+  hp_equivalent: string;
   total_posts: string;
   posting_metadata?: {
     profile: {
@@ -38,6 +39,7 @@ const SPECTATOR_PROFILE: ProfileData = {
   community_followings: '0',
   vp_percent: '0',
   rc_percent: '0',
+  hp_equivalent: '0',
   total_posts: '0',
   community_totalposts: '0',
   posting_metadata: {
