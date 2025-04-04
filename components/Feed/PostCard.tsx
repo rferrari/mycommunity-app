@@ -117,23 +117,70 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
     return (pending + total + curator).toFixed(3);
   };
 
+  const navigateToProfile = (username: string) => {
+    router.push({
+      pathname: "/(tabs)/profile",
+      params: { username }
+    });
+  };
+
   const media = extractMediaFromBody(post.body);
   const postContent = post.body.replace(/<iframe.*?<\/iframe>|!\[.*?\]\(.*?\)/g, '').trim();
-  const linkRegex = /(https?:\/\/[^\s]+)/g;
-  const postContentWithLinks = postContent.split(linkRegex).map((part, index) => {
-    if (linkRegex.test(part)) {
+  
+  // Process post content to handle @username mentions and URLs
+  const renderPostContent = () => {
+    if (!postContent) return null;
+    
+    // First, split by URLs
+    const linkRegex = /(https?:\/\/[^\s]+)/g;
+    // Then process @username mentions in each non-URL part
+    const mentionRegex = /(@[a-zA-Z0-9.-]+)/g;
+    
+    return postContent.split(linkRegex).map((part, index) => {
+      // If this part is a URL, make it a clickable link
+      if (linkRegex.test(part)) {
+        return (
+          <Text
+            key={`link-${index}`}
+            className="text-green-600 underline"
+            onPress={() => Linking.openURL(part)}
+          >
+            {part}
+          </Text>
+        );
+      }
+      
+      // If not a URL, process for @username mentions
+      const segments = part.split(mentionRegex);
+      if (segments.length === 1) {
+        // No mentions in this part
+        return <Text key={`text-${index}`} className="text-lg">{part}</Text>;
+      }
+      
+      // Process parts with mentions
       return (
-        <Text
-          key={index}
-          className="text-blue-500 underline"
-          onPress={() => Linking.openURL(part)}
-        >
-          {part}
+        <Text key={`text-${index}`} className="text-lg">
+          {segments.map((segment, segmentIndex) => {
+            // Check if this segment is a mention
+            if (mentionRegex.test(segment)) {
+              const username = segment.substring(1); // Remove @ symbol
+              return (
+                <Text
+                  key={`mention-${segmentIndex}`}
+                  className="text-green-600 font-bold"
+                  onPress={() => navigateToProfile(username)}
+                >
+                  {segment}
+                </Text>
+              );
+            }
+            // Regular text segment
+            return <Text key={`segment-${segmentIndex}`}>{segment}</Text>;
+          })}
         </Text>
       );
-    }
-    return <Text key={index} className='text-lg'>{part}</Text>;
-  });
+    });
+  };
 
   const handleProfilePress = () => {
     router.push({
@@ -163,7 +210,9 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
       </Pressable>
 
       {postContent !== '' && (
-        <Text className="px-2 mb-2 text-2xl">{postContentWithLinks}</Text>
+        <View className="px-2 mb-2">
+          {renderPostContent()}
+        </View>
       )}
 
       {media.length > 0 && (
