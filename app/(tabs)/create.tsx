@@ -218,12 +218,14 @@ export default function CreatePost() {
   };
 
   return (
-    <ScrollView className="flex-1 p-4 bg-background">
-      {username === "SPECTATOR" ? (
+    <>
+    { username === "SPECTATOR" ? (
+      <ScrollView className="flex-1 p-4 bg-background">
         <CreateSpectatorInfo />
-      ) : (
-        <View className="flex flex-col gap-4">
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      </ScrollView>
+    ) : (
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView className="flex-1 p-4 bg-background">
           {/* Header */}
           <Text className="text-3xl font-bold mt-3 mb-2">Create Post</Text>
 
@@ -300,9 +302,9 @@ export default function CreatePost() {
               </Pressable>
             </View>
           )}
-        </TouchableWithoutFeedback>
-        </View>
-      )}
-    </ScrollView>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    )}
+    </>
   );
 }  

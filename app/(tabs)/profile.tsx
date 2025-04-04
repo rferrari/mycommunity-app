@@ -126,7 +126,12 @@ export default function ProfileScreen() {
     const radius = (size - strokeWidth) / 2;
     const circumference = 2 * Math.PI * radius;
     const strokeDashoffset = circumference - (percentage / 100) * circumference;
-
+  
+    // Dynamic color logic
+    let dynamicColor = "#4CAF50"; // default green
+    if (percentage <= 50) dynamicColor = "#FFD600"; // warning yellow
+    if (percentage < 15) dynamicColor = "#FF6B6B"; // danger red
+  
     return (
       <Svg width={size} height={size}>
         <Circle
@@ -138,7 +143,7 @@ export default function ProfileScreen() {
           strokeWidth={strokeWidth}
         />
         <Circle
-          stroke={color}
+          stroke={dynamicColor}
           fill="none"
           cx={size / 2}
           cy={size / 2}
@@ -236,7 +241,7 @@ export default function ProfileScreen() {
           ].map((item, idx) => (
             <View key={idx} className="items-center">
               <CircularProgress percentage={item.value} />
-              <Text className="font-bold mt-2">{item.value}%</Text>
+              <Text className="font-bold mt-2">{item.value.toFixed(0)}%</Text>
               <Text className="text-muted-foreground">{item.label}</Text>
             </View>
           ))}
