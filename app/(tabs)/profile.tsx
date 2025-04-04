@@ -176,7 +176,7 @@ export default function ProfileScreen() {
           </View>
           <View className="items-center">
             <Text className="font-bold text-xl">{profileData?.community_totalposts || "0"}</Text>
-            <Text className="text-muted-foreground">Posts</Text>
+            <Text className="text-muted-foreground">Snaps</Text>
           </View>
         </View>
       )}
