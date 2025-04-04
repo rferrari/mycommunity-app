@@ -4,7 +4,7 @@ import { Text } from "~/components/ui/text";
 import { useColorScheme } from "~/lib/useColorScheme";
 
 // Use the exact icon names from Ionicons
-type IconName = React.ComponentProps<typeof Ionicons>["name"];
+export type IconName = React.ComponentProps<typeof Ionicons>["name"];
 
 interface InfoItem {
   icon: IconName;
@@ -13,8 +13,8 @@ interface InfoItem {
 }
 
 interface SpectatorInfoBaseProps {
-  icon: IconName;
-  iconColor: string;
+  icon?: IconName;
+  iconColor?: string;
   title: string;
   titleUppercase?: boolean;
   description: string;
@@ -34,13 +34,15 @@ export function SpectatorInfoBase({
   return (
     <>
       <View className="items-center mt-2 mb-4">
-        <View
-          className="w-24 h-24 rounded-full bg-foreground/10 items-center justify-center"
-          style={{ borderWidth: 3, borderColor: isDarkColorScheme ? "#ffffff20" : "#00000020" }}
-        >
-          <Ionicons name={icon} size={48} color={iconColor} />
-        </View>
-        <Text className={`text-3xl font-bold mt-2 ${titleUppercase ? 'uppercase' : ''}`}>{title}</Text>
+        {icon && (
+          <View
+            className="w-24 h-24 rounded-full bg-foreground/10 items-center justify-center"
+            style={{ borderWidth: 3, borderColor: isDarkColorScheme ? "#ffffff20" : "#00000020" }}
+          >
+            <Ionicons name={icon} size={48} color={iconColor} />
+          </View>
+        )}
+        <Text className={`text-3xl font-bold ${!icon ? "mt-0" : "mt-2"} ${titleUppercase ? 'uppercase' : ''}`}>{title}</Text>
         <Text className="text-center opacity-70 mt-2 mx-4">
           {description}
         </Text>

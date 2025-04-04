@@ -43,7 +43,7 @@ const SPECTATOR_PROFILE: ProfileData = {
   posting_metadata: {
     profile: {
       name: 'Spectator',
-      about: 'Browse and explore content without logging in.',
+      about: '',
       profile_image: '',
       cover_image: '',
       location: '',
