@@ -42,7 +42,7 @@ const SPECTATOR_PROFILE: ProfileData = {
   community_totalposts: '0',
   posting_metadata: {
     profile: {
-      name: 'Spectator Mode',
+      name: 'Spectator',
       about: 'Browse and explore content without logging in.',
       profile_image: '',
       cover_image: '',
