@@ -216,12 +216,16 @@ export default function ProfileScreen() {
           </View>
         </View>
       )}
-
+ 
       {(profileUsername !== "SPECTATOR" && profileUsername !== currentUsername) && (
-        // currentUsername follow profileUsername
+        <>
+        {/* 
+        currentUsername follow profileUsername
         <Button><Text>Follow</Text></Button>
-        // :
-        // <Button><Text>Unfollow</Text></Button>
+        :
+        <Button><Text>Unfollow</Text></Button>
+        */}
+        </>
       )}
 
       {(profileUsername !== "SPECTATOR" && profileUsername === currentUsername) && (
