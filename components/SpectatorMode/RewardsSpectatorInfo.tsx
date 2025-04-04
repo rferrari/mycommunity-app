@@ -21,7 +21,7 @@ export function RewardsSpectatorInfo() {
         >
           <Ionicons name="megaphone-outline" size={48} color="#34C759" />
         </View>
-        <Text className="text-3xl font-bold mt-2">SkateHive Rewards</Text>
+        <Text className="text-3xl font-bold mt-2">Rewards</Text>
         <Text className="text-center opacity-70 mt-2">
         Learn how you can earn rewards in the SkateHive community!
         </Text>
@@ -46,7 +46,7 @@ export function RewardsSpectatorInfo() {
         {
           icon: "cash-outline",
           title: "More Ways to Earn",
-          text: "Through contests, engagement, and consistent contributions, you can unlock even more opportunities to earn.",
+          text: "Through contests, engagement, and consistent contributions, you can unlock even morer.",
         },
       ].map((item, index) => (
         <View key={index} className="w-full mt-4 p-6 bg-foreground/5 rounded-xl">

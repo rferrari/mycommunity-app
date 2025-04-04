@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { MatrixRain } from '~/components/ui/loading-effects/MatrixRain';
-import {  StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 
 export default function AboutScreen() {
@@ -29,39 +29,39 @@ export default function AboutScreen() {
 
         {/* Content */}
         <ScrollView className="flex-1 px-6">
-        <Text style={styles.heading}></Text>
+          <Text style={styles.heading}></Text>
 
-<Section title="🌍 What is Skatehive?">
-  <Bullet text="A global community of skaters, creators, and enthusiasts." />
-  <Bullet text="Built on decentralization, creativity, and collaboration." />
-  <Bullet text="No central authority — it’s skater-owned and skater-driven." />
-</Section>
+          <Section title="🌍 What is Skatehive?">
+            <Bullet text="It’s a worldwide crew of skaters, creators, and weirdos doing it our way." />
+            <Bullet text="Built on DIY, decentralization, and zero corporate bullsh*t." />
+            <Bullet text="No bosses, no brands calling shots — this is 100% skater-owned, skater-run." />
+          </Section>
 
-<Section title="📼 Tech Revolution in Skateboarding">
-  <Bullet text="From VX1000 to social media, tech has shaped skate culture." />
-  <Bullet text="Skatehive is the next evolution, blending community + rewards." />
-</Section>
+          <Section title="📼 Tech Revolution in Skateboarding">
+            <Bullet text="From VX tapes to IG clips — tech’s always been part of the ride." />
+            <Bullet text="Skatehive is the next chapter: community-powered + crypto rewards = freedom." />
+          </Section>
 
-<Section title="🚀 Key Features">
-  <Bullet text="Post-to-earn: Get rewarded for sharing tricks, clips, stories." />
-  <Bullet text="Infinity Mag: A digital skate mag built by and for skaters." />
-  <Bullet text="Decentralized sponsorships: Recognition from the community." />
-</Section>
+          <Section title="🚀 Why It Rips">
+            <Bullet text="Post-to-earn: film a trick, drop a story, share your vibe — get rewarded." />
+            <Bullet text="Infinity Mag: our own never-ending skate mag. No ads. No fluff." />
+            <Bullet text="Decentralized sponsorships: repping your crew, getting love from the people." />
+          </Section>
 
-<Section title="🧰 Open-Source Power">
-  <Bullet text="Tech is open-source: any crew or skateshop can clone it." />
-  <Bullet text="Content broadcasted across a network of skate sites via blockchain." />
-</Section>
+          <Section title="🧰 Open-Source = Total Freedom">
+            <Bullet text="Anyone can fork this sh*t — skateshops, collectives, your homie with a laptop." />
+            <Bullet text="Your content echoes across the skateverse. Powered by blockchain, owned by you." />
+          </Section>
 
-<Section title="🤝 Community Focus">
-  <Bullet text="Every like, post, or comment adds value to the ecosystem." />
-  <Bullet text="Skaters curate their own culture — not controlled by algorithms." />
-</Section>
+          <Section title="🤝 Community-First, Always">
+            <Bullet text="Likes, posts, comments — every move adds value to *our* world." />
+            <Bullet text="We set the tone. No AI deciding what's cool. No engagement farms." />
+          </Section>
 
-<Section title="🛹 The Mission">
-  <Bullet text="Return control of skate media to skaters." />
-  <Bullet text="Build a vibrant, connected, and fair global skate culture — together." />
-</Section>
+          <Section title="🛹 Our Mission">
+            <Bullet text="Put skate media back in skaters’ hands. Forever." />
+            <Bullet text="Grow a real-deal global skate culture — raw, connected, and free AF." />
+          </Section>
         </ScrollView>
       </View>
     </View>
