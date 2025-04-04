@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
 import { Redirect } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
-import { useAuth } from '~/lib/auth-provider';
+import React from 'react';
 import { LoadingScreen } from '~/components/ui/LoadingScreen';
+import { useAuth } from '~/lib/auth-provider';
 
 export default function RedirectPage() {
   const { isLoading, isAuthenticated } = useAuth();
