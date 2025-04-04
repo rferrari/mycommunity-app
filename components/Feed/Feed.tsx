@@ -113,9 +113,9 @@ export function Feed({ refreshTrigger = 0 }: FeedProps) {
   const keyExtractor = React.useCallback((item: Post) => item.permlink, []);
 
   const title =
-    feedMode === 'latest' ? 'Latest Posts' :
-      feedMode === 'trending' ? 'Trending Posts' :
-        'Following Posts';
+    feedMode === 'latest' ? 'Latest' :
+      feedMode === 'trending' ? 'Trending' :
+        'Following';
 
   const buttonAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }]
