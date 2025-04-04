@@ -53,7 +53,7 @@ export default function ProfileScreen() {
           <Ionicons
             name="eye-outline"
             size={48}
-            color={isDarkColorScheme ? "#ffffff" : "#000000"}
+            color={"#34C759"}
           />
         </View>
       );
