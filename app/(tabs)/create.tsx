@@ -225,17 +225,17 @@ export default function CreatePost() {
       </ScrollView>
     ) : (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView className="flex-1 p-4 bg-background">
+        <ScrollView className="flex-1 bg-background">
           {/* Header */}
-          <Text className="text-3xl font-bold mt-3 mb-2">Create Post</Text>
+          <Text className="text-3xl font-bold ml-4 mt-4">Create</Text>
 
-          <Card>
+          <Card className="m-4 mt-2 p-4 bg-card border border-border rounded-lg">
             <TextInput
               multiline
               placeholder="What's on your mind?"
               value={content}
               onChangeText={setContent}
-              className="p-4 text-foreground text-lg min-h-[20vh]"
+              className="text-foreground text-lg min-h-[20vh]"
               placeholderTextColor="#666"
               style={{ textAlignVertical: "top" }}
               numberOfLines={5}
