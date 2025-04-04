@@ -6,6 +6,7 @@ import { useColorScheme } from "~/lib/useColorScheme";
 import { Crown } from "lucide-react-native";
 import { LoadingScreen } from "../ui/LoadingScreen";
 import { useLeaderboard } from "~/lib/hooks/useQueries";
+import { cn } from "~/lib/utils";
 
 interface LeaderboardProps {
   currentUsername: string | null;
@@ -85,9 +86,8 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
     <ScrollView className="w-full py-4" showsVerticalScrollIndicator={false}>
       <View className="items-center mb-4">
         <View
-          className="w-24 h-24 rounded-full bg-foreground/10 items-center justify-center"
+          className="w-24 h-24 rounded-full bg-foreground/10 items-center justify-center border-3"
           style={{
-            borderWidth: 3,
             borderColor: isDarkColorScheme ? "#ffffff20" : "#00000020",
           }}
         >
@@ -96,7 +96,7 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
         <Text className="text-3xl font-bold mt-2">Leaderboard</Text>
       </View>
 
-      <View>
+      <View className="divide-solid divide-cyan-200">
         {topSkaters.map((skater, index) => (
           <LeaderboardItem
             key={skater.id}
@@ -108,7 +108,6 @@ export function Leaderboard({ currentUsername }: LeaderboardProps) {
 
         {currentUserInfo && surroundingUsers.length > 0 && (
           <>
-            <View className="w-full my-2 bg-gray-600 h-1 opacity-50" />
             {surroundingUsers.map((skater) => (
               <LeaderboardItem
                 key={skater.id}
@@ -133,28 +132,17 @@ const LeaderboardItem = ({
   isCurrentUser?: boolean;
 }) => (
   <View
-    style={{
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      padding: 10,
-      marginVertical: 4,
-      borderBottomWidth: 1,
-      borderBottomColor: "#ccc",
-      borderRadius: isTop ? 10 : 0,
-      backgroundColor: isCurrentUser ? "#444" : "transparent",
-      borderWidth: isCurrentUser ? 2 : 0,
-      borderColor: isCurrentUser ? "#FFD700" : "transparent",
-    }}
+    className={cn(
+      "flex-row items-center justify-between p-2",
+      isTop && "rounded-[10px]",
+      isCurrentUser && "border-2 border-green-500",
+    )}
   >
     <Text
-      style={{
-        fontSize: 16,
-        fontWeight: "bold",
-        color: isTop ? "#d4af37" : "#eee",
-        width: 50,
-        textAlign: "center",
-      }}
+      className={cn(
+        "text-base font-bold w-[50px] text-center",
+        isTop ? "text-[#d4af37]" : "text-[#eee]"
+      )}
     >
       #{skater.position}
     </Text>
@@ -164,7 +152,7 @@ const LeaderboardItem = ({
         source={{
           uri: `https://images.hive.blog/u/${skater.hive_author}/avatar/small`,
         }}
-        style={{ width: 40, height: 40, borderRadius: 50, borderWidth: 3 }}
+        className="w-10 h-10 rounded-full border-[3px]"
       />
       {isTop && skater.position === 1 && (
         <View className="absolute -top-4 left-1/2 -translate-x-1/2">
@@ -174,23 +162,18 @@ const LeaderboardItem = ({
     </View>
 
     <Text
-      style={{
-        fontSize: 16,
-        paddingLeft: 10,
-        fontWeight: "bold",
-        flex: 1,
-        textAlign: "left",
-        color: isTop ? "#fff" : "#eee",
-      }}
+      className={cn(
+        "text-base font-bold pl-2.5 flex-1 text-left",
+        isTop ? "text-white" : "text-[#eee]"
+      )}
     >
       {skater.hive_author}
     </Text>
     <Text
-      style={{
-        fontSize: 16,
-        fontWeight: "bold",
-        color: isTop ? "#4caf50" : "#fff",
-      }}
+      className={cn(
+        "text-base font-bold",
+        isTop ? "text-[#4caf50]" : "text-white"
+      )}
     >
       {skater.points.toFixed(0)}
     </Text>
