@@ -121,7 +121,7 @@ export default function WalletScreen() {
   };
 
   const hideValue = (value: string | number | undefined) => {
-    return !showWallet ? "••••••" : value?.toString() || "0";
+    return !showWallet ? "•••" : value?.toString() || "0";
   };
 
   const sortedPendingPosts = (posts: RewardsData["pending_posts"]) => {
@@ -198,7 +198,7 @@ export default function WalletScreen() {
                 <View className="flex-row justify-between items-center">
                   <Text className="text-muted-foreground">Total Value</Text>
                   <Text className="text-xl font-bold">
-                    ${hideValue(calculateTotalValue())}
+                    {hideValue(calculateTotalValue())}
                   </Text>
                 </View>
 
@@ -211,7 +211,7 @@ export default function WalletScreen() {
                           {hideValue(balanceData?.hbd)}
                         </Text>
                         <Text className="text-sm text-muted-foreground">
-                          ${hideValue(balanceData?.hbd)}
+                          {hideValue(balanceData?.hbd)}
                         </Text>
                       </View>
                     </View>
@@ -225,7 +225,6 @@ export default function WalletScreen() {
                           {hideValue(balanceData?.hive)}
                         </Text>
                         <Text className="text-sm text-muted-foreground">
-                          $
                           {hideValue(
                             calculateDollarValue(
                               balanceData?.hive,
@@ -245,7 +244,6 @@ export default function WalletScreen() {
                           {hideValue(balanceData?.hp_equivalent)}
                         </Text>
                         <Text className="text-sm text-muted-foreground">
-                          $
                           {hideValue(
                             calculateDollarValue(
                               balanceData?.hp_equivalent,
@@ -334,7 +332,7 @@ export default function WalletScreen() {
                                 Potential
                               </Text>
                               <Text className="font-medium text-green-500">
-                                ${hideValue(post.pending_payout_value)}
+                                {hideValue(post.pending_payout_value)}
                               </Text>
                             </View>
                             <View className="flex-row justify-between items-center">
