@@ -18,6 +18,8 @@ import { useProfile, useUserFeed } from "~/lib/hooks/useQueries";
 import { PostCard } from "~/components/Feed/PostCard";
 import type { Post } from "~/lib/types";
 import { LoadingScreen } from "~/components/ui/LoadingScreen";
+import Svg, { Circle } from "react-native-svg";
+
 
 export default function ProfileScreen() {
   const { isDarkColorScheme } = useColorScheme();
@@ -107,6 +109,51 @@ export default function ProfileScreen() {
     );
   }
 
+  const vp = Number(profileData?.vp_percent || 0);
+  const rc = Number(profileData?.rc_percent || 0);
+
+  const CircularProgress = ({
+    percentage = 0, // Default 0% if not provided
+    size = 60,
+    strokeWidth = 6,
+    color = "#4CAF50",
+  }: {
+    percentage?: number;
+    size?: number;
+    strokeWidth?: number;
+    color?: string;
+  }) => {
+    const radius = (size - strokeWidth) / 2;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
+    return (
+      <Svg width={size} height={size}>
+        <Circle
+          stroke="#e6e6e6"
+          fill="none"
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={strokeWidth}
+        />
+        <Circle
+          stroke={color}
+          fill="none"
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={strokeWidth}
+          strokeDasharray={`${circumference} ${circumference}`}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          rotation="-90"
+          origin={`${size / 2}, ${size / 2}`}
+        />
+      </Svg>
+    );
+  };
+
   return (
     <ScrollView
       className="flex-1 bg-background"
@@ -132,6 +179,7 @@ export default function ProfileScreen() {
         </Pressable>
       )}
 
+
       {/* Profile Info Section */}
       <View className="items-center gap-2 pt-6">
         {renderProfileImage()}
@@ -152,33 +200,44 @@ export default function ProfileScreen() {
           </Text>
         )} */}
       </View>
+      {profileUsername !== "SPECTATOR" && (
+        <View className="flex-row justify-around bg-card p-4 rounded-lg">
+          <View className="items-center">
+            <Text className="font-bold">{profileData?.community_followers || "0"}</Text>
+            <Text className="text-muted-foreground">Followers</Text>
+          </View>
+          <View className="items-center">
+            <Text className="font-bold">{profileData?.community_followings || "0"}</Text>
+            <Text className="text-muted-foreground">Following</Text>
+          </View>
+          <View className="items-center">
+            <Text className="font-bold">{profileData?.community_totalposts || "0"}</Text>
+            <Text className="text-muted-foreground">Posts</Text>
+          </View>
+        </View>
+      )}
 
-      {/* Stats Section */}
-      <View className="flex-row justify-around bg-card p-4 rounded-lg">
-        <View className="items-center">
-          <Text className="font-bold">{profileData?.community_followers || "0"}</Text>
-          <Text className="text-muted-foreground">Followers</Text>
-        </View>
-        <View className="items-center">
-          <Text className="font-bold">{profileData?.community_followings || "0"}</Text>
-          <Text className="text-muted-foreground">Following</Text>
-        </View>
-        <View className="items-center">
-          <Text className="font-bold">{profileData?.community_totalposts || "0"}</Text>
-          <Text className="text-muted-foreground">Posts</Text>
-        </View>
-      </View>
+      {(profileUsername !== "SPECTATOR" && profileUsername !== currentUsername) && (
+        // currentUsername follow profileUsername
+        <Button><Text>Follow</Text></Button>
+        // :
+        // <Button><Text>Unfollow</Text></Button>
+      )}
 
-      <View className="flex-row justify-around bg-card p-4 rounded-lg">
-        <View className="items-center">
-          <Text className="font-bold">{profileData?.vp_percent || "0"}</Text>
-          <Text className="text-muted-foreground">Voting Power</Text>
+      {(profileUsername !== "SPECTATOR" && profileUsername === currentUsername) && (
+        <View className="flex-row justify-around bg-card p-4 rounded-lg">
+          {[
+            { label: "Voting Power", value: vp },
+            { label: "Resource Credits", value: rc }
+          ].map((item, idx) => (
+            <View key={idx} className="items-center">
+              <CircularProgress percentage={item.value} />
+              <Text className="font-bold mt-2">{item.value}%</Text>
+              <Text className="text-muted-foreground">{item.label}</Text>
+            </View>
+          ))}
         </View>
-        <View className="items-center">
-          <Text className="font-bold">{profileData?.rc_percent || "0"}</Text>
-          <Text className="text-muted-foreground">Resource Credits</Text>
-        </View>
-      </View>
+      )}
 
       {/* Show Create Account CTA only for SPECTATOR */}
       {profileUsername === "SPECTATOR" ? (

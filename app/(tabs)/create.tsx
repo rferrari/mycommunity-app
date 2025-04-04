@@ -23,6 +23,7 @@ import { useColorScheme } from "~/lib/useColorScheme";
 import { useAuth } from "~/lib/auth-provider";
 import { API_BASE_URL } from "~/lib/constants";
 import { useQueryClient } from "@tanstack/react-query";
+import { CreateSpectatorInfo } from "~/components/SpectatorMode/CreateSpectatorInfo";
 
 export default function CreatePost() {
   const { isDarkColorScheme } = useColorScheme();
@@ -217,85 +218,91 @@ export default function CreatePost() {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ScrollView className="flex-1 bg-background p-2">
-        {/* Header */}
-        <Text className="text-3xl font-bold mt-3 mb-2">Create Post</Text>
+    <ScrollView className="flex-1 p-4 bg-background">
+      {username === "SPECTATOR" ? (
+        <CreateSpectatorInfo />
+      ) : (
+        <View className="flex flex-col gap-4">
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          {/* Header */}
+          <Text className="text-3xl font-bold mt-3 mb-2">Create Post</Text>
 
-        <Card>
-          <TextInput
-            multiline
-            placeholder="What's on your mind?"
-            value={content}
-            onChangeText={setContent}
-            className="p-4 text-foreground text-lg min-h-[20vh]"
-            placeholderTextColor="#666"
-            style={{ textAlignVertical: "top" }}
-            numberOfLines={5}
-          />
-        </Card>
+          <Card>
+            <TextInput
+              multiline
+              placeholder="What's on your mind?"
+              value={content}
+              onChangeText={setContent}
+              className="p-4 text-foreground text-lg min-h-[20vh]"
+              placeholderTextColor="#666"
+              style={{ textAlignVertical: "top" }}
+              numberOfLines={5}
+            />
+          </Card>
 
-        <View className="flex-row items-center justify-between p-4 border-t border-border">
-          <Pressable
-            onPress={pickMedia}
-            className="flex-row items-center"
-            disabled={isUploading || isSelectingMedia}
-          >
-            {isSelectingMedia ? (
-              <>
-                <View className="w-6 h-6 items-center justify-center">
-                  <ActivityIndicator size="small" />
-                </View>
-                <Text className="ml-2 text-foreground/60">Selecting...</Text>
-              </>
-            ) : (
-              <>
-                <Ionicons name="image-outline" size={24} color="#666" />
-                <Text className="ml-2 text-foreground/60">
-                  {media ? "Replace media" : "Add media"}
-                </Text>
-              </>
-            )}
-          </Pressable>
-
-          <Button
-            onPress={handlePost}
-            disabled={(!content.trim() && !media) || isUploading}
-          >
-            <Text className="font-medium">
-              {isUploading ? "Posting..." : "Post"}
-            </Text>
-          </Button>
-        </View>
-
-        {media && (
-          <View className="relative border border-muted rounded-lg overflow-hidden w-full aspect-square mt-4">
-            {mediaType === "image" ? (
-              <Image
-                source={{ uri: media }}
-                style={{ resizeMode: "cover", width: "100%", height: "100%" }}
-              />
-            ) : mediaType === "video" ? (
-              hasVideoInteraction ? (
-                <VideoPlayer url={media} playing={isVideoPlaying} />
-              ) : (
-                <Pressable className="w-full h-full" onPress={handleVideoPress}>
-                  <VideoPlayer url={media} playing={false} />
-                  <View className="absolute inset-0 flex items-center justify-center bg-black/20">
-                    <FontAwesome name="play-circle" size={50} color="white" />
-                  </View>
-                </Pressable>
-              )
-            ) : null}
+          <View className="flex-row items-center justify-between p-4 border-t border-border">
             <Pressable
-              onPress={removeMedia}
-              className="absolute top-2 right-2 bg-black/50 rounded-full p-1"
+              onPress={pickMedia}
+              className="flex-row items-center"
+              disabled={isUploading || isSelectingMedia}
             >
-              <Ionicons name="close" size={20} color="white" />
+              {isSelectingMedia ? (
+                <>
+                  <View className="w-6 h-6 items-center justify-center">
+                    <ActivityIndicator size="small" />
+                  </View>
+                  <Text className="ml-2 text-foreground/60">Selecting...</Text>
+                </>
+              ) : (
+                <>
+                  <Ionicons name="image-outline" size={24} color="#666" />
+                  <Text className="ml-2 text-foreground/60">
+                    {media ? "Replace media" : "Add media"}
+                  </Text>
+                </>
+              )}
             </Pressable>
+
+            <Button
+              onPress={handlePost}
+              disabled={(!content.trim() && !media) || isUploading}
+            >
+              <Text className="font-medium">
+                {isUploading ? "Posting..." : "Post"}
+              </Text>
+            </Button>
           </View>
-        )}
-      </ScrollView>
-    </TouchableWithoutFeedback>
+
+          {media && (
+            <View className="relative border border-muted rounded-lg overflow-hidden w-full aspect-square mt-4">
+              {mediaType === "image" ? (
+                <Image
+                  source={{ uri: media }}
+                  style={{ resizeMode: "cover", width: "100%", height: "100%" }}
+                />
+              ) : mediaType === "video" ? (
+                hasVideoInteraction ? (
+                  <VideoPlayer url={media} playing={isVideoPlaying} />
+                ) : (
+                  <Pressable className="w-full h-full" onPress={handleVideoPress}>
+                    <VideoPlayer url={media} playing={false} />
+                    <View className="absolute inset-0 flex items-center justify-center bg-black/20">
+                      <FontAwesome name="play-circle" size={50} color="white" />
+                    </View>
+                  </Pressable>
+                )
+              ) : null}
+              <Pressable
+                onPress={removeMedia}
+                className="absolute top-2 right-2 bg-black/50 rounded-full p-1"
+              >
+                <Ionicons name="close" size={20} color="white" />
+              </Pressable>
+            </View>
+          )}
+        </TouchableWithoutFeedback>
+        </View>
+      )}
+    </ScrollView>
   );
-}
+}  

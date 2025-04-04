@@ -7,8 +7,8 @@ import { useColorScheme } from '~/lib/useColorScheme';
 const TAB_ITEMS = [
   {
     name: 'home',
-    title: 'Wait List',
-    icon: 'home-outline'
+    title: '',
+    icon: 'enter-outline'
   },
   // {
   //   name: 'about',
