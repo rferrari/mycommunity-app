@@ -18,6 +18,8 @@ import { useProfile, useUserFeed } from "~/lib/hooks/useQueries";
 import { PostCard } from "~/components/Feed/PostCard";
 import type { Post } from "~/lib/types";
 import { LoadingScreen } from "~/components/ui/LoadingScreen";
+import { PopCommunitiesSelector } from "~/components/ PopCommunitiesSelector";
+import { FollowButton } from "~/components/Follow/FollowButton";
 
 export default function ProfileScreen() {
   const { isDarkColorScheme } = useColorScheme();
@@ -187,19 +189,7 @@ export default function ProfileScreen() {
         </View>
       )}
 
-      {(profileUsername !== "SPECTATOR" && profileUsername !== currentUsername) && (
-        <>
-          {/* 
-        currentUsername follow profileUsername
-        <Button><Text>Follow</Text></Button>
-        :
-        <Button><Text>Unfollow</Text></Button>
-        */}
-        </>
-      )}
-
       {(profileUsername !== "SPECTATOR") && (
-
         <View className="flex-row justify-around bg-card p-4 rounded-lg">
           <View key={'hp'} className="items-center">
             <Text
@@ -227,6 +217,28 @@ export default function ProfileScreen() {
           ))}
 
         </View>
+      )}
+
+      {currentUsername && profileUsername &&
+        profileUsername !== "SPECTATOR" &&
+        profileUsername !== currentUsername && (
+          <>
+            <FollowButton
+              currentUsername={currentUsername}
+              profileUsername={profileUsername}
+              // type="normal"
+            />
+          </>
+        )}
+
+      {(profileUsername !== "SPECTATOR" && profileUsername === currentUsername) && (
+        <PopCommunitiesSelector
+          // communities={pop_communities}
+          onSelect={([id, name]) => {
+            console.log("Selected:", id, name);
+            // set state or navigate
+          }}
+        />
       )}
 
       {/* Show Create Account CTA only for SPECTATOR */}
