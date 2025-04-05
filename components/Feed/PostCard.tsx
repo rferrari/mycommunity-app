@@ -11,6 +11,8 @@ import { MediaPreview } from './MediaPreview';
 import { useToast } from '~/lib/toast-provider';
 import type { Media, Post } from '../../lib/types';
 import { extractMediaFromBody } from '~/lib/utils';
+import { FollowButton } from '../Follow/FollowButton';
+// import { MiniFollowButton } from '../Follow/MiniFollowButton';
 
 interface PostCardProps {
   post: Post;
@@ -198,6 +200,11 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
               source={{ uri: `https://images.ecency.com/webp/u/${post.author}/avatar/small` }}
               className="w-full h-full border border-muted rounded-full"
               alt={`${post.author}'s avatar`}
+            />
+            <FollowButton
+                currentUsername={currentUsername}
+                profileUsername={post.author}
+                // type="mini"
             />
           </View>
           <View>
