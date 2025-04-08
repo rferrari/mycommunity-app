@@ -1,10 +1,12 @@
 # MyCommunity App 🚀
 
-A powerful mobile application that empowers communities through the HIVE blockchain, combining social features with decentralized rewards.
+A powerful React Native mobile application that empowers communities through the HIVE blockchain. MyCommunity App combines social networking features with decentralized rewards, secure authentication, and a modern user interface to create a seamless community experience.
 
-![App Preview](path-to-your-app-preview.gif)
+## 📱 Overview
 
-## 🌟 Features
+MyCommunity App is built using the latest React Native and Expo technologies, offering a cross-platform solution with native performance. The application connects to the HIVE blockchain, allowing users to interact with decentralized content, manage their HIVE wallets, and participate in community governance.
+
+## 🌟 Key Features
 
 ### Content Creation & Sharing
 - 📝 Long-form articles with Markdown support
@@ -32,53 +34,159 @@ A powerful mobile application that empowers communities through the HIVE blockch
 - 📱 Native mobile experience
 - ⚡ Fast and responsive interface
 - 🎨 Modern design language
-- 🔄 Seamless navigation
 
-## 🛠️ Technology Stack
+## 🛠️ Project Structure
 
-- **Frontend**: React Native + Expo
-- **Styling**: NativeWind v4
-- **Blockchain**: HIVE
-- **Security**: SecureStore encryption
-- **Media**: IPFS integration
-- **Navigation**: Expo Router
+The project follows a clean, modular architecture:
+
+```
+mycommunity-app/
+├── app/                 # Expo Router screens and navigation
+│   ├── (tabs)/          # Main tab screens
+│   ├── (onboarding)/    # Onboarding flows
+│   └── _layout.tsx      # Root navigation layout
+├── assets/              # Static assets (images, videos)
+├── components/          # Reusable UI components
+│   ├── auth/            # Authentication components
+│   ├── Feed/            # Feed-related components
+│   ├── ui/              # Base UI components
+│   └── Leaderboard/     # Leaderboard components
+├── lib/                 # Core utilities and business logic
+│   ├── hooks/           # Custom React hooks
+│   ├── icons/           # Icon components
+│   ├── api.ts           # API integration
+│   ├── auth-provider.tsx # Authentication context
+│   ├── hive-utils.ts    # HIVE blockchain utilities
+│   └── types.ts         # TypeScript type definitions
+└── ...configuration files
+```
+
+### Key Files
+
+- `app/_layout.tsx`: Root navigation and providers setup
+- `lib/auth-provider.tsx`: Authentication logic and secure storage
+- `lib/api.ts`: API integration functions
+- `components/ui/`: Reusable UI components built with NativeWind
+
+## 📋 Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18 or newer)
+- [pnpm](https://pnpm.io/) package manager
+- [Expo CLI](https://docs.expo.dev/workflow/expo-cli/) (optional, but recommended)
+- For iOS development: macOS with Xcode
+- For Android development: Android Studio and SDK
 
 ## 🚀 Getting Started
 
+### Installation
+
 1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/mycommunity-app.git
-```
 
-2. Install dependencies:
 ```bash
+git clone https://github.com/r4topunk/mycommunity-app.git
 cd mycommunity-app
-npm install
 ```
 
-3. Start the development server:
+2. Install dependencies with pnpm:
+
 ```bash
-npm start
+pnpm install
 ```
 
-## 🔧 Configuration
+3. Set up environment variables (if needed):
 
-Create a `.env` file with your configuration:
+Create a `.env` file in the project root with your configuration:
 
-```env
+```
 API_BASE_URL=your_api_url
 HIVE_NODE=your_preferred_node
 ```
 
+### Running the App
+
+#### Development Mode
+
+Run the app in development mode with hot reloading:
+
+```bash
+# Start the development server with Metro bundler
+pnpm dev
+
+# Run on iOS simulator
+pnpm ios
+
+# Run on Android emulator
+pnpm android
+
+# Run on web browser
+pnpm web
+```
+
+#### Using a Physical Device
+
+To run on a physical device:
+
+1. Install the Expo Go app on your device
+2. Make sure your device is on the same network as your development machine
+3. Scan the QR code displayed in the terminal with your camera app (iOS) or Expo Go app (Android)
+
+## 📦 Building for Production
+
+This project uses [EAS Build](https://docs.expo.dev/build/introduction/) for creating production-ready builds:
+
+```bash
+# Install EAS CLI if not already installed
+npm install -g eas-cli
+
+# Log in to your Expo account
+eas login
+
+# Configure your build profiles (if needed)
+eas build:configure
+
+# Build for internal testing (preview)
+eas build --platform ios --profile preview
+eas build --platform android --profile preview
+
+# Build for production
+eas build --platform ios --profile production
+eas build --platform android --profile production
+```
+
+## 📱 HIVE Blockchain Integration
+
+MyCommunity App integrates with the HIVE blockchain for:
+
+- User authentication using HIVE account credentials
+- Content storage and retrieval
+- Rewards distribution and tracking
+- Voting and social interactions
+
+The integration is handled through the `@hiveio/dhive` library with secure storage of user credentials using Expo SecureStore.
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+#### Metro Bundler Issues
+
+If you encounter issues with the Metro bundler:
+
+```bash
+# Clear Metro cache
+pnpm clean
+pnpm dev -c
+```
+
 ## 🤝 Contributing
 
-We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting PRs.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📱 Screenshots
-
-| Feed | Magazine | Dark Mode |
-|------|----------|-----------|
-| ![Feed](path-to-feed.png) | ![Magazine](path-to-magazine.png) | ![Dark](path-to-dark.png) |
+1. Fork the repository
+2. Create your feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add some amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
 
 ## 🔐 Security
 
@@ -87,10 +195,6 @@ We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING
 - Private key never leaves the device
 - Regular security audits
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 💎 Powered by HIVE
 
 Built on the HIVE blockchain, enabling:
@@ -98,6 +202,12 @@ Built on the HIVE blockchain, enabling:
 - Community rewards
 - Transparent monetization
 - Censorship resistance
+
+## 🔗 Links
+
+- [HIVE Blockchain](https://hive.io/)
+- [Expo Documentation](https://docs.expo.dev/)
+- [React Native Documentation](https://reactnative.dev/docs/getting-started)
 
 ---
 
