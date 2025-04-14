@@ -135,7 +135,7 @@ const LeaderboardItem = ({
     className={cn(
       "flex-row items-center justify-between p-2",
       isTop && "rounded-[10px]",
-      isCurrentUser && "border-2 border-green-500",
+      !isTop && ((isCurrentUser) && "border-2 border-green-500"),
     )}
   >
     <Text
