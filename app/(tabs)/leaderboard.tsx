@@ -7,9 +7,7 @@ export default function LeaderboardScreen() {
   const { username } = useAuth();
 
   return (
-    <View
-      className="flex-1 bg-background p-2 w-full h-full"
-    >
+    <View className="flex-1 bg-background p-2 w-full h-full">
       <Leaderboard currentUsername={username} />
     </View>
   );

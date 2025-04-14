@@ -8,7 +8,7 @@ import { getBalance, getRewards } from "~/lib/api";
 import { LoadingScreen } from "~/components/ui/LoadingScreen";
 import { RewardsSpectatorInfo } from "~/components/SpectatorMode/RewardsSpectatorInfo";
 import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
-import { useMarket } from "~/lib/hooks/useQueries";
+import { useMarket } from "~/lib/hooks/useMarket";
 
 interface BalancetData {
   account_name: string;

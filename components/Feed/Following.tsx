@@ -6,7 +6,7 @@ import type { Post } from "~/lib/types";
 import { PostCard } from "./PostCard";
 import { Text } from "../ui/text";
 import { LoadingScreen } from "../ui/LoadingScreen";
-import { useFollowing} from "~/lib/hooks/useQueries";
+import { useFollowing} from "~/lib/hooks/useFeeds";
 
 interface FollowingProps {
   refreshTrigger?: number;

@@ -174,7 +174,7 @@ export default function CreatePost() {
       }
 
       // Send the post data as JSON
-      const response = await fetch(`${API_BASE_URL}/createpost`, {
+      const response = await authFetch(`${API_BASE_URL}/createpost`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${postingKey}`,

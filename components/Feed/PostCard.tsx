@@ -11,6 +11,7 @@ import { MediaPreview } from './MediaPreview';
 import { useToast } from '~/lib/toast-provider';
 import type { Media, Post } from '../../lib/types';
 import { extractMediaFromBody } from '~/lib/utils';
+import { authFetch } from '~/lib/authFetch';
 
 interface PostCardProps {
   post: Post;
@@ -66,7 +67,7 @@ export function PostCard({ post, currentUsername }: PostCardProps) {
       setIsLiked(!isLiked);
       setVoteCount(prevCount => previousLikedState ? prevCount - 1 : prevCount + 1);
 
-      const response = await fetch(`${API_BASE_URL}/vote`, {
+      const response = await authFetch(`${API_BASE_URL}/vote`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

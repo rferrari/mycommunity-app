@@ -6,7 +6,7 @@ import type { Post } from "../lib/types";
 import { PostCard } from "./feed/PostCard";
 import { Text } from "./ui/text";
 import { LoadingScreen } from "./ui/LoadingScreen";
-import { useTrending } from "~/lib/hooks/useQueries";
+import { useTrending } from "~/lib/hooks/useFeeds";
 
 interface FeedProps {
   refreshTrigger?: number;

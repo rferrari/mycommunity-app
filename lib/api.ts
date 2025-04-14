@@ -1,3 +1,4 @@
+import { authFetch } from '~/lib/authFetch';
 import { API_BASE_URL } from './constants';
 import type { Post } from './types';
 
@@ -11,7 +12,7 @@ interface ApiResponse<T> {
  */
 export async function getFeed(): Promise<Post[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/feed`);
+    const response = await authFetch(`${API_BASE_URL}/feed`);
     const data: ApiResponse<Post[]> = await response.json();
     
     if (data.success && Array.isArray(data.data)) {
@@ -47,7 +48,7 @@ export async function getFeed(): Promise<Post[]> {
  */
 export async function getTrending(): Promise<Post[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/feed/trending`);
+    const response = await authFetch(`${API_BASE_URL}/feed/trending`);
     const data: ApiResponse<Post[]> = await response.json();
     return data.success && Array.isArray(data.data) ? data.data : [];
   } catch (error) {
@@ -62,7 +63,7 @@ export async function getTrending(): Promise<Post[]> {
  */
 export async function getFollowing(username: string): Promise<Post[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/feed/${username}/following`);
+    const response = await authFetch(`${API_BASE_URL}/feed/${username}/following`);
     const data: ApiResponse<Post[]> = await response.json();
     return data.success && Array.isArray(data.data) ? data.data : [];
   } catch (error) {
@@ -76,7 +77,7 @@ export async function getFollowing(username: string): Promise<Post[]> {
  */
 export async function getBalance(username: string) {
   try {
-    const response = await fetch(`${API_BASE_URL}/balance/${username}`);
+    const response = await authFetch(`${API_BASE_URL}/balance/${username}`);
     const data = await response.json();
     return data.success ? data.data : null;
   } catch (error) {
@@ -90,7 +91,7 @@ export async function getBalance(username: string) {
  */
 export async function getRewards(username: string) {
   try {
-    const response = await fetch(`${API_BASE_URL}/balance/${username}/rewards`);
+    const response = await authFetch(`${API_BASE_URL}/balance/${username}/rewards`);
     const data = await response.json();
     return data.success ? data.data : null;
   } catch (error) {

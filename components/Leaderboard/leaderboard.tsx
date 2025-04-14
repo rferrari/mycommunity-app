@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { Crown } from "lucide-react-native";
 import { LoadingScreen } from "../ui/LoadingScreen";
-import { useLeaderboard } from "~/lib/hooks/useQueries";
+import { useLeaderboard } from "~/lib/hooks/useLeaderboard";
 import { cn } from "~/lib/utils";
 
 interface LeaderboardProps {

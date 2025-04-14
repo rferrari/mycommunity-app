@@ -6,7 +6,7 @@ import type { Post } from '~/lib/types';
 import { LoadingScreen } from '../ui/LoadingScreen';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { useAuth } from '~/lib/auth-provider';
-import { useFeed, useTrending, useFollowing } from '~/lib/hooks/useQueries';
+import { useFeed, useTrending, useFollowing } from '~/lib/hooks/useFeeds';
 import { Clock } from '~/lib/icons/Clock';
 import { TrendingUp } from '~/lib/icons/TrendingUp';
 import { Sun } from '~/lib/icons/Sun';
