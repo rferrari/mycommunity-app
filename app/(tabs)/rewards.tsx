@@ -337,7 +337,7 @@ export default function WalletScreen() {
                                 Potential
                               </Text>
                               <Text className="font-medium text-green-500">
-                                {hideValue(post.pending_payout_value)}
+                                {hideValue(post.pending_payout_value)} HBD
                               </Text>
                             </View>
                             <View className="flex-row justify-between items-center">
