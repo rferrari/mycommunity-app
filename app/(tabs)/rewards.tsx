@@ -117,7 +117,7 @@ export default function WalletScreen() {
     const pendingValue =
       parseFloat(rewardsData.summary.total_pending_payout) || 0;
 
-    return (hiveValue + hbdValue + hpValue + pendingValue).toFixed(2);
+    return `$`+(hiveValue + hbdValue + hpValue + pendingValue).toFixed(2);
   };
 
   const hideValue = (value: string | number | undefined) => {
@@ -154,8 +154,8 @@ export default function WalletScreen() {
     amount: string | undefined,
     price: string | undefined
   ) => {
-    if (!amount || !price) return "0.00";
-    return (parseFloat(amount) * parseFloat(price)).toFixed(2);
+    if (!amount || !price) return "$0.00";
+    return `$`+(parseFloat(amount) * parseFloat(price)).toFixed(2);
   };
 
   return (
@@ -211,7 +211,12 @@ export default function WalletScreen() {
                           {hideValue(balanceData?.hbd)}
                         </Text>
                         <Text className="text-sm text-muted-foreground">
-                          {hideValue(balanceData?.hbd)}
+                          {hideValue(
+                            calculateDollarValue(
+                              balanceData?.hbd,
+                              "1"
+                            )
+                          )}
                         </Text>
                       </View>
                     </View>
